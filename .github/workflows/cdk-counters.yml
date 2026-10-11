@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   counters:
     runs-on: ubuntu-latest
@@ -29,14 +32,16 @@ jobs:
       - name: Upstream counter vectors (sanity check of the harness)
         continue-on-error: true
         working-directory: cdk-erigon/zk/tests
-        run: go test -run Test_RunTestVectors -count=1 -timeout 60m . 2>&1 | tail -40
+        run: go test -run Test_RunTestVectors -count=1 -timeout 60m . 2>&1 | tail -40 | tee ${{ github.workspace }}/upstream-vectors.txt
 
       - name: Latheon transactions, fork 13
         working-directory: cdk-erigon/zk/tests
         env:
           LATHEON_FORK: "13"
           LATHEON_OUT_DIR: ${{ github.workspace }}/fork13-
-        run: go test -run Test_LatheonCounters -count=1 -v -timeout 60m .
+        run: |
+          set -o pipefail
+          go test -run Test_LatheonCounters -count=1 -v -timeout 60m . 2>&1 | grep -v '^\[' | tee ${{ github.workspace }}/fork13-log.txt
 
       - name: Latheon transactions, fork 12
         continue-on-error: true
@@ -44,7 +49,23 @@ jobs:
         env:
           LATHEON_FORK: "12"
           LATHEON_OUT_DIR: ${{ github.workspace }}/fork12-
-        run: go test -run Test_LatheonCounters -count=1 -v -timeout 60m .
+        run: |
+          set -o pipefail
+          go test -run Test_LatheonCounters -count=1 -v -timeout 60m . 2>&1 | grep -v '^\[' | tee ${{ github.workspace }}/fork12-log.txt
+
+      - name: Save results to the results branch
+        if: always()
+        run: |
+          mkdir -p /tmp/out && cp -f fork13-* fork12-* upstream-vectors.txt /tmp/out/ 2>/dev/null || true
+          git config user.name "latheon-network"
+          git config user.email "latheon.protocol@gmail.com"
+          if git fetch origin results; then git switch results; else git switch --orphan results; git rm -rq --cached . 2>/dev/null || true; fi
+          find . -mindepth 1 -maxdepth 1 ! -name .git ! -name 'run-*' -exec rm -rf {} +
+          mkdir -p "run-${{ github.run_id }}" && cp /tmp/out/* "run-${{ github.run_id }}/"
+          echo "cdk-erigon ${{ github.sha }} run ${{ github.run_id }}" > "run-${{ github.run_id }}/SOURCE.txt"
+          git add "run-${{ github.run_id }}"
+          git commit -m "counter results, run ${{ github.run_id }}"
+          git push origin results
 
       - uses: actions/upload-artifact@v4
         if: always()
