@@ -1,0 +1,56 @@
+name: cdk-erigon counters
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  counters:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: 0xPolygon/cdk-erigon
+          ref: 080a7c37b3e1006730477437a91f037db07e01bb
+          path: cdk-erigon
+          fetch-depth: 1
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: cdk-erigon/go.mod
+          cache-dependency-path: cdk-erigon/go.sum
+
+      - name: Add Latheon test and transactions
+        run: cp cdk/latheon_counters_test.go cdk/latheon-txs.json cdk-erigon/zk/tests/
+
+      - name: Upstream counter vectors (sanity check of the harness)
+        continue-on-error: true
+        working-directory: cdk-erigon/zk/tests
+        run: go test -run Test_RunTestVectors -count=1 -timeout 60m . 2>&1 | tail -40
+
+      - name: Latheon transactions, fork 13
+        working-directory: cdk-erigon/zk/tests
+        env:
+          LATHEON_FORK: "13"
+          LATHEON_OUT_DIR: ${{ github.workspace }}/fork13-
+        run: go test -run Test_LatheonCounters -count=1 -v -timeout 60m .
+
+      - name: Latheon transactions, fork 12
+        continue-on-error: true
+        working-directory: cdk-erigon/zk/tests
+        env:
+          LATHEON_FORK: "12"
+          LATHEON_OUT_DIR: ${{ github.workspace }}/fork12-
+        run: go test -run Test_LatheonCounters -count=1 -v -timeout 60m .
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: latheon-counters
+          path: |
+            fork13-latheon-counters-result.json
+            fork12-latheon-counters-result.json
+          if-no-files-found: warn
