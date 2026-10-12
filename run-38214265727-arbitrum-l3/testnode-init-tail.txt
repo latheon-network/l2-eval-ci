@@ -1,0 +1,200 @@
+      transactionHash: '0x4312c612107b36012ee390f71e726e0818221007cb7fce126ff01044dffc6c75',
+      address: '0x9B7C0fcc305ca36412F87Fd6Bd08c194909A7d4E',
+      topics: [Array],
+      data: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      logIndex: 0,
+      blockHash: '0x5bbc85fdcd3270df2233476b784fe9cf0f224b4d2d98a537440bd626e604b21e'
+    },
+    {
+      transactionIndex: 1,
+      blockNumber: 191,
+      transactionHash: '0x4312c612107b36012ee390f71e726e0818221007cb7fce126ff01044dffc6c75',
+      address: '0x9B7C0fcc305ca36412F87Fd6Bd08c194909A7d4E',
+      topics: [Array],
+      data: '0x00000000000000000000000000000000000000000000010f0cf064dd59200000',
+      logIndex: 1,
+      blockHash: '0x5bbc85fdcd3270df2233476b784fe9cf0f224b4d2d98a537440bd626e604b21e'
+    },
+    {
+      transactionIndex: 1,
+      blockNumber: 191,
+      transactionHash: '0x4312c612107b36012ee390f71e726e0818221007cb7fce126ff01044dffc6c75',
+      address: '0x4A967eD69a2B78680212b4D78DDd91A1905A2168',
+      topics: [Array],
+      data: '0x000000000000000000000000736ab8af044ed0c5112e86b200ccdc6f7a9459be000000000000000000000000000000000000000000000000000000000000000c000000000000000000000000a316ae47ec1982d06a4c57753060b763850b4de4ce17c059468d178938b0ca31d6baf9597a8dd8448bd92b5dcd10119b3b2286010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006acc843d',
+      logIndex: 2,
+      blockHash: '0x5bbc85fdcd3270df2233476b784fe9cf0f224b4d2d98a537440bd626e604b21e'
+    },
+    {
+      transactionIndex: 1,
+      blockNumber: 191,
+      transactionHash: '0x4312c612107b36012ee390f71e726e0818221007cb7fce126ff01044dffc6c75',
+      address: '0x9B7C0fcc305ca36412F87Fd6Bd08c194909A7d4E',
+      topics: [Array],
+      data: '0x00000000000000000000000000000000000000000000010f0cf064dd59200000',
+      logIndex: 3,
+      blockHash: '0x5bbc85fdcd3270df2233476b784fe9cf0f224b4d2d98a537440bd626e604b21e'
+    },
+    {
+      transactionIndex: 1,
+      blockNumber: 191,
+      transactionHash: '0x4312c612107b36012ee390f71e726e0818221007cb7fce126ff01044dffc6c75',
+      address: '0x736AB8Af044Ed0C5112E86b200cCdC6F7A9459BE',
+      topics: [Array],
+      data: '0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000349205ae47ec1982d06a4c57753060b763850b3cd300000000000000000000000000000000000000000000010f0cf064dd59200000000000000000000000000000',
+      logIndex: 4,
+      blockHash: '0x5bbc85fdcd3270df2233476b784fe9cf0f224b4d2d98a537440bd626e604b21e'
+    }
+  ],
+  blockNumber: 191,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x01d6b8', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05f5e100', _isBigNumber: true },
+  status: 1,
+  type: 2,
+  byzantium: true
+}
+{
+  type: 2,
+  chainId: 333333,
+  nonce: 0,
+  maxPriorityFeePerGas: BigNumber { _hex: '0x59682f00', _isBigNumber: true },
+  maxFeePerGas: BigNumber { _hex: '0x6553f100', _isBigNumber: true },
+  gasPrice: null,
+  gasLimit: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  to: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E',
+  value: BigNumber { _hex: '0x056bc75e2d63100000', _isBigNumber: true },
+  data: '0x',
+  accessList: [],
+  hash: '0xbfaf2c6412027ef94b2fbdd9ea5ae1e05bcc7fcdfd42d044c62d37ff76688832',
+  v: 1,
+  r: '0x5e7102a3fe0c0180d4e4c27966bf4a9a14435c698fb85ed9c8bf83222cf9a457',
+  s: '0x5d73d7f234710b83f88e74cb5148e52299104d85b5ed7e4af97d114998dcdcb0',
+  from: '0x9205AE47eC1982d06a4C57753060B763850b3Cd3',
+  confirmations: 0,
+  wait: [Function (anonymous)]
+}
+{
+  to: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E',
+  from: '0x9205AE47eC1982d06a4C57753060B763850b3Cd3',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x59185f88fd34170f0886295bb4c8f4a5aa8301460590c910a668ef4e3195bb38',
+  transactionHash: '0xbfaf2c6412027ef94b2fbdd9ea5ae1e05bcc7fcdfd42d044c62d37ff76688832',
+  logs: [],
+  blockNumber: 10,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05f5e100', _isBigNumber: true },
+  status: 1,
+  type: 2,
+  byzantium: true
+}
+{
+  type: 2,
+  chainId: 333333,
+  nonce: 0,
+  maxPriorityFeePerGas: BigNumber { _hex: '0x59682f00', _isBigNumber: true },
+  maxFeePerGas: BigNumber { _hex: '0x6553f100', _isBigNumber: true },
+  gasPrice: null,
+  gasLimit: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  to: '0x863c904166E801527125D8672442D736194A3362',
+  value: BigNumber { _hex: '0x8ac7230489e80000', _isBigNumber: true },
+  data: '0x',
+  accessList: [],
+  hash: '0x7052edf7c8d4c1d6db9084530d27971442b06a0a4e59e93ebcc0f461903ec796',
+  v: 1,
+  r: '0xcddc46a825f7fa8060a248a93a7c2a71490f88743b26f269ce2b1d6370ff1646',
+  s: '0x62b7756eeb9f6ec50234baf2f22bedcd94fe9d48ce944ca6f671439492f441ee',
+  from: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E',
+  confirmations: 0,
+  wait: [Function (anonymous)]
+}
+{
+  to: '0x863c904166E801527125D8672442D736194A3362',
+  from: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x0553a017fc12116dd7f1edb43b6d2078b3ca06cbde3fe917a970e0fd2b01b93a',
+  transactionHash: '0x7052edf7c8d4c1d6db9084530d27971442b06a0a4e59e93ebcc0f461903ec796',
+  logs: [],
+  blockNumber: 11,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05f5e100', _isBigNumber: true },
+  status: 1,
+  type: 2,
+  byzantium: true
+}
+== Deploy CacheManager on L3
+ Container nitro-testnode-geth-1  Running
+ Container nitro-testnode-sequencer-1  Running
+yarn run v1.22.22
+warning package.json: License should be a valid SPDX license expression
+$ hardhat run scripts/local-deployment/deployCacheManager.ts
+* New CacheManager created at address: 0xF5fE98ee962e3E077A75FBe6fE8aBaeF80F3c12d 
+* New ProxyAdmin created at address: 0xAd2951f0D8b49D527981F4e57B355B6cE3dC4Aec 
+* New TransparentUpgradeableProxy created at address: 0x639540036ea0c2b52ab80c9647Ee7cD75884f867 0xF5fE98ee962e3E077A75FBe6fE8aBaeF80F3c12d 0xAd2951f0D8b49D527981F4e57B355B6cE3dC4Aec 0x
+Cache manager deployed at: 0x639540036ea0c2b52ab80c9647Ee7cD75884f867
+Done in 8.00s.
+== Deploy Stylus Deployer on L3
+create-stylus-deployer
+Stylus deployer deployed at L3 address: 0xcEcba2F1DC234f70Dd89F2041029807F8D03A990
+== create l3 traffic
+{
+  type: 2,
+  chainId: 333333,
+  nonce: 1,
+  maxPriorityFeePerGas: BigNumber { _hex: '0x59682f00', _isBigNumber: true },
+  maxFeePerGas: BigNumber { _hex: '0x6553f100', _isBigNumber: true },
+  gasPrice: null,
+  gasLimit: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  to: '0x8442acb41093c00382b03f569d021C3E5a16df61',
+  value: BigNumber { _hex: '0x8ac7230489e80000', _isBigNumber: true },
+  data: '0x',
+  accessList: [],
+  hash: '0x7044233bbb83c20e4b994775792bf60063623eecf266eec43b800d709a540119',
+  v: 0,
+  r: '0x4ff6e8cb71a1bc89f7c348413aea3900eed605b0681692a2e53a66ef51f0da22',
+  s: '0x1e4cb9fa022246315823626e6e2e5f12ec044121dcdd2f489f78199dae36a02e',
+  from: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E',
+  confirmations: 0,
+  wait: [Function (anonymous)]
+}
+{
+  to: '0x8442acb41093c00382b03f569d021C3E5a16df61',
+  from: '0x3f1Eae7D46d88F08fc2F8ed27FCb2AB183EB2d0E',
+  contractAddress: null,
+  transactionIndex: 1,
+  gasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  logsBloom: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+  blockHash: '0x8b760ef5a70f7916040bacc41fc52cf92b1982839c58b89de1eac9732fa7b1e0',
+  transactionHash: '0x7044233bbb83c20e4b994775792bf60063623eecf266eec43b800d709a540119',
+  logs: [],
+  blockNumber: 18,
+  confirmations: 1,
+  cumulativeGasUsed: BigNumber { _hex: '0x5208', _isBigNumber: true },
+  effectiveGasPrice: BigNumber { _hex: '0x05f5e100', _isBigNumber: true },
+  status: 1,
+  type: 2,
+  byzantium: true
+}
+== Launching Sequencer
+if things go wrong - use --init to create a new chain
+
+ Container nitro-testnode-validation_node-1  Running
+ Container nitro-testnode-geth-1  Running
+ Container nitro-testnode-sequencer-1  Running
+ Container nitro-testnode-l3node-1  Running
+ Container nitro-testnode-geth-1  Waiting
+ Container nitro-testnode-sequencer-1  Waiting
+ Container nitro-testnode-l3node-1  Waiting
+ Container nitro-testnode-validation_node-1  Waiting
+ Container nitro-testnode-validation_node-1  Healthy
+ Container nitro-testnode-sequencer-1  Healthy
+ Container nitro-testnode-geth-1  Healthy
+ Container nitro-testnode-l3node-1  Healthy
