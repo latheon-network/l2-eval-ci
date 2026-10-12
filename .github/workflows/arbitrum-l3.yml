@@ -2,6 +2,10 @@ name: arbitrum L3 custom gas token
 
 on:
   workflow_dispatch:
+    inputs:
+      min_base_fee_wei:
+        description: 'Minimum L2 base fee to set on the L3 before the scenario, in wei (0 = keep the default)'
+        default: '10000000'
   push:
     paths:
       - 'arbitrum/**'
@@ -18,6 +22,8 @@ jobs:
       # public Hardhat/Anvil test account #9, holds nothing anywhere
       LATHEON_EVAL_KEY: "0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
       EVAL_ADDR: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720"
+      # 10000000 wei = 0.01 gwei; testnode default minimum is 0.1 gwei
+      MIN_BASE_FEE_WEI: ${{ inputs.min_base_fee_wei || '10000000' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -67,6 +73,15 @@ jobs:
           ./test-node.bash script send-l3 --ethamount 1000 --from user_fee_token_deployer --to address_${EVAL_ADDR} --wait 2>&1 | tail -5
           curl -s -X POST -H 'content-type: application/json' --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBalance\",\"params\":[\"${EVAL_ADDR}\",\"latest\"]}" http://127.0.0.1:3347 | tee $GITHUB_WORKSPACE/l3-balance-before.txt
 
+      - name: Lower the L3 minimum base fee (chain owner, ArbOwner precompile)
+        if: env.MIN_BASE_FEE_WEI != '0'
+        run: |
+          set -o pipefail
+          OWNER_KEY=$(cd nitro-testnode && ./test-node.bash script print-private-key --account l3owner 2>/dev/null | tail -n 1 | tr -d '\r\n')
+          cd arbitrum/l2-eval
+          npm install --no-audit --no-fund > /dev/null
+          OWNER_KEY=$OWNER_KEY node set-min-base-fee.js http://127.0.0.1:3347 $MIN_BASE_FEE_WEI 2>&1 | tee $GITHUB_WORKSPACE/min-base-fee.txt
+
       - name: Latheon scenario on the L3 (gas paid in the custom token)
         working-directory: arbitrum/l2-eval
         env:
@@ -82,7 +97,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p /tmp/out
-          cp -f testnode-version.txt chain-facts.txt l3-balance-before.txt eval-l3.txt /tmp/out/ 2>/dev/null || true
+          cp -f testnode-version.txt chain-facts.txt l3-balance-before.txt min-base-fee.txt eval-l3.txt /tmp/out/ 2>/dev/null || true
           tail -200 testnode-init.txt > /tmp/out/testnode-init-tail.txt 2>/dev/null || true
           cp -f arbitrum/l2-eval/results/*.json /tmp/out/ 2>/dev/null || true
           cd /tmp && rm -rf res
