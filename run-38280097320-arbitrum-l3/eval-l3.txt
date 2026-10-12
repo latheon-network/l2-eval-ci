@@ -1,0 +1,52 @@
+Сеть: testnode-l3 (chainId 333333, EVM)
+Кошелёк: 0xa0Ee7A142d267C1f36714E4a8F75612F20a79720
+Баланс: 1000.0 FEE (custom gas token)
+
+1. Деплой контрактов (исходники репозитория без изменений)
+   ✔ deploy PoseidonT3: газ 3 695 103 (из них за L1 0), комиссия 0.0003695103 FEE (custom gas token)  0x7098d8c66caef956361d361d6ccdd110db73fcdb6b255bc0d76a2c2e03d0e5a8
+   ✔ deploy Verifier: газ 390 473 (из них за L1 0), комиссия 0.0000390473 FEE (custom gas token)  0xb33cad3b53171aeb49fff043d0adce4ce323ddf008715b66457ba55308970ca1
+   ✔ deploy Token: газ 681 267 (из них за L1 0), комиссия 0.0000681267 FEE (custom gas token)  0xb76e7d8989f484380d749be496871383f0fa3bb4a7d546a6a189222574e01693
+   ✔ deploy Pool100: газ 1 433 687 (из них за L1 0), комиссия 0.0001433687 FEE (custom gas token)  0x1e564677eae0ee572694d5853eda7c0bb3aa84dd68fa0857c04044c0fd8c59e5
+   ✔ deploy Pool50: газ 1 433 687 (из них за L1 0), комиссия 0.0001433687 FEE (custom gas token)  0x0062f19788d0952dfaf8f5a95e4e187d302381fd5dbb016c5a11f947ea28e238
+   ✔ deploy Pool10: газ 1 433 675 (из них за L1 0), комиссия 0.0001433675 FEE (custom gas token)  0xe082667e88d835277525649f62c8bcefcb36e096d19c87fbff232e57aef5e6ad
+   ✔ deploy Pool1: газ 1 433 675 (из них за L1 0), комиссия 0.0001433675 FEE (custom gas token)  0xf2b56cd8793548177b7cba25336139ea938f2b8a6c33505b9c50fc1d81f8a9fd
+   ✔ deploy Router: газ 970 867 (из них за L1 0), комиссия 0.0000970867 FEE (custom gas token)  0x01c531f23a53eb9dddd5206f8317a1f14d467ddb76fbf2cd9504cccb607b72d5
+
+2. Прямой депозит в пул 100 и вывод
+   ✔ approve pool 100: газ 46 406 (из них за L1 0), комиссия 0.0000046406 FEE (custom gas token)  0x6bc80e988b4b0e49943f0aa0e4f28a2d6a40e9ed99bece933afd30f7abd0130b
+   ✔ deposit V5 direct (1 note): газ 433 657 (из них за L1 0), комиссия 0.0000433657 FEE (custom gas token)  0x2cc0ffccb95e9c22962b2e98451c826318f666faf9ef753629db561f2b22e2fc
+   ✔ withdraw V5 direct (1 note): газ 272 607 (из них за L1 0), комиссия 0.0000272607 FEE (custom gas token)  0x9df1c0eb49683806377a94392c61f85ab1bc5b31862831f6a7b7288b92776034
+
+3. Депозиты через роутер
+   ✔ approve router: газ 46 406 (из них за L1 0), комиссия 0.0000046406 FEE (custom gas token)  0x949b732629be3d3c57cacc4613a5a9fb6a57398b13c5c394c1fd61ae0f2726a6
+   ✔ router deposit 1 note: газ 470 864 (из них за L1 0), комиссия 0.0000470864 FEE (custom gas token)  0x08d1c7edb57bd4383f55891caf763ee29aea92351b6722abe5058bc772672df8
+   ✔ router deposit 3 notes: газ 1 260 083 (из них за L1 0), комиссия 0.0001260083 FEE (custom gas token)  0x6a2ac734e3622ef43f94f0e0dc383926a53512d938b4d543dc4e94aa4b079eaf
+   ✔ router deposit 14 notes: газ 4 314 720 (из них за L1 0), комиссия 0.000431472 FEE (custom gas token)  0xed311bc00aa5236cfa069c45bdf190c24355e9c2ce73b6b0efaf66c05f17314a
+   ✔ router deposit 32 notes: газ 9 302 207 (из них за L1 0), комиссия 0.0009302207 FEE (custom gas token)  0xb7b50a9169804b9a66962601d9d51e16b09add764b140e455dc32a6a671a4135
+
+4. withdrawMany (доказательства считаются на этом компьютере)
+...
+   ✔ withdrawMany 3 notes: газ 789 365 (из них за L1 0), комиссия 0.0000789365 FEE (custom gas token)  0x90dd28eb20f9e57277800bb55e097c00f98d814ba8f167f9a1883319576cd88d
+................
+   ✔ withdrawMany 16 notes: газ 3 864 790 (из них за L1 0), комиссия 0.000386479 FEE (custom gas token)  0x4e2acb2d025b2e9d47416feb63eafa69fc326b892cb2f059fecc8c33b98b8bef
+
+Итог: testnode-l3
+операция                                 газ                комиссия
+deploy PoseidonT3                  3 695 103            0.0003695103
+deploy Verifier                      390 473            0.0000390473
+deploy Token                         681 267            0.0000681267
+deploy Pool100                     1 433 687            0.0001433687
+deploy Pool50                      1 433 687            0.0001433687
+deploy Pool10                      1 433 675            0.0001433675
+deploy Pool1                       1 433 675            0.0001433675
+deploy Router                        970 867            0.0000970867
+deposit V5 direct (1 note)           433 657            0.0000433657
+withdraw V5 direct (1 note)          272 607            0.0000272607
+router deposit 1 note                470 864            0.0000470864
+router deposit 3 notes             1 260 083            0.0001260083
+router deposit 14 notes            4 314 720             0.000431472
+router deposit 32 notes            9 302 207            0.0009302207
+withdrawMany 3 notes                 789 365            0.0000789365
+withdrawMany 16 notes              3 864 790             0.000386479
+Всего комиссий: 0.0032180727 FEE (custom gas token)
+Результаты: /home/runner/work/l2-eval-ci/l2-eval-ci/arbitrum/l2-eval/results/testnode-l3-2026-10-12T16-58-22-018Z.json
