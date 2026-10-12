@@ -13,7 +13,7 @@ permissions:
 jobs:
   l3:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 120
     env:
       # public Hardhat/Anvil test account #9, holds nothing anywhere
       LATHEON_EVAL_KEY: "0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
@@ -42,8 +42,14 @@ jobs:
       - name: Start L1 + L2 + L3 with custom fee token (18 decimals)
         working-directory: nitro-testnode
         run: |
-          set -o pipefail
-          ./test-node.bash --init-force --detach --l3node --l3-fee-token --l3-fee-token-decimals 18 2>&1 | tee $GITHUB_WORKSPACE/testnode-init.txt | tail -60
+          # Output goes to a file, not a pipe: testnode leaves background traffic
+          # generators running, and they would keep a pipe open until the job timeout.
+          set +e
+          timeout 75m ./test-node.bash --init-force --detach --l3node --l3-fee-token --l3-fee-token-decimals 18 > $GITHUB_WORKSPACE/testnode-init.txt 2>&1 < /dev/null
+          rc=$?
+          tail -60 $GITHUB_WORKSPACE/testnode-init.txt
+          echo "test-node.bash exit code: $rc"
+          exit $rc
 
       - name: Chain facts
         working-directory: nitro-testnode
