@@ -1,8 +1,11 @@
 name: cdk-erigon counters
 
 on:
-  push:
   workflow_dispatch:
+  push:
+    paths:
+      - 'cdk/**'
+      - '.github/workflows/cdk-counters.yml'
 
 permissions:
   contents: write

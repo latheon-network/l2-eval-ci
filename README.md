@@ -7,3 +7,5 @@ Evaluation runs for Latheon's L2 framework comparison. Testnet research only, no
 The sender key in `cdk/latheon-txs.json` is the public Hardhat/Anvil test account #9. It holds nothing anywhere.
 
 Run: GitHub Actions, workflow `cdk-erigon counters` (on push or manually). Results: job log and the `latheon-counters` artifact.
+
+`arbitrum/`: starts the official Arbitrum nitro-testnode (L1 + L2 + an L3 whose gas is paid in a custom ERC-20 fee token, 18 decimals) in GitHub Actions and runs the Latheon evaluation scenario (`arbitrum/l2-eval/eval.js`, same 18 transactions, real proofs) on the L3. Workflow `arbitrum L3 custom gas token`. Results are committed to the `results` branch.

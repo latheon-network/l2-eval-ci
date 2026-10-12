@@ -1,0 +1,92 @@
+name: arbitrum L3 custom gas token
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'arbitrum/**'
+      - '.github/workflows/arbitrum-l3.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  l3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      # public Hardhat/Anvil test account #9, holds nothing anywhere
+      LATHEON_EVAL_KEY: "0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6"
+      EVAL_ADDR: "0xa0Ee7A142d267C1f36714E4a8F75612F20a79720"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Latheon circuits (public repo)
+        uses: actions/checkout@v4
+        with:
+          repository: latheon-network/Latheon
+          ref: 0cb805276d47b03ae22e9fd0ec3fb4458fbfbce5
+          path: latheon
+          fetch-depth: 1
+
+      - name: nitro-testnode
+        run: |
+          git clone --recurse-submodules https://github.com/OffchainLabs/nitro-testnode.git
+          cd nitro-testnode && git checkout 72ac4bb && git submodule update --init --recursive
+          git log -1 --format='%H %cd' | tee $GITHUB_WORKSPACE/testnode-version.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Start L1 + L2 + L3 with custom fee token (18 decimals)
+        working-directory: nitro-testnode
+        run: |
+          set -o pipefail
+          ./test-node.bash --init-force --detach --l3node --l3-fee-token --l3-fee-token-decimals 18 2>&1 | tee $GITHUB_WORKSPACE/testnode-init.txt | tail -60
+
+      - name: Chain facts
+        working-directory: nitro-testnode
+        run: |
+          {
+            echo "L3 chainId:"; curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' http://127.0.0.1:3347; echo
+            echo "L3 gasPrice:"; curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_gasPrice","params":[]}' http://127.0.0.1:3347; echo
+            echo "deployed_l3_chain_info.json:"; docker run --rm -v nitro-testnode_config:/config alpine cat /config/deployed_l3_chain_info.json || true; echo
+            echo "l3_chain_config.json:"; docker run --rm -v nitro-testnode_config:/config alpine cat /config/l3_chain_config.json || true
+          } 2>&1 | tee $GITHUB_WORKSPACE/chain-facts.txt
+
+      - name: Fund the test account on L3 with the fee token
+        working-directory: nitro-testnode
+        run: |
+          ./test-node.bash script send-l3 --ethamount 1000 --from user_fee_token_deployer --to address_${EVAL_ADDR} --wait 2>&1 | tail -5
+          curl -s -X POST -H 'content-type: application/json' --data "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBalance\",\"params\":[\"${EVAL_ADDR}\",\"latest\"]}" http://127.0.0.1:3347 | tee $GITHUB_WORKSPACE/l3-balance-before.txt
+
+      - name: Latheon scenario on the L3 (gas paid in the custom token)
+        working-directory: arbitrum/l2-eval
+        env:
+          LATHEON_REPO: ${{ github.workspace }}/latheon
+        run: |
+          set -o pipefail
+          npm install --no-audit --no-fund
+          node eval.js testnode-l3 --fresh 2>&1 | tee $GITHUB_WORKSPACE/eval-l3.txt
+
+      - name: Save results to the results branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/out
+          cp -f testnode-version.txt chain-facts.txt l3-balance-before.txt eval-l3.txt /tmp/out/ 2>/dev/null || true
+          tail -200 testnode-init.txt > /tmp/out/testnode-init-tail.txt 2>/dev/null || true
+          cp -f arbitrum/l2-eval/results/*.json /tmp/out/ 2>/dev/null || true
+          cd /tmp && rm -rf res
+          URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if ! git clone -q --depth 1 --branch results "$URL" res; then mkdir res && git -C res init -q -b results && git -C res remote add origin "$URL"; fi
+          cd res
+          git config user.name "latheon-network"
+          git config user.email "latheon.protocol@gmail.com"
+          D="run-${{ github.run_id }}-arbitrum-l3"
+          mkdir -p "$D" && cp /tmp/out/* "$D/"
+          git add "$D"
+          git commit -m "arbitrum L3 results, run ${{ github.run_id }}"
+          git push origin results

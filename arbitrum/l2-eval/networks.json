@@ -1,0 +1,4 @@
+{
+  "testnode-l3": { "rpc": "http://127.0.0.1:3347", "chainId": null, "vm": "evm", "symbol": "FEE (custom gas token)", "explorer": null },
+  "testnode-l2": { "rpc": "http://127.0.0.1:8547", "chainId": null, "vm": "evm", "symbol": "ETH", "explorer": null }
+}
