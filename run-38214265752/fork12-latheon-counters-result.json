@@ -1,0 +1,3198 @@
+{
+ "forkId": 12,
+ "mcpReduction": 0.6,
+ "results": {
+  "smtLevels=32": [
+   {
+    "label": "deploy PoseidonT3",
+    "ok": true,
+    "zkGasUsed": 3694045,
+    "evmGasUsed": "3695103",
+    "counters": [
+     {
+      "name": "S",
+      "used": 3755010,
+      "limit": 31876521,
+      "pct": 11.779861422142021
+     },
+     {
+      "name": "A",
+      "used": 74813,
+      "limit": 996141,
+      "pct": 7.510282178928485
+     },
+     {
+      "name": "B",
+      "used": 220691,
+      "limit": 1992283,
+      "pct": 11.077291730140749
+     },
+     {
+      "name": "M",
+      "used": 2149,
+      "limit": 996141,
+      "pct": 0.21573251176289301
+     },
+     {
+      "name": "K",
+      "used": 258,
+      "limit": 9029,
+      "pct": 2.8574592978181417
+     },
+     {
+      "name": "D",
+      "used": 917,
+      "limit": 569223,
+      "pct": 0.16109679334812543
+     },
+     {
+      "name": "P",
+      "used": 1911,
+      "limit": 1028275,
+      "pct": 0.18584522622839222
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 11.779861422142021,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Verifier",
+    "ok": true,
+    "zkGasUsed": 390373,
+    "evmGasUsed": "390473",
+    "counters": [
+     {
+      "name": "S",
+      "used": 369200,
+      "limit": 31876521,
+      "pct": 1.1582192423069004
+     },
+     {
+      "name": "A",
+      "used": 7713,
+      "limit": 996141,
+      "pct": 0.7742879773044178
+     },
+     {
+      "name": "B",
+      "used": 21802,
+      "limit": 1992283,
+      "pct": 1.0943224431468823
+     },
+     {
+      "name": "M",
+      "used": 226,
+      "limit": 996141,
+      "pct": 0.02268755126031355
+     },
+     {
+      "name": "K",
+      "used": 32,
+      "limit": 9029,
+      "pct": 0.35441355631852917
+     },
+     {
+      "name": "D",
+      "used": 95,
+      "limit": 569223,
+      "pct": 0.01668941697717766
+     },
+     {
+      "name": "P",
+      "used": 1089,
+      "limit": 1028275,
+      "pct": 0.10590552138289855
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 1.1582192423069004,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Token",
+    "ok": true,
+    "zkGasUsed": 681051,
+    "evmGasUsed": "681267",
+    "counters": [
+     {
+      "name": "S",
+      "used": 954178,
+      "limit": 31876521,
+      "pct": 2.9933567719011744
+     },
+     {
+      "name": "A",
+      "used": 19928,
+      "limit": 996141,
+      "pct": 2.000520006705878
+     },
+     {
+      "name": "B",
+      "used": 56399,
+      "limit": 1992283,
+      "pct": 2.8308729231740672
+     },
+     {
+      "name": "M",
+      "used": 1083,
+      "limit": 996141,
+      "pct": 0.1087195487385822
+     },
+     {
+      "name": "K",
+      "used": 61,
+      "limit": 9029,
+      "pct": 0.6756008417321963
+     },
+     {
+      "name": "D",
+      "used": 164,
+      "limit": 569223,
+      "pct": 0.028811204044811963
+     },
+     {
+      "name": "P",
+      "used": 2063,
+      "limit": 1028275,
+      "pct": 0.20062726410736428
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 2.9933567719011744,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool100",
+    "ok": true,
+    "zkGasUsed": 1433417,
+    "evmGasUsed": "1433687",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6785,
+      "limit": 1028275,
+      "pct": 0.6598429408475359
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool50",
+    "ok": true,
+    "zkGasUsed": 1433417,
+    "evmGasUsed": "1433687",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6785,
+      "limit": 1028275,
+      "pct": 0.6598429408475359
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool10",
+    "ok": true,
+    "zkGasUsed": 1433405,
+    "evmGasUsed": "1433675",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6785,
+      "limit": 1028275,
+      "pct": 0.6598429408475359
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool1",
+    "ok": true,
+    "zkGasUsed": 1433405,
+    "evmGasUsed": "1433675",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6785,
+      "limit": 1028275,
+      "pct": 0.6598429408475359
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Router",
+    "ok": true,
+    "zkGasUsed": 970575,
+    "evmGasUsed": "970867",
+    "counters": [
+     {
+      "name": "S",
+      "used": 1854124,
+      "limit": 31876521,
+      "pct": 5.816582054233584
+     },
+     {
+      "name": "A",
+      "used": 40276,
+      "limit": 996141,
+      "pct": 4.043202719293754
+     },
+     {
+      "name": "B",
+      "used": 109108,
+      "limit": 1992283,
+      "pct": 5.476531195618294
+     },
+     {
+      "name": "M",
+      "used": 3570,
+      "limit": 996141,
+      "pct": 0.35838299999698836
+     },
+     {
+      "name": "K",
+      "used": 76,
+      "limit": 9029,
+      "pct": 0.8417321962565069
+     },
+     {
+      "name": "D",
+      "used": 724,
+      "limit": 569223,
+      "pct": 0.1271909251734382
+     },
+     {
+      "name": "P",
+      "used": 4491,
+      "limit": 1028275,
+      "pct": 0.4367508691741023
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 5.816582054233584,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "approve pool 100",
+    "ok": true,
+    "zkGasUsed": 46406,
+    "evmGasUsed": "46406",
+    "counters": [
+     {
+      "name": "S",
+      "used": 35710,
+      "limit": 31876521,
+      "pct": 0.11202602693060514
+     },
+     {
+      "name": "A",
+      "used": 977,
+      "limit": 996141,
+      "pct": 0.09807848487312538
+     },
+     {
+      "name": "B",
+      "used": 1970,
+      "limit": 1992283,
+      "pct": 0.09888153440048426
+     },
+     {
+      "name": "M",
+      "used": 26,
+      "limit": 996141,
+      "pct": 0.0026100722688856296
+     },
+     {
+      "name": "K",
+      "used": 12,
+      "limit": 9029,
+      "pct": 0.13290508361944844
+     },
+     {
+      "name": "D",
+      "used": 59,
+      "limit": 569223,
+      "pct": 0.010365006333194548
+     },
+     {
+      "name": "P",
+      "used": 1103,
+      "limit": 1028275,
+      "pct": 0.10726702487175123
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 0.13290508361944844,
+    "maxName": "K",
+    "overflow": false
+   },
+   {
+    "label": "deposit V5 direct (1 note)",
+    "ok": true,
+    "zkGasUsed": 423457,
+    "evmGasUsed": "433657",
+    "counters": [
+     {
+      "name": "S",
+      "used": 9196455,
+      "limit": 31876521,
+      "pct": 28.85024686351437
+     },
+     {
+      "name": "A",
+      "used": 76824,
+      "limit": 996141,
+      "pct": 7.712161230187292
+     },
+     {
+      "name": "B",
+      "used": 534565,
+      "limit": 1992283,
+      "pct": 26.831780424768972
+     },
+     {
+      "name": "M",
+      "used": 107543,
+      "limit": 996141,
+      "pct": 10.795961615875663
+     },
+     {
+      "name": "K",
+      "used": 17,
+      "limit": 9029,
+      "pct": 0.18828220179421862
+     },
+     {
+      "name": "D",
+      "used": 2552,
+      "limit": 569223,
+      "pct": 0.44833044342902517
+     },
+     {
+      "name": "P",
+      "used": 7430,
+      "limit": 1028275,
+      "pct": 0.7225693515839634
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 28.85024686351437,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "withdraw V5 direct (1 note)",
+    "ok": true,
+    "zkGasUsed": 262407,
+    "evmGasUsed": "272607",
+    "counters": [
+     {
+      "name": "S",
+      "used": 1683395,
+      "limit": 31876521,
+      "pct": 5.280987219402017
+     },
+     {
+      "name": "A",
+      "used": 140801,
+      "limit": 996141,
+      "pct": 14.134645597360214
+     },
+     {
+      "name": "B",
+      "used": 86218,
+      "limit": 1992283,
+      "pct": 4.327598037025864
+     },
+     {
+      "name": "M",
+      "used": 241,
+      "limit": 996141,
+      "pct": 0.024193362184670643
+     },
+     {
+      "name": "K",
+      "used": 19,
+      "limit": 9029,
+      "pct": 0.21043304906412671
+     },
+     {
+      "name": "D",
+      "used": 177,
+      "limit": 569223,
+      "pct": 0.031095018999583644
+     },
+     {
+      "name": "P",
+      "used": 3337,
+      "limit": 1028275,
+      "pct": 0.3245240815929591
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 14.134645597360214,
+    "maxName": "A",
+    "overflow": false
+   },
+   {
+    "label": "approve router",
+    "ok": true,
+    "zkGasUsed": 46406,
+    "evmGasUsed": "46406",
+    "counters": [
+     {
+      "name": "S",
+      "used": 35710,
+      "limit": 31876521,
+      "pct": 0.11202602693060514
+     },
+     {
+      "name": "A",
+      "used": 977,
+      "limit": 996141,
+      "pct": 0.09807848487312538
+     },
+     {
+      "name": "B",
+      "used": 1970,
+      "limit": 1992283,
+      "pct": 0.09888153440048426
+     },
+     {
+      "name": "M",
+      "used": 26,
+      "limit": 996141,
+      "pct": 0.0026100722688856296
+     },
+     {
+      "name": "K",
+      "used": 12,
+      "limit": 9029,
+      "pct": 0.13290508361944844
+     },
+     {
+      "name": "D",
+      "used": 59,
+      "limit": 569223,
+      "pct": 0.010365006333194548
+     },
+     {
+      "name": "P",
+      "used": 1103,
+      "limit": 1028275,
+      "pct": 0.10726702487175123
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 0.13290508361944844,
+    "maxName": "K",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 1 note",
+    "ok": true,
+    "zkGasUsed": 470864,
+    "evmGasUsed": "470864",
+    "counters": [
+     {
+      "name": "S",
+      "used": 9307266,
+      "limit": 31876521,
+      "pct": 29.197872628571982
+     },
+     {
+      "name": "A",
+      "used": 78051,
+      "limit": 996141,
+      "pct": 7.835336563799703
+     },
+     {
+      "name": "B",
+      "used": 539007,
+      "limit": 1992283,
+      "pct": 27.054740717056763
+     },
+     {
+      "name": "M",
+      "used": 107687,
+      "limit": 996141,
+      "pct": 10.810417400749492
+     },
+     {
+      "name": "K",
+      "used": 26,
+      "limit": 9029,
+      "pct": 0.28796101450880496
+     },
+     {
+      "name": "D",
+      "used": 2714,
+      "limit": 569223,
+      "pct": 0.47679029132694917
+     },
+     {
+      "name": "P",
+      "used": 9764,
+      "limit": 1028275,
+      "pct": 0.9495514332255477
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 29.197872628571982,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 3 notes",
+    "ok": true,
+    "zkGasUsed": 1260071,
+    "evmGasUsed": "1260071",
+    "counters": [
+     {
+      "name": "S",
+      "used": 27741804,
+      "limit": 31876521,
+      "pct": 87.02895777114448
+     },
+     {
+      "name": "A",
+      "used": 231191,
+      "limit": 996141,
+      "pct": 23.208662227536063
+     },
+     {
+      "name": "B",
+      "used": 1609138,
+      "limit": 1992283,
+      "pct": 80.7685454325515
+     },
+     {
+      "name": "M",
+      "used": 322863,
+      "limit": 996141,
+      "pct": 32.411375498046965
+     },
+     {
+      "name": "K",
+      "used": 46,
+      "limit": 9029,
+      "pct": 0.5094694872078857
+     },
+     {
+      "name": "D",
+      "used": 7891,
+      "limit": 569223,
+      "pct": 1.3862756775464098
+     },
+     {
+      "name": "P",
+      "used": 24398,
+      "limit": 1028275,
+      "pct": 2.3727115800734238
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 87.02895777114448,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 14 notes",
+    "ok": true,
+    "zkGasUsed": 4314720,
+    "evmGasUsed": "4314720",
+    "counters": [
+     {
+      "name": "S",
+      "used": 87485923,
+      "limit": 31876521,
+      "pct": 274.4525445546583
+     },
+     {
+      "name": "A",
+      "used": 1069152,
+      "limit": 996141,
+      "pct": 107.32938409321572
+     },
+     {
+      "name": "B",
+      "used": 4377186,
+      "limit": 1992283,
+      "pct": 219.70703961234423
+     },
+     {
+      "name": "M",
+      "used": 470443,
+      "limit": 996141,
+      "pct": 47.22654724582163
+     },
+     {
+      "name": "K",
+      "used": 127,
+      "limit": 9029,
+      "pct": 1.4065788016391627
+     },
+     {
+      "name": "D",
+      "used": 35848,
+      "limit": 569223,
+      "pct": 6.297707576819629
+     },
+     {
+      "name": "P",
+      "used": 97672,
+      "limit": 1028275,
+      "pct": 9.498626340229997
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 274.4525445546583,
+    "maxName": "S",
+    "overflow": true
+   },
+   {
+    "label": "router deposit 32 notes",
+    "ok": true,
+    "zkGasUsed": 9292055,
+    "evmGasUsed": "9302255",
+    "counters": [
+     {
+      "name": "S",
+      "used": 182483691,
+      "limit": 31876521,
+      "pct": 572.4705371706028
+     },
+     {
+      "name": "A",
+      "used": 2442440,
+      "limit": 996141,
+      "pct": 245.19018893911604
+     },
+     {
+      "name": "B",
+      "used": 8683497,
+      "limit": 1992283,
+      "pct": 435.85660270152385
+     },
+     {
+      "name": "M",
+      "used": 635304,
+      "limit": 996141,
+      "pct": 63.77651356585062
+     },
+     {
+      "name": "K",
+      "used": 259,
+      "limit": 9029,
+      "pct": 2.8685347214530954
+     },
+     {
+      "name": "D",
+      "used": 81502,
+      "limit": 569223,
+      "pct": 14.318114341830881
+     },
+     {
+      "name": "P",
+      "used": 213623,
+      "limit": 1028275,
+      "pct": 20.774889985655587
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 572.4705371706028,
+    "maxName": "S",
+    "overflow": true
+   },
+   {
+    "label": "withdrawMany 3 notes",
+    "ok": true,
+    "zkGasUsed": 789377,
+    "evmGasUsed": "789377",
+    "counters": [
+     {
+      "name": "S",
+      "used": 5098056,
+      "limit": 31876521,
+      "pct": 15.993138021555113
+     },
+     {
+      "name": "A",
+      "used": 422177,
+      "limit": 996141,
+      "pct": 42.381249240820324
+     },
+     {
+      "name": "B",
+      "used": 260196,
+      "limit": 1992283,
+      "pct": 13.060192753740306
+     },
+     {
+      "name": "M",
+      "used": 847,
+      "limit": 996141,
+      "pct": 0.08502812352869724
+     },
+     {
+      "name": "K",
+      "used": 41,
+      "limit": 9029,
+      "pct": 0.4540923690331155
+     },
+     {
+      "name": "D",
+      "used": 576,
+      "limit": 569223,
+      "pct": 0.10119057030372983
+     },
+     {
+      "name": "P",
+      "used": 9284,
+      "limit": 1028275,
+      "pct": 0.9028713136077411
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 42.381249240820324,
+    "maxName": "A",
+    "overflow": false
+   },
+   {
+    "label": "withdrawMany 16 notes",
+    "ok": true,
+    "zkGasUsed": 3864850,
+    "evmGasUsed": "3864850",
+    "counters": [
+     {
+      "name": "S",
+      "used": 26794493,
+      "limit": 31876521,
+      "pct": 84.05714350069758
+     },
+     {
+      "name": "A",
+      "used": 2241644,
+      "limit": 996141,
+      "pct": 225.03280158130224
+     },
+     {
+      "name": "B",
+      "used": 1366465,
+      "limit": 1992283,
+      "pct": 68.58789639825265
+     },
+     {
+      "name": "M",
+      "used": 3501,
+      "limit": 996141,
+      "pct": 0.35145626974494576
+     },
+     {
+      "name": "K",
+      "used": 172,
+      "limit": 9029,
+      "pct": 1.9049728652120943
+     },
+     {
+      "name": "D",
+      "used": 2738,
+      "limit": 569223,
+      "pct": 0.4810065650896046
+     },
+     {
+      "name": "P",
+      "used": 45103,
+      "limit": 1028275,
+      "pct": 4.386277989837349
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 225.03280158130224,
+    "maxName": "A",
+    "overflow": true
+   }
+  ],
+  "smtLevels=64": [
+   {
+    "label": "deploy PoseidonT3",
+    "ok": true,
+    "zkGasUsed": 3694045,
+    "evmGasUsed": "3695103",
+    "counters": [
+     {
+      "name": "S",
+      "used": 3755010,
+      "limit": 31876521,
+      "pct": 11.779861422142021
+     },
+     {
+      "name": "A",
+      "used": 74813,
+      "limit": 996141,
+      "pct": 7.510282178928485
+     },
+     {
+      "name": "B",
+      "used": 220691,
+      "limit": 1992283,
+      "pct": 11.077291730140749
+     },
+     {
+      "name": "M",
+      "used": 2149,
+      "limit": 996141,
+      "pct": 0.21573251176289301
+     },
+     {
+      "name": "K",
+      "used": 258,
+      "limit": 9029,
+      "pct": 2.8574592978181417
+     },
+     {
+      "name": "D",
+      "used": 917,
+      "limit": 569223,
+      "pct": 0.16109679334812543
+     },
+     {
+      "name": "P",
+      "used": 2551,
+      "limit": 1028275,
+      "pct": 0.2480853857188009
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 11.779861422142021,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Verifier",
+    "ok": true,
+    "zkGasUsed": 390373,
+    "evmGasUsed": "390473",
+    "counters": [
+     {
+      "name": "S",
+      "used": 369200,
+      "limit": 31876521,
+      "pct": 1.1582192423069004
+     },
+     {
+      "name": "A",
+      "used": 7713,
+      "limit": 996141,
+      "pct": 0.7742879773044178
+     },
+     {
+      "name": "B",
+      "used": 21802,
+      "limit": 1992283,
+      "pct": 1.0943224431468823
+     },
+     {
+      "name": "M",
+      "used": 226,
+      "limit": 996141,
+      "pct": 0.02268755126031355
+     },
+     {
+      "name": "K",
+      "used": 32,
+      "limit": 9029,
+      "pct": 0.35441355631852917
+     },
+     {
+      "name": "D",
+      "used": 95,
+      "limit": 569223,
+      "pct": 0.01668941697717766
+     },
+     {
+      "name": "P",
+      "used": 1729,
+      "limit": 1028275,
+      "pct": 0.16814568087330725
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 1.1582192423069004,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Token",
+    "ok": true,
+    "zkGasUsed": 681051,
+    "evmGasUsed": "681267",
+    "counters": [
+     {
+      "name": "S",
+      "used": 954178,
+      "limit": 31876521,
+      "pct": 2.9933567719011744
+     },
+     {
+      "name": "A",
+      "used": 19928,
+      "limit": 996141,
+      "pct": 2.000520006705878
+     },
+     {
+      "name": "B",
+      "used": 56399,
+      "limit": 1992283,
+      "pct": 2.8308729231740672
+     },
+     {
+      "name": "M",
+      "used": 1083,
+      "limit": 996141,
+      "pct": 0.1087195487385822
+     },
+     {
+      "name": "K",
+      "used": 61,
+      "limit": 9029,
+      "pct": 0.6756008417321963
+     },
+     {
+      "name": "D",
+      "used": 164,
+      "limit": 569223,
+      "pct": 0.028811204044811963
+     },
+     {
+      "name": "P",
+      "used": 3123,
+      "limit": 1028275,
+      "pct": 0.30371252826335365
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 2.9933567719011744,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool100",
+    "ok": true,
+    "zkGasUsed": 1433417,
+    "evmGasUsed": "1433687",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 9485,
+      "limit": 1028275,
+      "pct": 0.9224186136976976
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool50",
+    "ok": true,
+    "zkGasUsed": 1433417,
+    "evmGasUsed": "1433687",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 9485,
+      "limit": 1028275,
+      "pct": 0.9224186136976976
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool10",
+    "ok": true,
+    "zkGasUsed": 1433405,
+    "evmGasUsed": "1433675",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 9485,
+      "limit": 1028275,
+      "pct": 0.9224186136976976
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool1",
+    "ok": true,
+    "zkGasUsed": 1433405,
+    "evmGasUsed": "1433675",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 9485,
+      "limit": 1028275,
+      "pct": 0.9224186136976976
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Router",
+    "ok": true,
+    "zkGasUsed": 970575,
+    "evmGasUsed": "970867",
+    "counters": [
+     {
+      "name": "S",
+      "used": 1854124,
+      "limit": 31876521,
+      "pct": 5.816582054233584
+     },
+     {
+      "name": "A",
+      "used": 40276,
+      "limit": 996141,
+      "pct": 4.043202719293754
+     },
+     {
+      "name": "B",
+      "used": 109108,
+      "limit": 1992283,
+      "pct": 5.476531195618294
+     },
+     {
+      "name": "M",
+      "used": 3570,
+      "limit": 996141,
+      "pct": 0.35838299999698836
+     },
+     {
+      "name": "K",
+      "used": 76,
+      "limit": 9029,
+      "pct": 0.8417321962565069
+     },
+     {
+      "name": "D",
+      "used": 724,
+      "limit": 569223,
+      "pct": 0.1271909251734382
+     },
+     {
+      "name": "P",
+      "used": 6791,
+      "limit": 1028275,
+      "pct": 0.6604264423427585
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 5.816582054233584,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "approve pool 100",
+    "ok": true,
+    "zkGasUsed": 46406,
+    "evmGasUsed": "46406",
+    "counters": [
+     {
+      "name": "S",
+      "used": 35710,
+      "limit": 31876521,
+      "pct": 0.11202602693060514
+     },
+     {
+      "name": "A",
+      "used": 977,
+      "limit": 996141,
+      "pct": 0.09807848487312538
+     },
+     {
+      "name": "B",
+      "used": 1970,
+      "limit": 1992283,
+      "pct": 0.09888153440048426
+     },
+     {
+      "name": "M",
+      "used": 26,
+      "limit": 996141,
+      "pct": 0.0026100722688856296
+     },
+     {
+      "name": "K",
+      "used": 12,
+      "limit": 9029,
+      "pct": 0.13290508361944844
+     },
+     {
+      "name": "D",
+      "used": 59,
+      "limit": 569223,
+      "pct": 0.010365006333194548
+     },
+     {
+      "name": "P",
+      "used": 1723,
+      "limit": 1028275,
+      "pct": 0.16756217937808465
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 0.16756217937808465,
+    "maxName": "P",
+    "overflow": false
+   },
+   {
+    "label": "deposit V5 direct (1 note)",
+    "ok": true,
+    "zkGasUsed": 423457,
+    "evmGasUsed": "433657",
+    "counters": [
+     {
+      "name": "S",
+      "used": 9196455,
+      "limit": 31876521,
+      "pct": 28.85024686351437
+     },
+     {
+      "name": "A",
+      "used": 76824,
+      "limit": 996141,
+      "pct": 7.712161230187292
+     },
+     {
+      "name": "B",
+      "used": 534565,
+      "limit": 1992283,
+      "pct": 26.831780424768972
+     },
+     {
+      "name": "M",
+      "used": 107543,
+      "limit": 996141,
+      "pct": 10.795961615875663
+     },
+     {
+      "name": "K",
+      "used": 17,
+      "limit": 9029,
+      "pct": 0.18828220179421862
+     },
+     {
+      "name": "D",
+      "used": 2552,
+      "limit": 569223,
+      "pct": 0.44833044342902517
+     },
+     {
+      "name": "P",
+      "used": 10270,
+      "limit": 1028275,
+      "pct": 0.998760059322652
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 28.85024686351437,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "withdraw V5 direct (1 note)",
+    "ok": true,
+    "zkGasUsed": 262407,
+    "evmGasUsed": "272607",
+    "counters": [
+     {
+      "name": "S",
+      "used": 1683395,
+      "limit": 31876521,
+      "pct": 5.280987219402017
+     },
+     {
+      "name": "A",
+      "used": 140801,
+      "limit": 996141,
+      "pct": 14.134645597360214
+     },
+     {
+      "name": "B",
+      "used": 86218,
+      "limit": 1992283,
+      "pct": 4.327598037025864
+     },
+     {
+      "name": "M",
+      "used": 241,
+      "limit": 996141,
+      "pct": 0.024193362184670643
+     },
+     {
+      "name": "K",
+      "used": 19,
+      "limit": 9029,
+      "pct": 0.21043304906412671
+     },
+     {
+      "name": "D",
+      "used": 177,
+      "limit": 569223,
+      "pct": 0.031095018999583644
+     },
+     {
+      "name": "P",
+      "used": 5337,
+      "limit": 1028275,
+      "pct": 0.5190245800004862
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 14.134645597360214,
+    "maxName": "A",
+    "overflow": false
+   },
+   {
+    "label": "approve router",
+    "ok": true,
+    "zkGasUsed": 46406,
+    "evmGasUsed": "46406",
+    "counters": [
+     {
+      "name": "S",
+      "used": 35710,
+      "limit": 31876521,
+      "pct": 0.11202602693060514
+     },
+     {
+      "name": "A",
+      "used": 977,
+      "limit": 996141,
+      "pct": 0.09807848487312538
+     },
+     {
+      "name": "B",
+      "used": 1970,
+      "limit": 1992283,
+      "pct": 0.09888153440048426
+     },
+     {
+      "name": "M",
+      "used": 26,
+      "limit": 996141,
+      "pct": 0.0026100722688856296
+     },
+     {
+      "name": "K",
+      "used": 12,
+      "limit": 9029,
+      "pct": 0.13290508361944844
+     },
+     {
+      "name": "D",
+      "used": 59,
+      "limit": 569223,
+      "pct": 0.010365006333194548
+     },
+     {
+      "name": "P",
+      "used": 1723,
+      "limit": 1028275,
+      "pct": 0.16756217937808465
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 0.16756217937808465,
+    "maxName": "P",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 1 note",
+    "ok": true,
+    "zkGasUsed": 470864,
+    "evmGasUsed": "470864",
+    "counters": [
+     {
+      "name": "S",
+      "used": 9307266,
+      "limit": 31876521,
+      "pct": 29.197872628571982
+     },
+     {
+      "name": "A",
+      "used": 78051,
+      "limit": 996141,
+      "pct": 7.835336563799703
+     },
+     {
+      "name": "B",
+      "used": 539007,
+      "limit": 1992283,
+      "pct": 27.054740717056763
+     },
+     {
+      "name": "M",
+      "used": 107687,
+      "limit": 996141,
+      "pct": 10.810417400749492
+     },
+     {
+      "name": "K",
+      "used": 26,
+      "limit": 9029,
+      "pct": 0.28796101450880496
+     },
+     {
+      "name": "D",
+      "used": 2714,
+      "limit": 569223,
+      "pct": 0.47679029132694917
+     },
+     {
+      "name": "P",
+      "used": 13704,
+      "limit": 1028275,
+      "pct": 1.3327174150883763
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 29.197872628571982,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 3 notes",
+    "ok": true,
+    "zkGasUsed": 1260071,
+    "evmGasUsed": "1260071",
+    "counters": [
+     {
+      "name": "S",
+      "used": 27741804,
+      "limit": 31876521,
+      "pct": 87.02895777114448
+     },
+     {
+      "name": "A",
+      "used": 231191,
+      "limit": 996141,
+      "pct": 23.208662227536063
+     },
+     {
+      "name": "B",
+      "used": 1609138,
+      "limit": 1992283,
+      "pct": 80.7685454325515
+     },
+     {
+      "name": "M",
+      "used": 322863,
+      "limit": 996141,
+      "pct": 32.411375498046965
+     },
+     {
+      "name": "K",
+      "used": 46,
+      "limit": 9029,
+      "pct": 0.5094694872078857
+     },
+     {
+      "name": "D",
+      "used": 7891,
+      "limit": 569223,
+      "pct": 1.3862756775464098
+     },
+     {
+      "name": "P",
+      "used": 33838,
+      "limit": 1028275,
+      "pct": 3.290753932556952
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 87.02895777114448,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 14 notes",
+    "ok": true,
+    "zkGasUsed": 4314720,
+    "evmGasUsed": "4314720",
+    "counters": [
+     {
+      "name": "S",
+      "used": 87485923,
+      "limit": 31876521,
+      "pct": 274.4525445546583
+     },
+     {
+      "name": "A",
+      "used": 1069152,
+      "limit": 996141,
+      "pct": 107.32938409321572
+     },
+     {
+      "name": "B",
+      "used": 4377186,
+      "limit": 1992283,
+      "pct": 219.70703961234423
+     },
+     {
+      "name": "M",
+      "used": 470443,
+      "limit": 996141,
+      "pct": 47.22654724582163
+     },
+     {
+      "name": "K",
+      "used": 127,
+      "limit": 9029,
+      "pct": 1.4065788016391627
+     },
+     {
+      "name": "D",
+      "used": 35848,
+      "limit": 569223,
+      "pct": 6.297707576819629
+     },
+     {
+      "name": "P",
+      "used": 133412,
+      "limit": 1028275,
+      "pct": 12.974350246772508
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 274.4525445546583,
+    "maxName": "S",
+    "overflow": true
+   },
+   {
+    "label": "router deposit 32 notes",
+    "ok": true,
+    "zkGasUsed": 9292055,
+    "evmGasUsed": "9302255",
+    "counters": [
+     {
+      "name": "S",
+      "used": 182483691,
+      "limit": 31876521,
+      "pct": 572.4705371706028
+     },
+     {
+      "name": "A",
+      "used": 2442440,
+      "limit": 996141,
+      "pct": 245.19018893911604
+     },
+     {
+      "name": "B",
+      "used": 8683497,
+      "limit": 1992283,
+      "pct": 435.85660270152385
+     },
+     {
+      "name": "M",
+      "used": 635304,
+      "limit": 996141,
+      "pct": 63.77651356585062
+     },
+     {
+      "name": "K",
+      "used": 259,
+      "limit": 9029,
+      "pct": 2.8685347214530954
+     },
+     {
+      "name": "D",
+      "used": 81502,
+      "limit": 569223,
+      "pct": 14.318114341830881
+     },
+     {
+      "name": "P",
+      "used": 290143,
+      "limit": 1028275,
+      "pct": 28.21647905472758
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 572.4705371706028,
+    "maxName": "S",
+    "overflow": true
+   },
+   {
+    "label": "withdrawMany 3 notes",
+    "ok": true,
+    "zkGasUsed": 789377,
+    "evmGasUsed": "789377",
+    "counters": [
+     {
+      "name": "S",
+      "used": 5098056,
+      "limit": 31876521,
+      "pct": 15.993138021555113
+     },
+     {
+      "name": "A",
+      "used": 422177,
+      "limit": 996141,
+      "pct": 42.381249240820324
+     },
+     {
+      "name": "B",
+      "used": 260196,
+      "limit": 1992283,
+      "pct": 13.060192753740306
+     },
+     {
+      "name": "M",
+      "used": 847,
+      "limit": 996141,
+      "pct": 0.08502812352869724
+     },
+     {
+      "name": "K",
+      "used": 41,
+      "limit": 9029,
+      "pct": 0.4540923690331155
+     },
+     {
+      "name": "D",
+      "used": 576,
+      "limit": 569223,
+      "pct": 0.10119057030372983
+     },
+     {
+      "name": "P",
+      "used": 14824,
+      "limit": 1028275,
+      "pct": 1.4416376941965914
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 42.381249240820324,
+    "maxName": "A",
+    "overflow": false
+   },
+   {
+    "label": "withdrawMany 16 notes",
+    "ok": true,
+    "zkGasUsed": 3864850,
+    "evmGasUsed": "3864850",
+    "counters": [
+     {
+      "name": "S",
+      "used": 26794493,
+      "limit": 31876521,
+      "pct": 84.05714350069758
+     },
+     {
+      "name": "A",
+      "used": 2241644,
+      "limit": 996141,
+      "pct": 225.03280158130224
+     },
+     {
+      "name": "B",
+      "used": 1366465,
+      "limit": 1992283,
+      "pct": 68.58789639825265
+     },
+     {
+      "name": "M",
+      "used": 3501,
+      "limit": 996141,
+      "pct": 0.35145626974494576
+     },
+     {
+      "name": "K",
+      "used": 172,
+      "limit": 9029,
+      "pct": 1.9049728652120943
+     },
+     {
+      "name": "D",
+      "used": 2738,
+      "limit": 569223,
+      "pct": 0.4810065650896046
+     },
+     {
+      "name": "P",
+      "used": 72223,
+      "limit": 1028275,
+      "pct": 7.023704748243417
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 225.03280158130224,
+    "maxName": "A",
+    "overflow": true
+   }
+  ],
+  "smtLevels=genesis": [
+   {
+    "label": "deploy PoseidonT3",
+    "ok": true,
+    "zkGasUsed": 3694045,
+    "evmGasUsed": "3695103",
+    "counters": [
+     {
+      "name": "S",
+      "used": 3755010,
+      "limit": 31876521,
+      "pct": 11.779861422142021
+     },
+     {
+      "name": "A",
+      "used": 74813,
+      "limit": 996141,
+      "pct": 7.510282178928485
+     },
+     {
+      "name": "B",
+      "used": 220691,
+      "limit": 1992283,
+      "pct": 11.077291730140749
+     },
+     {
+      "name": "M",
+      "used": 2149,
+      "limit": 996141,
+      "pct": 0.21573251176289301
+     },
+     {
+      "name": "K",
+      "used": 258,
+      "limit": 9029,
+      "pct": 2.8574592978181417
+     },
+     {
+      "name": "D",
+      "used": 917,
+      "limit": 569223,
+      "pct": 0.16109679334812543
+     },
+     {
+      "name": "P",
+      "used": 1891,
+      "limit": 1028275,
+      "pct": 0.18390022124431693
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 11.779861422142021,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Verifier",
+    "ok": true,
+    "zkGasUsed": 390373,
+    "evmGasUsed": "390473",
+    "counters": [
+     {
+      "name": "S",
+      "used": 369200,
+      "limit": 31876521,
+      "pct": 1.1582192423069004
+     },
+     {
+      "name": "A",
+      "used": 7713,
+      "limit": 996141,
+      "pct": 0.7742879773044178
+     },
+     {
+      "name": "B",
+      "used": 21802,
+      "limit": 1992283,
+      "pct": 1.0943224431468823
+     },
+     {
+      "name": "M",
+      "used": 226,
+      "limit": 996141,
+      "pct": 0.02268755126031355
+     },
+     {
+      "name": "K",
+      "used": 32,
+      "limit": 9029,
+      "pct": 0.35441355631852917
+     },
+     {
+      "name": "D",
+      "used": 95,
+      "limit": 569223,
+      "pct": 0.01668941697717766
+     },
+     {
+      "name": "P",
+      "used": 1069,
+      "limit": 1028275,
+      "pct": 0.10396051639882327
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 1.1582192423069004,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Token",
+    "ok": true,
+    "zkGasUsed": 681051,
+    "evmGasUsed": "681267",
+    "counters": [
+     {
+      "name": "S",
+      "used": 954178,
+      "limit": 31876521,
+      "pct": 2.9933567719011744
+     },
+     {
+      "name": "A",
+      "used": 19928,
+      "limit": 996141,
+      "pct": 2.000520006705878
+     },
+     {
+      "name": "B",
+      "used": 56399,
+      "limit": 1992283,
+      "pct": 2.8308729231740672
+     },
+     {
+      "name": "M",
+      "used": 1083,
+      "limit": 996141,
+      "pct": 0.1087195487385822
+     },
+     {
+      "name": "K",
+      "used": 61,
+      "limit": 9029,
+      "pct": 0.6756008417321963
+     },
+     {
+      "name": "D",
+      "used": 164,
+      "limit": 569223,
+      "pct": 0.028811204044811963
+     },
+     {
+      "name": "P",
+      "used": 2043,
+      "limit": 1028275,
+      "pct": 0.198682259123289
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 2.9933567719011744,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool100",
+    "ok": true,
+    "zkGasUsed": 1433417,
+    "evmGasUsed": "1433687",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6765,
+      "limit": 1028275,
+      "pct": 0.6578979358634607
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool50",
+    "ok": true,
+    "zkGasUsed": 1433417,
+    "evmGasUsed": "1433687",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6765,
+      "limit": 1028275,
+      "pct": 0.6578979358634607
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool10",
+    "ok": true,
+    "zkGasUsed": 1433405,
+    "evmGasUsed": "1433675",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6765,
+      "limit": 1028275,
+      "pct": 0.6578979358634607
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Pool1",
+    "ok": true,
+    "zkGasUsed": 1433405,
+    "evmGasUsed": "1433675",
+    "counters": [
+     {
+      "name": "S",
+      "used": 30468242,
+      "limit": 31876521,
+      "pct": 95.58208061663944
+     },
+     {
+      "name": "A",
+      "used": 737765,
+      "limit": 996141,
+      "pct": 74.0623064405541
+     },
+     {
+      "name": "B",
+      "used": 1692297,
+      "limit": 1992283,
+      "pct": 84.94260102605905
+     },
+     {
+      "name": "M",
+      "used": 99973,
+      "limit": 996141,
+      "pct": 10.036029036050117
+     },
+     {
+      "name": "K",
+      "used": 72,
+      "limit": 9029,
+      "pct": 0.7974305017166906
+     },
+     {
+      "name": "D",
+      "used": 2638,
+      "limit": 569223,
+      "pct": 0.46343875774520704
+     },
+     {
+      "name": "P",
+      "used": 6765,
+      "limit": 1028275,
+      "pct": 0.6578979358634607
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 95.58208061663944,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "deploy Router",
+    "ok": true,
+    "zkGasUsed": 970575,
+    "evmGasUsed": "970867",
+    "counters": [
+     {
+      "name": "S",
+      "used": 1854124,
+      "limit": 31876521,
+      "pct": 5.816582054233584
+     },
+     {
+      "name": "A",
+      "used": 40276,
+      "limit": 996141,
+      "pct": 4.043202719293754
+     },
+     {
+      "name": "B",
+      "used": 109108,
+      "limit": 1992283,
+      "pct": 5.476531195618294
+     },
+     {
+      "name": "M",
+      "used": 3570,
+      "limit": 996141,
+      "pct": 0.35838299999698836
+     },
+     {
+      "name": "K",
+      "used": 76,
+      "limit": 9029,
+      "pct": 0.8417321962565069
+     },
+     {
+      "name": "D",
+      "used": 724,
+      "limit": 569223,
+      "pct": 0.1271909251734382
+     },
+     {
+      "name": "P",
+      "used": 4471,
+      "limit": 1028275,
+      "pct": 0.434805864190027
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 5.816582054233584,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "approve pool 100",
+    "ok": true,
+    "zkGasUsed": 46406,
+    "evmGasUsed": "46406",
+    "counters": [
+     {
+      "name": "S",
+      "used": 35710,
+      "limit": 31876521,
+      "pct": 0.11202602693060514
+     },
+     {
+      "name": "A",
+      "used": 977,
+      "limit": 996141,
+      "pct": 0.09807848487312538
+     },
+     {
+      "name": "B",
+      "used": 1970,
+      "limit": 1992283,
+      "pct": 0.09888153440048426
+     },
+     {
+      "name": "M",
+      "used": 26,
+      "limit": 996141,
+      "pct": 0.0026100722688856296
+     },
+     {
+      "name": "K",
+      "used": 12,
+      "limit": 9029,
+      "pct": 0.13290508361944844
+     },
+     {
+      "name": "D",
+      "used": 59,
+      "limit": 569223,
+      "pct": 0.010365006333194548
+     },
+     {
+      "name": "P",
+      "used": 1083,
+      "limit": 1028275,
+      "pct": 0.10532201988767596
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 0.13290508361944844,
+    "maxName": "K",
+    "overflow": false
+   },
+   {
+    "label": "deposit V5 direct (1 note)",
+    "ok": true,
+    "zkGasUsed": 423457,
+    "evmGasUsed": "433657",
+    "counters": [
+     {
+      "name": "S",
+      "used": 9196455,
+      "limit": 31876521,
+      "pct": 28.85024686351437
+     },
+     {
+      "name": "A",
+      "used": 76824,
+      "limit": 996141,
+      "pct": 7.712161230187292
+     },
+     {
+      "name": "B",
+      "used": 534565,
+      "limit": 1992283,
+      "pct": 26.831780424768972
+     },
+     {
+      "name": "M",
+      "used": 107543,
+      "limit": 996141,
+      "pct": 10.795961615875663
+     },
+     {
+      "name": "K",
+      "used": 17,
+      "limit": 9029,
+      "pct": 0.18828220179421862
+     },
+     {
+      "name": "D",
+      "used": 2552,
+      "limit": 569223,
+      "pct": 0.44833044342902517
+     },
+     {
+      "name": "P",
+      "used": 7410,
+      "limit": 1028275,
+      "pct": 0.7206243465998882
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 28.85024686351437,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "withdraw V5 direct (1 note)",
+    "ok": true,
+    "zkGasUsed": 262407,
+    "evmGasUsed": "272607",
+    "counters": [
+     {
+      "name": "S",
+      "used": 1683395,
+      "limit": 31876521,
+      "pct": 5.280987219402017
+     },
+     {
+      "name": "A",
+      "used": 140801,
+      "limit": 996141,
+      "pct": 14.134645597360214
+     },
+     {
+      "name": "B",
+      "used": 86218,
+      "limit": 1992283,
+      "pct": 4.327598037025864
+     },
+     {
+      "name": "M",
+      "used": 241,
+      "limit": 996141,
+      "pct": 0.024193362184670643
+     },
+     {
+      "name": "K",
+      "used": 19,
+      "limit": 9029,
+      "pct": 0.21043304906412671
+     },
+     {
+      "name": "D",
+      "used": 177,
+      "limit": 569223,
+      "pct": 0.031095018999583644
+     },
+     {
+      "name": "P",
+      "used": 3317,
+      "limit": 1028275,
+      "pct": 0.3225790766088838
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 14.134645597360214,
+    "maxName": "A",
+    "overflow": false
+   },
+   {
+    "label": "approve router",
+    "ok": true,
+    "zkGasUsed": 46406,
+    "evmGasUsed": "46406",
+    "counters": [
+     {
+      "name": "S",
+      "used": 35710,
+      "limit": 31876521,
+      "pct": 0.11202602693060514
+     },
+     {
+      "name": "A",
+      "used": 977,
+      "limit": 996141,
+      "pct": 0.09807848487312538
+     },
+     {
+      "name": "B",
+      "used": 1970,
+      "limit": 1992283,
+      "pct": 0.09888153440048426
+     },
+     {
+      "name": "M",
+      "used": 26,
+      "limit": 996141,
+      "pct": 0.0026100722688856296
+     },
+     {
+      "name": "K",
+      "used": 12,
+      "limit": 9029,
+      "pct": 0.13290508361944844
+     },
+     {
+      "name": "D",
+      "used": 59,
+      "limit": 569223,
+      "pct": 0.010365006333194548
+     },
+     {
+      "name": "P",
+      "used": 1083,
+      "limit": 1028275,
+      "pct": 0.10532201988767596
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 0.13290508361944844,
+    "maxName": "K",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 1 note",
+    "ok": true,
+    "zkGasUsed": 470864,
+    "evmGasUsed": "470864",
+    "counters": [
+     {
+      "name": "S",
+      "used": 9307266,
+      "limit": 31876521,
+      "pct": 29.197872628571982
+     },
+     {
+      "name": "A",
+      "used": 78051,
+      "limit": 996141,
+      "pct": 7.835336563799703
+     },
+     {
+      "name": "B",
+      "used": 539007,
+      "limit": 1992283,
+      "pct": 27.054740717056763
+     },
+     {
+      "name": "M",
+      "used": 107687,
+      "limit": 996141,
+      "pct": 10.810417400749492
+     },
+     {
+      "name": "K",
+      "used": 26,
+      "limit": 9029,
+      "pct": 0.28796101450880496
+     },
+     {
+      "name": "D",
+      "used": 2714,
+      "limit": 569223,
+      "pct": 0.47679029132694917
+     },
+     {
+      "name": "P",
+      "used": 9744,
+      "limit": 1028275,
+      "pct": 0.9476064282414723
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 29.197872628571982,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 3 notes",
+    "ok": true,
+    "zkGasUsed": 1260071,
+    "evmGasUsed": "1260071",
+    "counters": [
+     {
+      "name": "S",
+      "used": 27741804,
+      "limit": 31876521,
+      "pct": 87.02895777114448
+     },
+     {
+      "name": "A",
+      "used": 231191,
+      "limit": 996141,
+      "pct": 23.208662227536063
+     },
+     {
+      "name": "B",
+      "used": 1609138,
+      "limit": 1992283,
+      "pct": 80.7685454325515
+     },
+     {
+      "name": "M",
+      "used": 322863,
+      "limit": 996141,
+      "pct": 32.411375498046965
+     },
+     {
+      "name": "K",
+      "used": 46,
+      "limit": 9029,
+      "pct": 0.5094694872078857
+     },
+     {
+      "name": "D",
+      "used": 7891,
+      "limit": 569223,
+      "pct": 1.3862756775464098
+     },
+     {
+      "name": "P",
+      "used": 24378,
+      "limit": 1028275,
+      "pct": 2.3707665750893487
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 87.02895777114448,
+    "maxName": "S",
+    "overflow": false
+   },
+   {
+    "label": "router deposit 14 notes",
+    "ok": true,
+    "zkGasUsed": 4314720,
+    "evmGasUsed": "4314720",
+    "counters": [
+     {
+      "name": "S",
+      "used": 87485923,
+      "limit": 31876521,
+      "pct": 274.4525445546583
+     },
+     {
+      "name": "A",
+      "used": 1069152,
+      "limit": 996141,
+      "pct": 107.32938409321572
+     },
+     {
+      "name": "B",
+      "used": 4377186,
+      "limit": 1992283,
+      "pct": 219.70703961234423
+     },
+     {
+      "name": "M",
+      "used": 470443,
+      "limit": 996141,
+      "pct": 47.22654724582163
+     },
+     {
+      "name": "K",
+      "used": 127,
+      "limit": 9029,
+      "pct": 1.4065788016391627
+     },
+     {
+      "name": "D",
+      "used": 35848,
+      "limit": 569223,
+      "pct": 6.297707576819629
+     },
+     {
+      "name": "P",
+      "used": 97652,
+      "limit": 1028275,
+      "pct": 9.496681335245922
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 274.4525445546583,
+    "maxName": "S",
+    "overflow": true
+   },
+   {
+    "label": "router deposit 32 notes",
+    "ok": true,
+    "zkGasUsed": 9292055,
+    "evmGasUsed": "9302255",
+    "counters": [
+     {
+      "name": "S",
+      "used": 182483691,
+      "limit": 31876521,
+      "pct": 572.4705371706028
+     },
+     {
+      "name": "A",
+      "used": 2442440,
+      "limit": 996141,
+      "pct": 245.19018893911604
+     },
+     {
+      "name": "B",
+      "used": 8683497,
+      "limit": 1992283,
+      "pct": 435.85660270152385
+     },
+     {
+      "name": "M",
+      "used": 635304,
+      "limit": 996141,
+      "pct": 63.77651356585062
+     },
+     {
+      "name": "K",
+      "used": 259,
+      "limit": 9029,
+      "pct": 2.8685347214530954
+     },
+     {
+      "name": "D",
+      "used": 81502,
+      "limit": 569223,
+      "pct": 14.318114341830881
+     },
+     {
+      "name": "P",
+      "used": 213603,
+      "limit": 1028275,
+      "pct": 20.772944980671515
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 572.4705371706028,
+    "maxName": "S",
+    "overflow": true
+   },
+   {
+    "label": "withdrawMany 3 notes",
+    "ok": true,
+    "zkGasUsed": 789377,
+    "evmGasUsed": "789377",
+    "counters": [
+     {
+      "name": "S",
+      "used": 5098056,
+      "limit": 31876521,
+      "pct": 15.993138021555113
+     },
+     {
+      "name": "A",
+      "used": 422177,
+      "limit": 996141,
+      "pct": 42.381249240820324
+     },
+     {
+      "name": "B",
+      "used": 260196,
+      "limit": 1992283,
+      "pct": 13.060192753740306
+     },
+     {
+      "name": "M",
+      "used": 847,
+      "limit": 996141,
+      "pct": 0.08502812352869724
+     },
+     {
+      "name": "K",
+      "used": 41,
+      "limit": 9029,
+      "pct": 0.4540923690331155
+     },
+     {
+      "name": "D",
+      "used": 576,
+      "limit": 569223,
+      "pct": 0.10119057030372983
+     },
+     {
+      "name": "P",
+      "used": 9264,
+      "limit": 1028275,
+      "pct": 0.9009263086236659
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 42.381249240820324,
+    "maxName": "A",
+    "overflow": false
+   },
+   {
+    "label": "withdrawMany 16 notes",
+    "ok": true,
+    "zkGasUsed": 3864850,
+    "evmGasUsed": "3864850",
+    "counters": [
+     {
+      "name": "S",
+      "used": 26794493,
+      "limit": 31876521,
+      "pct": 84.05714350069758
+     },
+     {
+      "name": "A",
+      "used": 2241644,
+      "limit": 996141,
+      "pct": 225.03280158130224
+     },
+     {
+      "name": "B",
+      "used": 1366465,
+      "limit": 1992283,
+      "pct": 68.58789639825265
+     },
+     {
+      "name": "M",
+      "used": 3501,
+      "limit": 996141,
+      "pct": 0.35145626974494576
+     },
+     {
+      "name": "K",
+      "used": 172,
+      "limit": 9029,
+      "pct": 1.9049728652120943
+     },
+     {
+      "name": "D",
+      "used": 2738,
+      "limit": 569223,
+      "pct": 0.4810065650896046
+     },
+     {
+      "name": "P",
+      "used": 45083,
+      "limit": 1028275,
+      "pct": 4.384332984853273
+     },
+     {
+      "name": "SHA",
+      "used": 0,
+      "limit": 7083,
+      "pct": 0
+     }
+    ],
+    "maxPct": 225.03280158130224,
+    "maxName": "A",
+    "overflow": true
+   }
+  ]
+ }
+}

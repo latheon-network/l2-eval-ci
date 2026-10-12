@@ -1,0 +1,1 @@
+ok  	github.com/erigontech/erigon/zk/tests	7.162s
