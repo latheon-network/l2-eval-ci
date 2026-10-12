@@ -1,0 +1,10 @@
+chain owners: 0x863c904166E801527125D8672442D736194A3362
+caller: 0x863c904166E801527125D8672442D736194A3362
+before: block 22, baseFeePerGas 100000000 wei, minimum 100000000 wei, eth_gasPrice 100000000 wei
+setMinimumL2BaseFee(10000000) tx 0x17b21356691fef4fb65064b228a84b1543e0ddaba9aa898a633f5d23cf4edf85, status 1
+after +0s: block 22, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +2s: block 23, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +4s: block 23, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +6s: block 24, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +8s: block 24, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +10s: block 25, baseFeePerGas 10000000 wei, minimum 10000000 wei, eth_gasPrice 10000000 wei
