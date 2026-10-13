@@ -1,0 +1,12 @@
+== ghcr.io/blockscout/blockscout
+754 tags; release-like (last 12): ['8.0.2', '8.1.0', '8.1.1', '8.1.2', '9.0.0', '9.0.1', '9.0.2']
+== ghcr.io/blockscout/frontend
+1000 tags; release-like (last 12): ['v1.38.1', 'v1.38.2', 'v2.0.0', 'v2.0.1', 'v2.0.2', 'v2.0.3', 'v2.1.0', 'v2.1.1', 'v2.2.0', 'v2.2.1', 'v2.3.0', 'v2.3.1']
+== ghcr.io/blockscout/blockscout-arbitrum
+29 tags; release-like (last 12): ['8.0.2', '8.1.0', '8.1.1', '8.1.2', '9.0.0', '9.0.1', '9.0.2']
+== docker.io/blockscout/blockscout
+['frontend-main', '7.0.2.commit.900ef697-indexer', '7.0.2.commit.900ef697', 'master', 'buildcache', '7.0.2.commit.4da76a19-indexer', '7.0.2.commit.4da76a19', '7.0.2.commit.de3757a1-indexer', '7.0.2.commit.de3757a1', '7.0.2.commit.4e595b89-indexer', '7.0.2.commit.4e595b89', '7.0.2.commit.daab2f64-indexer', '7.0.2.commit.daab2f64', '7.0.2.commit.2d1c4ad8-indexer', '7.0.2.commit.2d1c4ad8', '7.0.2.commit.cd605fe4-indexer', '7.0.2.commit.cd605fe4', '7.0.2.commit.cebd32d5-indexer', '7.0.2.commit.cebd32d5', '7.0.2.commit.f408bf11-indexer', '7.0.2.commit.f408bf11', '7.0.2.commit.85170ec2-indexer', '7.0.2.commit.85170ec2', '7.0.2.commit.e914ee53-indexer', '7.0.2.commit.e914ee53', '7.0.2.commit.804a2c31-indexer', '7.0.2.commit.804a2c31', '7.0.2.commit.2a4f54cf-api', '7.0.2.commit.2a4f54cf-indexer', '7.0.2.commit.2a4f54cf']
+== docker.io/blockscout/frontend
+[]
+== docker.io/offchainlabs/nitro-node
+['v3.11.5-7d41882', 'v3.11.5-7d41882-arm64', 'v3.11.5-7d41882-amd64', 'v3.11.5-7d41882-slim', 'v3.11.5-7d41882-slim-arm64', 'v3.11.5-7d41882-slim-amd64', 'v3.11.5-7d41882-stripped', 'v3.11.5-7d41882-stripped-arm64', 'v3.11.5-7d41882-stripped-amd64', 'v3.11.5-7d41882-slim-stripped', 'v3.11.5-7d41882-slim-stripped-arm64', 'v3.11.5-7d41882-slim-stripped-amd64', 'v3.11.5-7d41882-validator', 'v3.11.5-7d41882-validator-arm64', 'v3.11.5-7d41882-validator-amd64', 'v3.11.5-7d41882-dev', 'v3.11.5-7d41882-dev-arm64', 'v3.11.5-7d41882-dev-amd64', 'v3.12.1-70fa99a', 'v3.12.1-70fa99a-arm64', 'v3.12.1-70fa99a-amd64', 'v3.12.1-70fa99a-slim', 'v3.12.1-70fa99a-slim-arm64', 'v3.12.1-70fa99a-slim-amd64', 'v3.12.1-70fa99a-stripped', 'v3.12.1-70fa99a-stripped-arm64', 'v3.12.1-70fa99a-stripped-amd64', 'v3.12.1-70fa99a-slim-stripped', 'v3.12.1-70fa99a-slim-stripped-arm64', 'v3.12.1-70fa99a-slim-stripped-amd64']
