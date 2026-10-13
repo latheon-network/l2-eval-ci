@@ -1,0 +1,20 @@
+chain owners: 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38
+caller: 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38
+before: block 11, baseFeePerGas 100000000 wei, minimum 100000000 wei, eth_gasPrice 100000000 wei
+setMinimumL2BaseFee(10000000) tx 0x8700b5ba4268811a489a65b1b9300593b87b96f469d8178ece4c2e14b64615d0, status 1
+after +0s: block 11, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +2s: block 12, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +4s: block 12, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +6s: block 12, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +8s: block 12, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +10s: block 12, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +12s: block 12, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +14s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +16s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +18s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +20s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +22s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +24s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +26s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +28s: block 13, baseFeePerGas 100000000 wei, minimum 10000000 wei, eth_gasPrice 100000000 wei
+after +30s: block 14, baseFeePerGas 10000000 wei, minimum 10000000 wei, eth_gasPrice 10000000 wei

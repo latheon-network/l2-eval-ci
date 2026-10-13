@@ -1,0 +1,23 @@
+11:51:17 deployer 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38, 0.2182721185238848 ETH on Arbitrum Sepolia
+11:51:18 deploy test LTH: 0x19dc323803ab0a56e462e28428b53a0747c26a45c473605390021022be94713b (gas 681267)
+11:51:19 deploy fee token pricer: 0x291b0f89cfadf979d8479b08a788d4490407ab655bf4bacb2f96683ae0a3a958 (gas 115773)
+11:51:19 createRollup: chainId 30763726523, stake token 0x980B62Da83eFf3D4576C647993b0c1D7faf17c73
+Approving custom fee token allowance for RollupCreator...
+Tokens approved in https://sepolia.arbiscan.io/tx/0x71d41059ae998554c8e217710ce8cd4df841271797f7755c1a63db252a34db98
+Approval transaction hash is 0x71d41059ae998554c8e217710ce8cd4df841271797f7755c1a63db252a34db98
+Deploying the Rollup...
+Deployed in https://sepolia.arbiscan.io/tx/0x2d7cc2a011d1e57678f269cf0c9518fcaa546243ab73a550fd398e0651725aac
+Deployment transaction hash is 0x2d7cc2a011d1e57678f269cf0c9518fcaa546243ab73a550fd398e0651725aac
+11:51:24 fund batch poster: 0xb7d5996a0942165f9f6ae67bbb6279a50fcfdfcbb1000ef7d412c75bf43ead81 (gas 21000)
+11:51:24 deployed: chainId 30763726523, rollup 0x87Db5Cb8E20b3d54C2c95fC24152C337Ce375Fdb
+11:51:31 L3 block 8
+11:51:32 approve inbox for test LTH: 0x0ebe31b162d012c59ace21a894a883768b44747bb9189bbc18cd7d306245131a (gas 46406)
+11:51:33 depositERC20 into L3: 0x19011209aee9b82e5bea9ecdb3855d5d7ec35609b6be9f6ac02e80d242b8d71f (gas 118896)
+11:51:43 deposit arrived on L3 after 10s: balance 10000.0000923626 LTH
+Tokens approved in https://sepolia.arbiscan.io/tx/0x910c1c97f7d6740c71270ca181d92156146d8e220486c0da84e851076d220f21
+Deploying the TokenBridge...
+11:51:47 createTokenBridge reported: Transaction with hash "0xa87b98b05abf5f27a728c72404c5ae60a10e846a06171a298b7c4873c4fda1e3" could not be found.; looking up the deployment instead
+11:51:57 token bridge: L3 router 0x020427038C826C5650699f22a42381895260B535, code present: true
+11:52:47 sequencer inbox batchCount 3
+11:52:47 batchCount 3 (batch poster is posting to Arbitrum Sepolia)
+11:52:50 swept 0.009966585343744 ETH back to the deployer: 0xd3d1d699c0f70cf915fbb3dbb6fad746c9913ab33e1ae039ea42097559766280

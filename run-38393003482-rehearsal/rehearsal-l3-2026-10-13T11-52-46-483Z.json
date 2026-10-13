@@ -1,0 +1,194 @@
+{
+ "network": "rehearsal-l3",
+ "chainId": 30763726523,
+ "vm": "evm",
+ "compiler": "solc 0.8.37+commit.f401782d.Emscripten.clang",
+ "wallet": "0x453fAbBEdf86cc7CC701a077F040c71d7a045b38",
+ "finished": "2026-10-13T11:52:46.482Z",
+ "addresses": {
+  "PoseidonT3": "0x67451b65BD9F0d1486A736927f8ef29d6BE72062",
+  "Verifier": "0xB86360CBDE78664bb1674c367391E9d79c37F294",
+  "Token": "0xf10AF1771450c528fee0c5435D3E4f4214073aFe",
+  "Pool100": "0x4D9b9624418e2E91a38122D53e2A12eE028194b3",
+  "Pool50": "0xc27DfC8A1CfD74D0D5645198Fb0d8B6b50292618",
+  "Pool10": "0xD01D19B9D296299619f681b842b3b61C79736F3a",
+  "Pool1": "0x0C3475657D4Bd198efe068dDB064725B6514FB04",
+  "Router": "0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5"
+ },
+ "steps": {
+  "deploy PoseidonT3": {
+   "ok": true,
+   "tx": "0x78265b90708e4da86365e47aed5d0baec01cca11b2553ccbc45ac6865c209f9d",
+   "block": 15,
+   "gasUsed": "2551221493",
+   "gasPrice": "10000000",
+   "fee": "25512214930000000",
+   "gasUsedForL1": "2547526390"
+  },
+  "deploy Verifier": {
+   "ok": true,
+   "tx": "0xf3f3edb268e939478e9e2908586ac0be748c8281f867087b2407c503c9e0ddea",
+   "block": 16,
+   "gasUsed": "522511191",
+   "gasPrice": "10000000",
+   "fee": "5225111910000000",
+   "gasUsedForL1": "522120718"
+  },
+  "deploy Token": {
+   "ok": true,
+   "tx": "0x29cf77785069f172ca67d29008ab90b62bb6ab14e7a81e3eb00f29c2a0431fe0",
+   "block": 17,
+   "gasUsed": "691558271",
+   "gasPrice": "10000000",
+   "fee": "6915582710000000",
+   "gasUsedForL1": "690877004"
+  },
+  "deploy Pool100": {
+   "ok": true,
+   "tx": "0x95f8212cb6bdaa7037a070d488b91ac6b1c726522c60e1ba059b60f6a00e490b",
+   "block": 18,
+   "gasUsed": "850168821",
+   "gasPrice": "10000000",
+   "fee": "8501688210000000",
+   "gasUsedForL1": "848735134"
+  },
+  "deploy Pool50": {
+   "ok": true,
+   "tx": "0x4afebe1d824f593f9e80b0384647e1b5e46718b2794c5bae3487c444eb4e8790",
+   "block": 19,
+   "gasUsed": "850829315",
+   "gasPrice": "10000000",
+   "fee": "8508293150000000",
+   "gasUsedForL1": "849395628"
+  },
+  "deploy Pool10": {
+   "ok": true,
+   "tx": "0x485f7ac2acd7569aedb620d0ecee2daaf1469448fee80ae5cd02d6eb226fb2e4",
+   "block": 20,
+   "gasUsed": "851820044",
+   "gasPrice": "10000000",
+   "fee": "8518200440000000",
+   "gasUsedForL1": "850386369"
+  },
+  "deploy Pool1": {
+   "ok": true,
+   "tx": "0xbeabfd90ed9acd8d834eb266e262df62d8d8f182e2b644594cd47143c9ebb154",
+   "block": 21,
+   "gasUsed": "850168809",
+   "gasPrice": "10000000",
+   "fee": "8501688090000000",
+   "gasUsedForL1": "848735134"
+  },
+  "deploy Router": {
+   "ok": true,
+   "tx": "0xd8d07efd421726e8ccd79fa58d47d46d6bc89d0e8198329e079e13c1c5e4f2b8",
+   "block": 22,
+   "gasUsed": "925332606",
+   "gasPrice": "10000000",
+   "fee": "9253326060000000",
+   "gasUsedForL1": "924361727"
+  },
+  "approve pool 100": {
+   "ok": true,
+   "tx": "0xd32e3bab7302f83e953d8346df060fbd1695e812fea2e77d1269f69a0d447cf3",
+   "block": 23,
+   "gasUsed": "61142125",
+   "gasPrice": "10000000",
+   "fee": "611421250000000",
+   "gasUsedForL1": "61095719"
+  },
+  "deposit V5 direct (1 note)": {
+   "ok": true,
+   "tx": "0x4695683eb3df53218933ff9a274dae2c7ccee3a334e2cc3d7143465eadaa6222",
+   "block": 24,
+   "gasUsed": "50631221",
+   "gasPrice": "10000000",
+   "fee": "506312210000000",
+   "gasUsedForL1": "50197564"
+  },
+  "withdraw V5 direct (1 note)": {
+   "ok": true,
+   "tx": "0xaeea69218617a0c36fd441e70936e389d9ca38ae9b705f1361120e822d7f93ec",
+   "block": 25,
+   "gasUsed": "157140007",
+   "gasPrice": "10000000",
+   "fee": "1571400070000000",
+   "gasUsedForL1": "156867388"
+  },
+  "approve router": {
+   "ok": true,
+   "tx": "0xe5009f984c9d63e1f8997761e7131099352671e3d8f0df5d190c008058cea2fd",
+   "block": 26,
+   "gasUsed": "61142125",
+   "gasPrice": "10000000",
+   "fee": "611421250000000",
+   "gasUsedForL1": "61095719"
+  },
+  "router deposit 1 note": {
+   "ok": true,
+   "tx": "0xb0e104af764ac382a6800ffd3f7070d19f133297d3ef561f1083e25ea00dac44",
+   "block": 27,
+   "gasUsed": "82702412",
+   "gasPrice": "10000000",
+   "fee": "827024120000000",
+   "notes": 1,
+   "amount": "1",
+   "gasUsedForL1": "82231536"
+  },
+  "router deposit 3 notes": {
+   "ok": true,
+   "tx": "0xc07c76731bc90a77199ea4542be364a230691d18e31ed71f6575b0ff9f59d90f",
+   "block": 28,
+   "gasUsed": "104957683",
+   "gasPrice": "10000000",
+   "fee": "1049576830000000",
+   "notes": 3,
+   "amount": "160",
+   "gasUsedForL1": "103697600"
+  },
+  "router deposit 14 notes": {
+   "ok": true,
+   "tx": "0xba19d22bc19c918c445661b1c1ceaa8b3763cc79f4e22413cad62651ef168a09",
+   "block": 29,
+   "gasUsed": "224589570",
+   "gasPrice": "10000000",
+   "fee": "2245895700000000",
+   "notes": 14,
+   "amount": "99",
+   "gasUsedForL1": "220274838"
+  },
+  "router deposit 32 notes": {
+   "ok": true,
+   "tx": "0xa8139983d82583f9d41fe50420bc202f1792616e50681bf15cb67900deff977a",
+   "block": 30,
+   "gasUsed": "419799418",
+   "gasPrice": "10000000",
+   "fee": "4197994180000000",
+   "notes": 32,
+   "amount": "3200",
+   "gasUsedForL1": "410497187"
+  },
+  "withdrawMany 3 notes": {
+   "ok": true,
+   "tx": "0xc06859dd2f31c1ffb7cde1d941a24e5b01fd38db885882f8aa7fe63134243615",
+   "block": 31,
+   "gasUsed": "410956317",
+   "gasPrice": "10000000",
+   "fee": "4109563170000000",
+   "notes": 3,
+   "gasUsedForL1": "410166940"
+  },
+  "withdrawMany 16 notes": {
+   "ok": true,
+   "tx": "0x8fe29ab89ea6eaffb368abf3807ccb6a62c54f1fb68d04eda68e7c28dcd8400f",
+   "block": 32,
+   "gasUsed": "1639909091",
+   "gasPrice": "10000000",
+   "fee": "16399090910000000",
+   "notes": 16,
+   "gasUsedForL1": "1636044301"
+  }
+ },
+ "totalFee": "111842962690000000",
+ "symbol": "LTH (test gas token)"
+}
