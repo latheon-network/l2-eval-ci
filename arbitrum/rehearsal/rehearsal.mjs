@@ -159,9 +159,9 @@ async function fund() {
   const st = load(statePath, {}); const pub = load(pubPath, {});
   const l3 = l3Client(st.chainId);
   log(`L3 block ${await waitL3(l3)}`);
-  const allowance = await parent.readContract({ address: st.token, abi: erc20Abi, functionName: 'allowance', args: [deployer.address, st.core.bridge] });
+  const allowance = await parent.readContract({ address: st.token, abi: erc20Abi, functionName: 'allowance', args: [deployer.address, st.core.inbox] });
   if (allowance < L3_DEPOSIT) {
-    await send('approve bridge for test LTH', parentWallet.writeContract({ address: st.token, abi: erc20Abi, functionName: 'approve', args: [st.core.bridge, L3_DEPOSIT] }));
+    await send('approve inbox for test LTH', parentWallet.writeContract({ address: st.token, abi: erc20Abi, functionName: 'approve', args: [st.core.inbox, L3_DEPOSIT] })); // ERC20Inbox pulls the fee token
   }
   const before = await l3.getBalance({ address: deployer.address });
   const rc = await send('depositERC20 into L3', parentWallet.writeContract({ address: st.core.inbox, abi: inboxAbi, functionName: 'depositERC20', args: [L3_DEPOSIT] }));
