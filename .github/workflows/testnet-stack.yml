@@ -98,7 +98,7 @@ jobs:
             if [ "${n:-0}" -ge 20 ] 2>/dev/null; then ok=1; break; fi
             sleep 10
           done
-          { echo "stats:"; E /api/v2/stats; echo; echo "latest blocks:"; E '/api/v2/blocks' | head -c 1500; echo;
+          { echo "stats:"; E /api/v2/stats; echo; echo "latest blocks:"; E '/api/v2/blocks' | cut -c1-1500; echo;
             echo "home page HTTP status: $(curl -sk -o /dev/null -w '%{http_code}' --resolve explorer.localhost:443:127.0.0.1 https://explorer.localhost/)"; } | tee $GITHUB_WORKSPACE/explorer-check.txt
           [ -n "$ok" ] && grep -q "home page HTTP status: 200" $GITHUB_WORKSPACE/explorer-check.txt
 
