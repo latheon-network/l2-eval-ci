@@ -1,0 +1,141 @@
+name: arbitrum L3 rehearsal on Arbitrum Sepolia
+
+# Manual only: spends testnet ETH from the REHEARSAL_DEPLOYER_KEY wallet.
+# Creates a real L3 (Rollup mode, gas token = test LTH) on Arbitrum Sepolia, runs its node here
+# for the duration of the job, runs the Latheon scenario on it, then stops. The rollup contracts
+# stay on Arbitrum Sepolia; the chain itself ends with the job (its keys are not kept).
+on:
+  workflow_dispatch:
+    inputs:
+      min_base_fee_wei:
+        description: 'Minimum L3 base fee in wei (0 = keep the default 0.1 gwei)'
+        default: '10000000'
+      nitro_image:
+        description: 'Nitro node image'
+        default: 'offchainlabs/nitro-node:v3.11.2-3599aca'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rehearsal
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  rehearsal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      DEPLOYER_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+      PARENT_RPC: ${{ secrets.ARB_SEPOLIA_RPC }}
+      MIN_BASE_FEE_WEI: ${{ inputs.min_base_fee_wei }}
+      NITRO_IMAGE: ${{ inputs.nitro_image }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the secret is set
+        run: |
+          if [ -z "$DEPLOYER_KEY" ]; then echo "::error::Secret REHEARSAL_DEPLOYER_KEY is not set"; exit 1; fi
+          if [ -z "$PARENT_RPC" ]; then echo "ARB_SEPOLIA_RPC not set, using the public Arbitrum Sepolia RPC"; fi
+
+      - name: Latheon circuits (public repo)
+        uses: actions/checkout@v4
+        with:
+          repository: latheon-network/Latheon
+          ref: 0cb805276d47b03ae22e9fd0ec3fb4458fbfbce5
+          path: latheon
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        run: |
+          (cd arbitrum/rehearsal && npm install --no-audit --no-fund > /dev/null)
+          (cd arbitrum/l2-eval && npm install --no-audit --no-fund > /dev/null)
+          docker pull -q "$NITRO_IMAGE"
+
+      - name: Deploy test LTH, fee token pricer and the rollup on Arbitrum Sepolia
+        working-directory: arbitrum/rehearsal
+        run: |
+          node rehearsal.mjs deploy 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+          while read -r k; do [ -n "$k" ] && echo "::add-mask::$k" && echo "::add-mask::${k#0x}"; done < secret/mask.txt
+
+      - name: Start the L3 node
+        run: |
+          mkdir -p /tmp/l3 && cp arbitrum/rehearsal/secret/node-config.json /tmp/l3/ && chmod -R 777 /tmp/l3
+          docker run -d --name l3node -v /tmp/l3:/home/user/.arbitrum -p 8449:8449 "$NITRO_IMAGE" --conf.file /home/user/.arbitrum/node-config.json
+          for i in $(seq 1 60); do
+            if curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' http://127.0.0.1:8449 | grep -q result; then echo "L3 RPC up after $((i*5))s"; exit 0; fi
+            sleep 5
+          done
+          echo "::error::L3 RPC did not come up"; docker logs --tail 80 l3node; exit 1
+
+      - name: Deposit test LTH into the L3 (chain's own inbox)
+        working-directory: arbitrum/rehearsal
+        run: node rehearsal.mjs fund 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+
+      - name: Token bridge for other ERC-20s
+        continue-on-error: true
+        working-directory: arbitrum/rehearsal
+        run: node rehearsal.mjs bridge 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+
+      - name: Lower the minimum base fee (chain owner)
+        if: env.MIN_BASE_FEE_WEI != '0'
+        working-directory: arbitrum/l2-eval
+        run: |
+          set -o pipefail
+          OWNER_KEY=$DEPLOYER_KEY node set-min-base-fee.js http://127.0.0.1:8449 $MIN_BASE_FEE_WEI 2>&1 | tee $GITHUB_WORKSPACE/min-base-fee.txt
+
+      - name: Latheon scenario on the L3
+        working-directory: arbitrum/l2-eval
+        env:
+          LATHEON_REPO: ${{ github.workspace }}/latheon
+          LATHEON_EVAL_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+        run: |
+          set -o pipefail
+          node eval.js rehearsal-l3 --fresh 2>&1 | tee $GITHUB_WORKSPACE/eval-rehearsal.txt
+
+      - name: Batches posted to Arbitrum Sepolia
+        working-directory: arbitrum/rehearsal
+        run: node rehearsal.mjs batches 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+
+      - name: Stop the node and return leftover ETH
+        if: always()
+        run: |
+          docker logs l3node > /tmp/l3-node-full.txt 2>&1 || true
+          docker stop l3node > /dev/null 2>&1 || true
+          cd arbitrum/rehearsal && [ -f secret/state.json ] && node rehearsal.mjs sweep 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt || true
+
+      - name: Save public results to the results branch
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p /tmp/out
+          cp -f rehearsal-log.txt min-base-fee.txt eval-rehearsal.txt /tmp/out/ 2>/dev/null || true
+          cp -f arbitrum/rehearsal/out/chain.json /tmp/out/ 2>/dev/null || true
+          cp -f arbitrum/l2-eval/results/*.json /tmp/out/ 2>/dev/null || true
+          tail -300 /tmp/l3-node-full.txt > /tmp/out/l3-node-log-tail.txt 2>/dev/null || true
+          # scrub the generated keys from anything saved, in case a tool printed them
+          if [ -f arbitrum/rehearsal/secret/mask.txt ]; then
+            while read -r k; do [ -n "$k" ] && sed -i "s/${k#0x}/<redacted>/gI" /tmp/out/* ; done < arbitrum/rehearsal/secret/mask.txt
+          fi
+          K="${DEPLOYER_KEY#0x}"; [ -n "$K" ] && sed -i "s/$K/<redacted>/gI" /tmp/out/*
+          if grep -rqi "private-key\|privatekey" /tmp/out; then echo "::warning::key-like field names found, removing those lines"; sed -i '/private-key\|privateKey/Id' /tmp/out/*; fi
+          cd /tmp && rm -rf res
+          URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone -q --depth 1 --branch results "$URL" res
+          cd res
+          git config user.name "latheon-network"
+          git config user.email "latheon.protocol@gmail.com"
+          D="run-${{ github.run_id }}-rehearsal"
+          mkdir -p "$D" && cp /tmp/out/* "$D/"
+          git add "$D"
+          git commit -m "arbitrum L3 rehearsal results, run ${{ github.run_id }}"
+          git push origin results

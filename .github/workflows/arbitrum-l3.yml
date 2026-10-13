@@ -8,7 +8,6 @@ on:
         default: '10000000'
   push:
     paths:
-      - 'arbitrum/**'
       - '.github/workflows/arbitrum-l3.yml'
 
 permissions:

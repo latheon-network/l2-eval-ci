@@ -1,0 +1,9 @@
+{
+  "name": "latheon-l3-rehearsal",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@arbitrum/chain-sdk": "0.28.0",
+    "viem": "1.21.4"
+  }
+}
