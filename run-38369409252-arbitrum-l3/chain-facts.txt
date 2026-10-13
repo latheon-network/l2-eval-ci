@@ -1,0 +1,66 @@
+L3 chainId:
+{"jsonrpc":"2.0","id":1,"result":"0x51615"}
+
+L3 gasPrice:
+{"jsonrpc":"2.0","id":1,"result":"0x5f5e100"}
+
+deployed_l3_chain_info.json:
+Unable to find image 'alpine:latest' locally
+latest: Pulling from library/alpine
+e2de96513ba9: Already exists
+Digest: sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6
+Status: Downloaded newer image for alpine:latest
+[
+  {
+    "chain-name": "orbit-dev-test",
+    "parent-chain-id": 412346,
+    "parent-chain-is-arbitrum": true,
+    "sequencer-url": "",
+    "secondary-forwarding-target": "",
+    "feed-url": "",
+    "secondary-feed-url": "",
+    "das-index-url": "",
+    "has-genesis-state": false,
+    "chain-config": {
+      "chainId": 333333,
+      "homesteadBlock": 0,
+      "daoForkSupport": true,
+      "eip150Block": 0,
+      "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "eip155Block": 0,
+      "eip158Block": 0,
+      "byzantiumBlock": 0,
+      "constantinopleBlock": 0,
+      "petersburgBlock": 0,
+      "istanbulBlock": 0,
+      "muirGlacierBlock": 0,
+      "berlinBlock": 0,
+      "londonBlock": 0,
+      "clique": {
+        "period": 0,
+        "epoch": 0
+      },
+      "arbitrum": {
+        "EnableArbOS": true,
+        "AllowDebugPrecompiles": true,
+        "DataAvailabilityCommittee": false,
+        "InitialArbOSVersion": 40,
+        "InitialChainOwner": "0x863c904166E801527125D8672442D736194A3362",
+        "GenesisBlockNum": 0
+      }
+    },
+    "rollup": {
+      "bridge": "0x4A967eD69a2B78680212b4D78DDd91A1905A2168",
+      "inbox": "0x736AB8Af044Ed0C5112E86b200cCdC6F7A9459BE",
+      "sequencer-inbox": "0x5e42912C3f17dd923FfEcF9e7Bb99830AB470603",
+      "deployed-at": 84,
+      "rollup": "0xA4af2E97CC08dBe8e8E07B0f45910D415850cb46",
+      "native-token": "0x9B7C0fcc305ca36412F87Fd6Bd08c194909A7d4E",
+      "upgrade-executor": "0xCEAfaf2E637ed66632e5a6A7b8Af89291417c5F8",
+      "validator-wallet-creator": "0xA84618C3f9d5A924E8CDCEb74bf408ddDfa736a2",
+      "stake-token": "0xF5fE98ee962e3E077A75FBe6fE8aBaeF80F3c12d"
+    }
+  }
+]
+l3_chain_config.json:
+{"chainId":333333,"homesteadBlock":0,"daoForkSupport":true,"eip150Block":0,"eip150Hash":"0x0000000000000000000000000000000000000000000000000000000000000000","eip155Block":0,"eip158Block":0,"byzantiumBlock":0,"constantinopleBlock":0,"petersburgBlock":0,"istanbulBlock":0,"muirGlacierBlock":0,"berlinBlock":0,"londonBlock":0,"clique":{"period":0,"epoch":0},"arbitrum":{"EnableArbOS":true,"AllowDebugPrecompiles":true,"DataAvailabilityCommittee":false,"InitialArbOSVersion":40,"InitialChainOwner":"0x863c904166E801527125D8672442D736194A3362","GenesisBlockNum":0}}
