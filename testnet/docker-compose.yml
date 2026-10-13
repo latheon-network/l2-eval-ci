@@ -43,6 +43,7 @@ services:
     environment:
       DATABASE_URL: postgresql://blockscout:${BS_DB_PASSWORD}@db:5432/blockscout
       ECTO_SSL_MODE: disable
+      ECTO_USE_SSL: "false"
       SECRET_KEY_BASE: ${BS_SECRET_KEY_BASE}
       ETHEREUM_JSONRPC_VARIANT: geth
       ETHEREUM_JSONRPC_TRANSPORT: http
