@@ -1,0 +1,134 @@
+INFO [10-13|11:33:51.609] retaining ability to lookup full transaction history as archive mode is enabled
+INFO [10-13|11:33:51.609] created jwt file                         filename=/home/user/.arbitrum/jwtsecret
+INFO [10-13|11:33:51.609] writing crash output to file             file=/home/user/.arbitrum/latheon-rehearsal/nitro.log.crash
+INFO [10-13|11:33:51.609] Running Arbitrum nitro node              revision=v3.11.2-3599aca vcs.time=2026-07-01T04:16:44-05:00
+INFO [10-13|11:33:51.610] Resources detected                       GOMAXPROCS=4
+INFO [10-13|11:33:51.709] connected to l1 chain                    l1url=https://sepolia-rollup.arbitrum.io/rpc l1chainid=421,614
+INFO [10-13|11:33:51.738] No memory free limit configured (--node.resource-mgmt.mem-free-limit), RPC requests will not be throttled based on memory usage
+INFO [10-13|11:33:51.772] Defaulting to pebble as the backing database
+INFO [10-13|11:33:51.772] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata cache=16.00MiB handles=16
+DEBUG[10-13|11:33:51.772] failed to open l2chaindata               err="error opening database at \"/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata\": pebble: database \"/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata\" does not exist"
+INFO [10-13|11:33:51.772] Defaulting to pebble as the backing database
+INFO [10-13|11:33:51.772] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata cache=2.00GiB handles=512
+DEBUG[10-13|11:33:51.776] Verified index file                      items=1 elapsed="4.262µs"
+DEBUG[10-13|11:33:51.777] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=bodies items=0 size=0.00B
+DEBUG[10-13|11:33:51.777] Verified index file                      items=1 elapsed="3.058µs"
+DEBUG[10-13|11:33:51.778] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=receipts items=0 size=0.00B
+DEBUG[10-13|11:33:51.778] Verified index file                      items=1 elapsed="3.164µs"
+DEBUG[10-13|11:33:51.779] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=headers items=0 size=0.00B
+DEBUG[10-13|11:33:51.779] Verified index file                      items=1 elapsed="3.15µs"
+DEBUG[10-13|11:33:51.780] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=hashes items=0 size=0.00B
+INFO [10-13|11:33:51.780] Opened ancient database                  database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain readonly=false
+INFO [10-13|11:33:51.780] Opened Era store                         datadir=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain/era
+INFO [10-13|11:33:51.780] Defaulting to pebble as the backing database
+INFO [10-13|11:33:51.780] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/wasm cache=2.00GiB handles=512
+WARN [10-13|11:33:51.780] Head block is not reachable
+DEBUG[10-13|11:33:51.780] Current full block not old enough to freeze err="freezing threshold is not available"
+WARN [10-13|11:33:51.783] Detected wasmer serialize version mismatch - removing old wasm entries detected=8 expected=16
+INFO [10-13|11:33:51.783] Wasm entries successfully removed.
+INFO [10-13|11:33:51.783] State scheme set by user                 scheme=hash
+INFO [10-13|11:33:51.783] Setting codehash position in rebuilding of wasm store to done
+ERROR[10-13|11:33:51.783] error getting genesis json file from directory err="error reading genesis json file directory : open : no such file or directory"
+INFO [10-13|11:33:51.866] Read serialized chain config from init message json="{\"chainId\":497486543,\"homesteadBlock\":0,\"daoForkBlock\":null,\"daoForkSupport\":true,\"eip150Block\":0,\"eip150Hash\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"eip155Block\":0,\"eip158Block\":0,\"byzantiumBlock\":0,\"constantinopleBlock\":0,\"petersburgBlock\":0,\"istanbulBlock\":0,\"muirGlacierBlock\":0,\"berlinBlock\":0,\"londonBlock\":0,\"clique\":{\"period\":0,\"epoch\":0},\"arbitrum\":{\"EnableArbOS\":true,\"AllowDebugPrecompiles\":false,\"DataAvailabilityCommittee\":false,\"InitialArbOSVersion\":51,\"InitialChainOwner\":\"0x453fAbBEdf86cc7CC701a077F040c71d7a045b38\",\"GenesisBlockNum\":0,\"MaxCodeSize\":24576,\"MaxInitCodeSize\":49152}}"
+INFO [10-13|11:33:51.866] Initializing                             ancients=0 genesisBlockNr=0
+INFO [10-13|11:33:51.866] addresss table import complete
+INFO [10-13|11:33:51.866] retryables import complete
+INFO [10-13|11:33:51.868] Persisted trie from memory database      nodes=94 flushnodes=0 size=10.83KiB flushsize=0.00B time=1.117963ms flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:33:51.868] Persisted trie from memory database      nodes=0  flushnodes=0 size=0.00B    flushsize=0.00B time="4.132µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:33:51.869] wrote genesis block                      number=0 hash=12acc0..8b1c74
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [10-13|11:33:51.869] Chain ID:  497486543 (unknown)
+INFO [10-13|11:33:51.869] Consensus: Beacon (proof-of-stake), merged from Clique (proof-of-authority)
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] Pre-Merge hard forks (block based):
+INFO [10-13|11:33:51.869]  - Homestead:                   #0       
+INFO [10-13|11:33:51.869]  - Tangerine Whistle (EIP 150): #0       
+INFO [10-13|11:33:51.869]  - Spurious Dragon/1 (EIP 155): #0       
+INFO [10-13|11:33:51.869]  - Spurious Dragon/2 (EIP 158): #0       
+INFO [10-13|11:33:51.869]  - Byzantium:                   #0       
+INFO [10-13|11:33:51.869]  - Constantinople:              #0       
+INFO [10-13|11:33:51.869]  - Petersburg:                  #0       
+INFO [10-13|11:33:51.869]  - Istanbul:                    #0       
+INFO [10-13|11:33:51.869]  - Muir Glacier:                #0       
+INFO [10-13|11:33:51.869]  - Berlin:                      #0       
+INFO [10-13|11:33:51.869]  - London:                      #0       
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] Merge configured:
+INFO [10-13|11:33:51.869]  - Total terminal difficulty:  <nil>
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] Post-Merge hard forks (timestamp based):
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] All fork specifications can be found at https://ethereum.github.io/execution-specs/src/ethereum/forks/
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [10-13|11:33:51.869] 
+INFO [10-13|11:33:51.869] Loaded most recent local block           number=0 hash=12acc0..8b1c74 age=57y7mo1w
+WARN [10-13|11:33:51.869] Failed to load snapshot                  err="missing or corrupted snapshot"
+INFO [10-13|11:33:51.869] Rebuilding state snapshot
+DEBUG[10-13|11:33:51.869] Journalled generator progress            progress=empty
+DEBUG[10-13|11:33:51.870] Start snapshot generation                root=26b6cc..c0928b
+INFO [10-13|11:33:51.870] Initialized transaction indexer          range="entire chain"
+INFO [10-13|11:33:51.871] Resuming state snapshot generation       root=26b6cc..c0928b accounts=0 slots=0 storage=0.00B dangling=0 elapsed=1.337ms
+DEBUG[10-13|11:33:51.872] Regenerated state range                  kind=storage prefix=0x6fb4d14ec89c201c23aa60e231e3993b3966b33ff1f55d198ec25980957ab32065 root=926ec1..527ba5 last=0x count=52 created=52 updated=0 untouched=0 deleted=0
+DEBUG[10-13|11:33:51.872] Regenerated state range                  kind=account prefix=0x61 root=26b6cc..c0928b last=0x count=19 created=19 updated=0 untouched=0 deleted=0
+DEBUG[10-13|11:33:51.872] Journalled generator progress            progress=done
+INFO [10-13|11:33:51.872] Generated state snapshot                 accounts=19 slots=52 storage=5.44KiB dangling=0 elapsed=2.672ms
+INFO [10-13|11:33:51.873] Setting rebuilding of wasm store to done
+INFO [10-13|11:33:52.000] Genesis assertion validated              genesisAssertionHash="[117 194 223 29 154 111 152 209 222 98 200 252 149 95 145 184 127 22 254 250 47 175 228 214 181 33 24 252 48 225 194 120]" genesisBlockHash=12acc0..8b1c74 genesisSendRoot=000000..000000
+INFO [10-13|11:33:52.000] Defaulting to pebble as the backing database
+INFO [10-13|11:33:52.000] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/arbitrumdata cache=16.00MiB handles=16
+DEBUG[10-13|11:33:52.028] eth_config returned nil BlobSchedule, skipping cache update chainID=421,614 consecutiveNilPolls=1
+INFO [10-13|11:33:52.054] State scheme set by user                 scheme=hash
+INFO [10-13|11:33:52.086] DA providers configured                  totalWriters=0
+WARN [10-13|11:33:52.086] validation not supported                 err="latestWasmModuleRoot not set"
+INFO [10-13|11:33:52.086] Disabling data poster storage, as parent chain appears to be an Arbitrum chain without a mempool
+DEBUG[10-13|11:34:07.211] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:34:22.242] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:34:37.264] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:34:51.781] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:34:52.289] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:35:07.314] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:35:22.340] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:35:37.375] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:35:51.781] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:35:52.390] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:36:07.416] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:36:22.440] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:36:37.470] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:36:51.781] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:36:52.496] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:37:07.521] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:37:22.543] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:37:37.568] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:37:51.782] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:37:52.605] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:38:07.625] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:38:22.661] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:38:37.677] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:38:51.782] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:38:52.702] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:39:07.725] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:39:22.749] Finalized block number updated           finalized=318,734,142
+DEBUG[10-13|11:39:37.772] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:39:51.782] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:39:52.802] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:40:07.831] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:40:22.850] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:40:37.873] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:40:51.782] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:40:52.900] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:41:07.922] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:41:22.951] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:41:37.976] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:41:51.783] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:41:53.001] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:42:08.029] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:42:23.052] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:42:38.079] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:42:51.783] Current full block not old enough to freeze err="freezing threshold is not available"
+DEBUG[10-13|11:42:53.101] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:43:08.130] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:43:23.152] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:43:38.183] Finalized block number updated           finalized=318,735,580
+DEBUG[10-13|11:43:51.783] Current full block not old enough to freeze err="freezing threshold is not available"
