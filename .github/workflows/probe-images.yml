@@ -1,0 +1,20 @@
+name: probe image tags
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List tags
+        run: |
+          ghcr() { tok=$(curl -s "https://ghcr.io/token?scope=repository:$1:pull" | python3 -c "import sys,json;print(json.load(sys.stdin).get('token',''))"); echo "== ghcr.io/$1"; curl -s -H "Authorization: Bearer $tok" "https://ghcr.io/v2/$1/tags/list?n=2000" | python3 -c "import sys,json;t=json.load(sys.stdin).get('tags') or [];import re;v=[x for x in t if re.match(r'^v?[0-9]+\.[0-9]+\.[0-9]+$',x)];print(len(t),'tags; release-like (last 12):',sorted(v,key=lambda s:[int(p) for p in s.lstrip('v').split('.')])[-12:])"; }
+          hub() { echo "== docker.io/$1"; curl -s "https://hub.docker.com/v2/repositories/$1/tags?page_size=30&ordering=last_updated" | python3 -c "import sys,json;print([r['name'] for r in json.load(sys.stdin).get('results',[])])"; }
+          { ghcr blockscout/blockscout; ghcr blockscout/frontend; ghcr blockscout/blockscout-arbitrum; hub blockscout/blockscout; hub blockscout/frontend; hub offchainlabs/nitro-node; } 2>&1 | tee /tmp/tags.txt
+      - name: Save
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git clone -q --depth 1 --branch results "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" res && cd res
+          git config user.name latheon-network && git config user.email latheon.protocol@gmail.com
+          mkdir -p probes && cp /tmp/tags.txt probes/image-tags-${{ github.run_id }}.txt && git add probes && git commit -qm "image tag probe" && git push -q origin results
