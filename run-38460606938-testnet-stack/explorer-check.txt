@@ -1,0 +1,5 @@
+stats:
+
+latest blocks:
+
+home page HTTP status: 200
