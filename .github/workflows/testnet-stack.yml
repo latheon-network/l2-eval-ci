@@ -112,7 +112,7 @@ jobs:
           sudo docker compose logs --no-color nitro 2>&1 | grep -v '^.*DEBUG' | tail -200 > /tmp/nitro-log.txt || true
           sudo docker compose logs --no-color blockscout frontend caddy 2>&1 | tail -300 > /tmp/services-log.txt || true
           sudo docker compose down || true
-          [ -f chain/secret/state.json ] && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
+          sudo test -f chain/secret/state.json && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
           mkdir -p /tmp/out
           cd $GITHUB_WORKSPACE
           cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt /tmp/out/ 2>/dev/null || true
