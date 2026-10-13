@@ -1,0 +1,21 @@
+20:05:32 deployer 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38, 0.2179946164911868 ETH on Arbitrum Sepolia
+20:05:35 deploy test LTH: 0x596e6cc3c6751beb379844bab59c313a59d6c9c7b6644b428b73bb13e08bbafa (gas 681267)
+20:05:38 deploy fee token pricer: 0xbe55c3ba0fb05cc2e87dcbaaee4a3f750066b53fc641ff855bcbc6c363c521d7 (gas 115773)
+20:05:38 createRollup: chainId 39931963174, stake token 0x980B62Da83eFf3D4576C647993b0c1D7faf17c73
+Approving custom fee token allowance for RollupCreator...
+Tokens approved in https://sepolia.arbiscan.io/tx/0xa0caacff0865cec8fba35ee8f7ac79610d1f0305a5449a1c196f5ae5c8445938
+Approval transaction hash is 0xa0caacff0865cec8fba35ee8f7ac79610d1f0305a5449a1c196f5ae5c8445938
+Deploying the Rollup...
+Deployed in https://sepolia.arbiscan.io/tx/0xdb8961ccce6280d411e2175648348e71629e4c7a93034f9305f6a54ef09d7e50
+Deployment transaction hash is 0xdb8961ccce6280d411e2175648348e71629e4c7a93034f9305f6a54ef09d7e50
+20:05:52 fund batch poster: 0x7fbcdce58b2ef177a6e4e74efa094ce00c188d2b2b06b5ba002c63ef7f97cf1c (gas 21000)
+20:05:52 deployed: chainId 39931963174, rollup 0x3A1A365195c72Ae2C56C640e7B5ecA6cEF7FAdf9
+ frontend Pulling 
+ db Pulling 
+ blockscout Pulling 
+ caddy Pulling 
+ frontend Error manifest unknown
+ blockscout  Interrupted
+ db  Interrupted
+ caddy  Interrupted
+Error response from daemon: manifest unknown
