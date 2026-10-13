@@ -1,0 +1,300 @@
+blockscout-1  | {"time":"2026-10-13T20:30:18.189Z","severity":"info","message":"== Running 20241121140138 Explorer.Repo.Account.Migrations.RemoveAbusedApiKeys.up/0 forward","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.189Z","severity":"info","message":"execute \"WITH ranked_keys AS (SELECT value,\\n                            identity_id,\\n                            inserted_at,\\n                            ROW_NUMBER() OVER (\\n                                PARTITION BY identity_id\\n                                ) as row_number\\n                    FROM account_api_keys)\\nDELETE\\nFROM account_api_keys\\nWHERE value IN (SELECT value\\n                FROM ranked_keys\\n                WHERE row_number > 3)\\n\"","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.190Z","severity":"info","message":"== Migrated 20241121140138 in 0.0s","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.192Z","severity":"info","message":"== Running 20241128100836 Explorer.Repo.Account.Migrations.RemoveAbusedCustomAbis.up/0 forward","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.192Z","severity":"info","message":"execute \"WITH ranked_abis AS (SELECT id,\\n                            identity_id,\\n                            ROW_NUMBER() OVER (\\n                                PARTITION BY identity_id\\n                                ) as row_number\\n                    FROM account_custom_abis)\\nDELETE\\nFROM account_custom_abis\\nWHERE id IN (SELECT id\\n            FROM ranked_abis\\n            WHERE row_number > 15)\\n\"","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.193Z","severity":"info","message":"== Migrated 20241128100836 in 0.0s","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.197Z","severity":"info","message":"== Running 20241204093817 Explorer.Repo.Account.Migrations.RemoveAbusedPublicTagsRequest.up/0 forward","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.197Z","severity":"info","message":"execute \"WITH ranked_public_tags_requests AS (SELECT id,\\n                                            identity_id,\\n                                            ROW_NUMBER() OVER (\\n                                                PARTITION BY identity_id\\n                                                ) as row_number\\n                                    FROM account_public_tags_requests)\\nDELETE\\nFROM account_public_tags_requests\\nWHERE id IN (SELECT id\\n            FROM ranked_public_tags_requests\\n            WHERE row_number > 15)\\n\"","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:18.198Z","severity":"info","message":"== Migrated 20241204093817 in 0.0s","metadata":{}}
+blockscout-1  | Success!
+blockscout-1  |     warning: redefining module ConfigHelper (current version defined in memory)
+blockscout-1  |     │
+blockscout-1  |   1 │ defmodule ConfigHelper do
+blockscout-1  |     │ ~~~~~~~~~~~~~~~~~~~~~~~~~
+blockscout-1  |     │
+blockscout-1  |     └─ config/config_helper.exs:1: ConfigHelper (module)
+blockscout-1  | 
+blockscout-1  |     warning: redefining module ConfigHelper (current version defined in memory)
+blockscout-1  |     │
+blockscout-1  |   1 │ defmodule ConfigHelper do
+blockscout-1  |     │ ~~~~~~~~~~~~~~~~~~~~~~~~~
+blockscout-1  |     │
+blockscout-1  |     └─ config/config_helper.exs:1: ConfigHelper (module)
+blockscout-1  | 
+blockscout-1  | {"time":"2026-10-13T20:30:22.469Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :channel_handled_in]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.469Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :channel_joined]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.469Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :endpoint, :start]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.470Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :endpoint, :stop]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.470Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :error_rendered]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.470Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :router_dispatch, :start]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.470Z","severity":"info","message":"The function passed as a handler with ID {Phoenix.Logger, [:phoenix, :socket_connected]} is a local function.\nThis means that it is either an anonymous function or a capture of a function without a module specified. That may cause a performance penalty when calling that handler. For more details see the note in `telemetry:attach/4` documentation.\n\nhttps://hexdocs.pm/telemetry/telemetry.html#attach/4","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.538Z","severity":"info","message":"[Que] Booting Que","metadata":{}}
+blockscout-1  | warning: using map.field notation (without parentheses) to invoke function Que.Persistence.Mnesia.DB.Jobs.__info__() is deprecated, you must add parentheses instead: remote.function()
+blockscout-1  |   (memento 0.3.2) lib/memento/table/definition.ex:195: Memento.Table.Definition.validate_table!/1
+blockscout-1  |   (memento 0.3.2) lib/memento/table/table.ex:168: Memento.Table.create/2
+blockscout-1  |   (que 0.10.1) lib/que/supervisor.ex:19: Que.Supervisor.start_link/0
+blockscout-1  |   (kernel 10.2.7) application_master.erl:295: :application_master.start_it_old/4
+blockscout-1  | 
+blockscout-1  | {"time":"2026-10-13T20:30:22.539Z","severity":"info","message":"[Que] Booting Server Supervisor for Workers","metadata":{}}
+blockscout-1  | warning: using map.field notation (without parentheses) to invoke function Que.Persistence.Mnesia.DB.Jobs.__info__() is deprecated, you must add parentheses instead: remote.function()
+blockscout-1  |   (memento 0.3.2) lib/memento/query/query.ex:423: Memento.Query.select/3
+blockscout-1  |   (que 0.10.1) lib/que/persistence/mnesia/db.ex:170: anonymous fn/1 in Que.Persistence.Mnesia.DB.Jobs.run_query/1
+blockscout-1  |   (mnesia 4.23.5) mnesia_tm.erl:890: :mnesia_tm.apply_fun/3
+blockscout-1  |   (mnesia 4.23.5) mnesia_tm.erl:866: :mnesia_tm.execute_transaction/5
+blockscout-1  |   (memento 0.3.2) lib/memento/transaction.ex:71: Memento.Transaction.execute/2
+blockscout-1  | 
+blockscout-1  | {"time":"2026-10-13T20:30:22.609Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | warning: using map.field notation (without parentheses) to invoke function BlockScoutWeb.Endpoint.__sockets__() is deprecated, you must add parentheses instead: remote.function()
+blockscout-1  |   (phoenix 1.5.14) lib/phoenix/endpoint/supervisor.ex:139: Phoenix.Endpoint.Supervisor.socket_children/1
+blockscout-1  |   (phoenix 1.5.14) lib/phoenix/endpoint/supervisor.ex:105: Phoenix.Endpoint.Supervisor.init/1
+blockscout-1  |   (stdlib 6.2.2) supervisor.erl:869: :supervisor.init/1
+blockscout-1  |   (stdlib 6.2.2) gen_server.erl:2229: :gen_server.init_it/2
+blockscout-1  |   (stdlib 6.2.2) gen_server.erl:2184: :gen_server.init_it/6
+blockscout-1  | 
+blockscout-1  | {"time":"2026-10-13T20:30:22.609Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-04 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.609Z","severity":"info","message":"tx/per day chart: latest date 2026-09-04 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.610Z","severity":"error","message":"Failed to fetch rate limit config: :invalid_config_url. Fallback to local config.","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.614Z","severity":"info","message":"Running BlockScoutWeb.Endpoint with cowboy 2.13.0 at 0.0.0.0:4000 (http)","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.614Z","severity":"error","message":"Could not find static manifest at \"/app/lib/block_scout_web-9.0.2/priv/static/cache_manifest.json\". Run \"mix phx.digest\" after building your static files or remove the configuration from \"config/prod.exs\".","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.614Z","severity":"info","message":"Access BlockScoutWeb.Endpoint at https://localhost:4000","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.655Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.664Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.664Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.664Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-05 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.664Z","severity":"info","message":"tx/per day chart: latest date 2026-09-05 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.678Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.687Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.687Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.687Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-06 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.687Z","severity":"info","message":"tx/per day chart: latest date 2026-09-06 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.693Z","severity":"info","message":"SanitizeIncorrectNFTTokenTransfers `delete_erc_721` step is finished","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.699Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.702Z","severity":"info","message":"Deleted 0 event notifications","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.708Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.708Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.708Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-07 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.708Z","severity":"info","message":"tx/per day chart: latest date 2026-09-07 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.710Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.710Z","severity":"info","message":"Checking if index needs to catch up in 1000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.717Z","severity":"info","message":"SanitizeIncorrectWETHTokenTransfers deletion of duplicates finished, continuing with deletion of not whitelisted weth transfers","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.718Z","severity":"info","message":"SanitizeIncorrectNFTTokenTransfers `delete_erc_1155` step is finished","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.728Z","severity":"info","message":"SanitizeIncorrectNFTTokenTransfers migration finished","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.734Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.742Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.742Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.742Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-08 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.742Z","severity":"info","message":"tx/per day chart: latest date 2026-09-08 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.748Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.749Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.749Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.749Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-09 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.749Z","severity":"info","message":"tx/per day chart: latest date 2026-09-09 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.752Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.754Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.754Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.754Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-10 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.754Z","severity":"info","message":"tx/per day chart: latest date 2026-09-10 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.757Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.759Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.759Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.759Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-11 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.759Z","severity":"info","message":"tx/per day chart: latest date 2026-09-11 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.763Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.765Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.765Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.765Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-12 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.765Z","severity":"info","message":"tx/per day chart: latest date 2026-09-12 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.768Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.769Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.769Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.769Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-13 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.769Z","severity":"info","message":"tx/per day chart: latest date 2026-09-13 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.775Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.777Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.777Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.777Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-14 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.777Z","severity":"info","message":"tx/per day chart: latest date 2026-09-14 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.781Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.784Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.784Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.784Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-15 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.784Z","severity":"info","message":"tx/per day chart: latest date 2026-09-15 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.788Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.790Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.790Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.790Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-16 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.790Z","severity":"info","message":"tx/per day chart: latest date 2026-09-16 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.794Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.795Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.795Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.796Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-17 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.796Z","severity":"info","message":"tx/per day chart: latest date 2026-09-17 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.797Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.798Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.798Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.798Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-18 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.798Z","severity":"info","message":"tx/per day chart: latest date 2026-09-18 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.800Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.801Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.801Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.801Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-19 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.801Z","severity":"info","message":"tx/per day chart: latest date 2026-09-19 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.803Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.804Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.804Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.804Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-20 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.804Z","severity":"info","message":"tx/per day chart: latest date 2026-09-20 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.807Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.808Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.808Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.808Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-21 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.808Z","severity":"info","message":"tx/per day chart: latest date 2026-09-21 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.812Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.812Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.812Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.812Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-22 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.812Z","severity":"info","message":"tx/per day chart: latest date 2026-09-22 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.814Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.815Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.815Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.815Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-23 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.815Z","severity":"info","message":"tx/per day chart: latest date 2026-09-23 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.816Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.819Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.819Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.819Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-24 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.819Z","severity":"info","message":"tx/per day chart: latest date 2026-09-24 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.821Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.822Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.822Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.822Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-25 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.822Z","severity":"info","message":"tx/per day chart: latest date 2026-09-25 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.823Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.824Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.824Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.824Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-26 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.824Z","severity":"info","message":"tx/per day chart: latest date 2026-09-26 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.826Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.827Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.827Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.827Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-27 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.828Z","severity":"info","message":"tx/per day chart: latest date 2026-09-27 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.830Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.831Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.831Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.831Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-28 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.831Z","severity":"info","message":"tx/per day chart: latest date 2026-09-28 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.832Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.833Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.833Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.833Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-29 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.833Z","severity":"info","message":"tx/per day chart: latest date 2026-09-29 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.835Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.836Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.836Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.836Z","severity":"info","message":"tx/per day chart: earliest date 2026-09-30 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.836Z","severity":"info","message":"tx/per day chart: latest date 2026-09-30 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.838Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.839Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.839Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.839Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-01 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.839Z","severity":"info","message":"tx/per day chart: latest date 2026-10-01 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.841Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.842Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.842Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.842Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-02 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.842Z","severity":"info","message":"tx/per day chart: latest date 2026-10-02 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.844Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.845Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.845Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.845Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-03 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.845Z","severity":"info","message":"tx/per day chart: latest date 2026-10-03 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.847Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.848Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.848Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.848Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-04 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.848Z","severity":"info","message":"tx/per day chart: latest date 2026-10-04 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.850Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.850Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.850Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.850Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-05 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.850Z","severity":"info","message":"tx/per day chart: latest date 2026-10-05 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.852Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.853Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.853Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.853Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-06 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.853Z","severity":"info","message":"tx/per day chart: latest date 2026-10-06 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.855Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.855Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.855Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.855Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-07 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.855Z","severity":"info","message":"tx/per day chart: latest date 2026-10-07 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.856Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.857Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.857Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.857Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-08 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.857Z","severity":"info","message":"tx/per day chart: latest date 2026-10-08 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.860Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.860Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.860Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.860Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-09 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.860Z","severity":"info","message":"tx/per day chart: latest date 2026-10-09 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.862Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.862Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.862Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.862Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-10 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.862Z","severity":"info","message":"tx/per day chart: latest date 2026-10-10 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.864Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.864Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.864Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.864Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-11 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.864Z","severity":"info","message":"tx/per day chart: latest date 2026-10-11 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.865Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.866Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.866Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.866Z","severity":"info","message":"tx/per day chart: earliest date 2026-10-12 00:00:00Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.866Z","severity":"info","message":"tx/per day chart: latest date 2026-10-12 23:59:59Z","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.868Z","severity":"info","message":"tx/per day chart: timestamp cannot be converted to min/max blocks, trying to find min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.868Z","severity":"warn","message":"tx/per day chart: failed to get min/max blocks through a fallback option}","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.868Z","severity":"info","message":"tx/per day chart: collect records for transactions per day stats","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.869Z","severity":"info","message":"tx/per day chart: records collected [%{date: ~D[2026-10-12], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-11], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-10], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-09], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-08], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-07], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-06], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-05], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-04], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-03], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-02], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-10-01], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-30], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-29], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-28], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-27], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-26], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-25], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-24], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-23], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-22], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-21], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-20], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-19], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-18], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-17], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-16], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-15], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-14], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-13], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-12], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-11], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-10], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-09], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-08], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-07], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-06], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-05], gas_used: 0, number_of_transactions: 0, total_fee: 0}, %{date: ~D[2026-09-04], gas_used: 0, number_of_transactions: 0, total_fee: 0}]","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.869Z","severity":"info","message":"tx/per day chart: save records","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:22.871Z","severity":"info","message":"tx/per day chart: number of inserted 40","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:23.761Z","severity":"info","message":"Index had to catch up.","metadata":{"fetcher":"block_catchup","last_block_number":0,"shrunk":false,"missing_block_count":9,"first_block_number":8}}
+blockscout-1  | {"time":"2026-10-13T20:30:23.761Z","severity":"info","message":"Checking if index needs to catch up in 0ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:23.762Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:23.762Z","severity":"info","message":"Checking if index needs to catch up in 1000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:24.763Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:24.763Z","severity":"info","message":"Checking if index needs to catch up in 3000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:25.813Z","severity":"info","message":"tzdata release in place is from a file last modified Thu, 16 Jan 2025 17:10:51 GMT. Release file on server was last modified Wed, 30 Sep 2026 01:06:34 GMT.","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:26.286Z","severity":"info","message":"Tzdata has updated the release from 2025a to 2026e","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:27.765Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:27.765Z","severity":"info","message":"Checking if index needs to catch up in 7000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:32.632Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:30:34.767Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:34.767Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:37.605Z","severity":"info","message":"Fetching chain spec path: nil.","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:37.605Z","severity":"info","message":"Fetching precompiled config path: nil.","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:37.605Z","severity":"warn","message":"Genesis data is not fetched. Neither chain spec path or precompiles config path are set.","metadata":{}}
+blockscout-1  | {"time":"2026-10-13T20:30:42.637Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:30:44.769Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:44.769Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:30:52.641Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:30:54.771Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:30:54.771Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:31:02.645Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:31:04.773Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:31:04.773Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:31:12.649Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:31:14.774Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:31:14.774Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:31:22.652Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:31:24.776Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:31:24.776Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:31:32.656Z","severity":"info","message":"Start sanitizing of empty blocks. Batch size is 10","metadata":{"fetcher":"empty_blocks_to_refetch"}}
+blockscout-1  | {"time":"2026-10-13T20:31:34.778Z","severity":"info","message":"Index already caught up.","metadata":{"fetcher":"block_catchup","last_block_number":null,"shrunk":false,"missing_block_count":0,"first_block_number":null}}
+blockscout-1  | {"time":"2026-10-13T20:31:34.778Z","severity":"info","message":"Checking if index needs to catch up in 10000ms.","metadata":{"fetcher":"block_catchup"}}
+blockscout-1  | {"time":"2026-10-13T20:31:39.023Z","severity":"info","message":"Sent 200 in 14ms on GET /api/v2/stats?","metadata":{"status":"200","unit":"microsecond","method":"GET","request_id":"GN4w7acUlDyut_oAACBE","duration":14375,"endpoint":"/api/v2/stats?"}}
+blockscout-1  | {"time":"2026-10-13T20:31:39.046Z","severity":"info","message":"Sent 200 in 7ms on GET /api/v2/stats?","metadata":{"status":"200","unit":"microsecond","method":"GET","request_id":"GN4w7ajaqeczqCQAACCE","duration":7778,"endpoint":"/api/v2/stats?"}}
+blockscout-1  | {"time":"2026-10-13T20:31:39.066Z","severity":"info","message":"Sent 200 in 9ms on GET /api/v2/blocks?","metadata":{"status":"200","unit":"microsecond","method":"GET","request_id":"GN4w7anyaWkUpqMAACCk","duration":9617,"endpoint":"/api/v2/blocks?"}}
