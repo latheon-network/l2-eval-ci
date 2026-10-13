@@ -1,0 +1,1 @@
+blockscout=9.0.2 frontend=v2.3.1 caddy=2.11.7

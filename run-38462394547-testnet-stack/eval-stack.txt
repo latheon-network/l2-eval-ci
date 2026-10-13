@@ -1,0 +1,52 @@
+Сеть: rehearsal-l3 (chainId 53408009498, EVM)
+Кошелёк: 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38
+Баланс: 10000.0052923626 LTH (test gas token)
+
+1. Деплой контрактов (исходники репозитория без изменений)
+   ✔ deploy PoseidonT3: газ 251 762 379 (из них за L1 248 067 276), комиссия 0.0251762379 LTH (test gas token)  0xad7771ddc2c19f66415c5df9a41214cf3dfa03f749d5aefd6e3c0ef1a3708a55
+   ✔ deploy Verifier: газ 51 213 385 (из них за L1 50 822 912), комиссия 0.0051213385 LTH (test gas token)  0x93a5dc183df01f80622a5deef65b3a5543abf858c2e33fbacc79bc01cd8b5ace
+   ✔ deploy Token: газ 68 166 374 (из них за L1 67 485 107), комиссия 0.0068166374 LTH (test gas token)  0x1f609ae28148a94949eeb417e09d6042f764e63978fe9457b1702a30c8c9408d
+   ✔ deploy Pool100: газ 84 358 666 (из них за L1 82 924 979), комиссия 0.0084358666 LTH (test gas token)  0x3df7b02d61ec6dd582f47734cbe904336c2d43e98c534dc65f27ee4ba7db5b0e
+   ✔ deploy Pool50: газ 84 262 167 (из них за L1 82 828 480), комиссия 0.0084262167 LTH (test gas token)  0x05efd000b739923dfd4d66e39ff7b1cc805f57dfb6b28a77e67d0faee66b972c
+   ✔ deploy Pool10: газ 84 326 487 (из них за L1 82 892 812), комиссия 0.0084326487 LTH (test gas token)  0xcd6e12188d8dca9a9179fa59dfd054c286c1234ef01507ffe489a08491c1f09f
+   ✔ deploy Pool1: газ 84 358 654 (из них за L1 82 924 979), комиссия 0.0084358654 LTH (test gas token)  0x831b6c587ce6efa12032eaae7899031c5d5b76261a9320d5718f9a6d7306d2c0
+   ✔ deploy Router: газ 91 101 131 (из них за L1 90 130 252), комиссия 0.0091101131 LTH (test gas token)  0xd76ea296d024f9bcc50c05b35f74f3b109c7a30cb06c9925a0eb0a2273111c40
+
+2. Прямой депозит в пул 100 и вывод
+   ✔ approve pool 100: газ 5 965 023 (из них за L1 5 918 617), комиссия 0.0005965023 LTH (test gas token)  0x9bd165d7a1835d0f61d0415cc73f9c876a746b57e4de168b4e87958785e3ebd3
+   ✔ deposit V5 direct (1 note): газ 5 290 783 (из них за L1 4 857 126), комиссия 0.0005290783 LTH (test gas token)  0x85d1624dd456f265db7448a84376754bfd967348e9b1a28dadede38613472ece
+   ✔ withdraw V5 direct (1 note): газ 15 551 671 (из них за L1 15 279 040), комиссия 0.0015551671 LTH (test gas token)  0x41c5f24f994497fd9818be0c906daf445962033afa89c731770da2fb134c3567
+
+3. Депозиты через роутер
+   ✔ approve router: газ 5 965 023 (из них за L1 5 918 617), комиссия 0.0005965023 LTH (test gas token)  0x9c287449e07f87667f7664aa97ca0276b5bfc210db7c01858a63dae3ae37d548
+   ✔ router deposit 1 note: газ 8 448 143 (из них за L1 7 977 267), комиссия 0.0008448143 LTH (test gas token)  0x7a420da05af5cde2f6f81189178f9a033de7a4775b59526ea8e64e0458dbbbda
+   ✔ router deposit 3 notes: газ 11 328 166 (из них за L1 10 068 083), комиссия 0.0011328166 LTH (test gas token)  0x175ee9776719b6d1b3554753f71fa76458df536aca1076462286c8bed52b3f45
+   ✔ router deposit 14 notes: газ 25 769 708 (из них за L1 21 454 988), комиссия 0.0025769708 LTH (test gas token)  0xe4f48afdd566bdf40568f263ca99ce89abb8e5d9ab1b7f3aa5aeb8d5a2f4a957
+   ✔ router deposit 32 notes: газ 49 285 066 (из них за L1 39 982 835), комиссия 0.0049285066 LTH (test gas token)  0xdad28537fb2458c6822b4551da72dc32fed5cd891c34a726b21b0459970aba44
+
+4. withdrawMany (доказательства считаются на этом компьютере)
+...
+   ✔ withdrawMany 3 notes: газ 40 514 821 (из них за L1 39 725 504), комиссия 0.0040514821 LTH (test gas token)  0x745538b17d20ec0f61d433932b5f4a03a45f9f28229651c171d89ba0a1580119
+................
+   ✔ withdrawMany 16 notes: газ 163 152 706 (из них за L1 159 288 012), комиссия 0.0163152706 LTH (test gas token)  0x4e60feebfc65219cbb69608fd0c945f62e6d2eeabf4a16e4cc00045599d99b4f
+
+Итог: rehearsal-l3
+операция                                 газ                комиссия
+deploy PoseidonT3                251 762 379            0.0251762379
+deploy Verifier                   51 213 385            0.0051213385
+deploy Token                      68 166 374            0.0068166374
+deploy Pool100                    84 358 666            0.0084358666
+deploy Pool50                     84 262 167            0.0084262167
+deploy Pool10                     84 326 487            0.0084326487
+deploy Pool1                      84 358 654            0.0084358654
+deploy Router                     91 101 131            0.0091101131
+deposit V5 direct (1 note)         5 290 783            0.0005290783
+withdraw V5 direct (1 note)       15 551 671            0.0015551671
+router deposit 1 note              8 448 143            0.0008448143
+router deposit 3 notes            11 328 166            0.0011328166
+router deposit 14 notes           25 769 708            0.0025769708
+router deposit 32 notes           49 285 066            0.0049285066
+withdrawMany 3 notes              40 514 821            0.0040514821
+withdrawMany 16 notes            163 152 706            0.0163152706
+Всего комиссий: 0.1118890307 LTH (test gas token)
+Результаты: /home/runner/work/l2-eval-ci/l2-eval-ci/arbitrum/l2-eval/results/rehearsal-l3-2026-10-13T20-27-28-160Z.json
