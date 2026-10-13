@@ -1,0 +1,21 @@
+# Public endpoints. Certificates come from Let's Encrypt automatically once DNS points here.
+# TLS_LINE is empty on the server; CI sets it to "tls internal" (self-signed, localhost names).
+
+{$RPC_HOST} {
+	{$TLS_LINE}
+	request_body {
+		max_size 1MB
+	}
+	reverse_proxy nitro:8449
+}
+
+{$EXPLORER_HOST} {
+	{$TLS_LINE}
+	@api path /api /api/* /socket /socket/* /sitemap.xml
+	handle @api {
+		reverse_proxy blockscout:4000
+	}
+	handle {
+		reverse_proxy frontend:3000
+	}
+}

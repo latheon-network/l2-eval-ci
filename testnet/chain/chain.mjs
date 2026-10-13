@@ -1,13 +1,17 @@
-// Rehearsal of a Latheon test chain: Arbitrum L3 on Arbitrum Sepolia, gas paid in a test LTH token.
+// Latheon test chain: Arbitrum L3 on Arbitrum Sepolia, gas paid in a test LTH token.
+// Used by the CI rehearsal and on the testnet server.
 //
-//   node rehearsal.mjs deploy   test LTH + fee token pricer on Arbitrum Sepolia, createRollup, node config
-//   node rehearsal.mjs fund     deposit test LTH into the L3 through the chain's own inbox (node must run)
-//   node rehearsal.mjs bridge   token bridge for other ERC-20s (node must run)
-//   node rehearsal.mjs batches  wait until the batch poster has posted to Arbitrum Sepolia
-//   node rehearsal.mjs sweep    return the batch poster's leftover ETH to the deployer
+//   node chain.mjs deploy   test LTH + fee token pricer on Arbitrum Sepolia, createRollup, node config
+//   node chain.mjs fund     deposit test LTH into the L3 through the chain's own inbox (node must run)
+//   node chain.mjs bridge   token bridge for other ERC-20s (node must run)
+//   node chain.mjs batches  wait until the batch poster has posted to Arbitrum Sepolia
+//   node chain.mjs sweep    return the batch poster's leftover ETH to the deployer (rehearsal only)
 //
-// Env: DEPLOYER_KEY (funded on Arbitrum Sepolia, never printed), PARENT_RPC (optional).
-// Private material goes to secret/ (never committed or uploaded); public facts go to out/chain.json.
+// Env: DEPLOYER_KEY (funded on Arbitrum Sepolia, never printed), PARENT_RPC (recommended: a dedicated RPC),
+//      CHAIN_NAME (default latheon-testnet), BATCH_MAX_DELAY (e.g. 30s; default: nitro's),
+//      NODE_API (default eth,net,web3,arb), BATCH_POSTER_FUNDING (ETH, default 0.01), L3_DEPOSIT (LTH, default 10000),
+//      STATE_DIR / OUT_DIR (default ./secret and ./out).
+// Private material goes to STATE_DIR (never committed or uploaded); public facts go to OUT_DIR/chain.json.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -24,18 +28,18 @@ import {
 import { generateChainId, sanitizePrivateKey } from '@arbitrum/chain-sdk/utils';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SECRET = path.join(HERE, 'secret');
-const OUT = path.join(HERE, 'out');
+const SECRET = process.env.STATE_DIR || path.join(HERE, 'secret');
+const OUT = process.env.OUT_DIR || path.join(HERE, 'out');
 fs.mkdirSync(SECRET, { recursive: true });
 fs.mkdirSync(OUT, { recursive: true });
 
 const PARENT_RPC = process.env.PARENT_RPC || 'https://sepolia-rollup.arbitrum.io/rpc';
 const L3_RPC = process.env.L3_RPC || 'http://127.0.0.1:8449';
-const CHAIN_NAME = 'latheon-rehearsal';
+const CHAIN_NAME = process.env.CHAIN_NAME || 'latheon-testnet';
 // Test exchange rate for the fee token pricer: LTH per 1 ETH, 18 decimals. Arbitrary for a testnet.
 const LTH_PER_ETH = parseEther('10000');
-const BATCH_POSTER_FUNDING = parseEther('0.01');
-const L3_DEPOSIT = parseEther('10000'); // test LTH moved into the L3 for the scenario
+const BATCH_POSTER_FUNDING = parseEther(process.env.BATCH_POSTER_FUNDING || '0.01');
+const L3_DEPOSIT = parseEther(process.env.L3_DEPOSIT || '10000'); // test LTH moved into the L3
 
 // ConstantFeeTokenPricer from OffchainLabs/nitro-testnode scripts/ethcommands.ts (constructor(uint256 rate)).
 const PRICER_BYTECODE = '0x60a0604052348015600e575f80fd5b506040516101c63803806101c68339818101604052810190602e9190606d565b8060808181525050506093565b5f80fd5b5f819050919050565b604f81603f565b81146058575f80fd5b50565b5f815190506067816048565b92915050565b5f60208284031215607f57607e603b565b5b5f608a84828501605b565b91505092915050565b6080516101166100b05f395f8181606a0152608f01526101165ff3fe6080604052348015600e575f80fd5b50600436106030575f3560e01c8063b8910a29146034578063e6aa216c14604e575b5f80fd5b603a6068565b6040516045919060c9565b60405180910390f35b6054608c565b604051605f919060c9565b60405180910390f35b7f000000000000000000000000000000000000000000000000000000000000000081565b5f7f0000000000000000000000000000000000000000000000000000000000000000905090565b5f819050919050565b60c38160b3565b82525050565b5f60208201905060da5f83018460bc565b9291505056fea2646970667358221220ee17f22614d853ccf8b3f854137f68f06ff92f9f71ba8b811d78b1313eead0c564736f6c634300081a0033';
@@ -88,7 +92,7 @@ async function deploy() {
 
   // 1. test LTH (contracts/LatheonToken.sol from the repo, unchanged; mints 100M to the deployer)
   if (!st.token) {
-    const art = JSON.parse(fs.readFileSync(path.join(HERE, '..', 'l2-eval', 'artifacts', 'evm.json'), 'utf8')).contracts.Token;
+    const art = JSON.parse(fs.readFileSync(path.join(HERE, 'artifacts', 'LatheonToken.json'), 'utf8'));
     const rc = await send('deploy test LTH', parentWallet.deployContract({ abi: art.abi, bytecode: art.bytecode, args: [deployer.address] }));
     st.token = rc.contractAddress; pub.txs.token = rc.transactionHash; save(statePath, st);
   }
@@ -141,8 +145,10 @@ async function deploy() {
     batchPosterPrivateKey: st.batchPosterKey, validatorPrivateKey: undefined, stakeToken: st.stakeToken,
     parentChainId: arbitrumSepolia.id, parentChainRpcUrl: PARENT_RPC,
   });
-  nodeConfig.node['batch-poster']['max-delay'] = '30s'; // post quickly so the rehearsal sees a batch land
+  if (process.env.BATCH_MAX_DELAY) nodeConfig.node['batch-poster']['max-delay'] = process.env.BATCH_MAX_DELAY;
+  nodeConfig.http.api = (process.env.NODE_API || 'eth,net,web3,arb').split(',');
   save(path.join(SECRET, 'node-config.json'), nodeConfig);
+  fs.writeFileSync(path.join(OUT, 'chain.env'), `CHAIN_ID=${st.chainId}\nCHAIN_NAME=${CHAIN_NAME}\n`);
   fs.writeFileSync(path.join(SECRET, 'mask.txt'), st.batchPosterKey + '\n' + st.validatorKey + '\n');
   save(pubPath, pub);
   log(`deployed: chainId ${st.chainId}, rollup ${st.core.rollup}`);

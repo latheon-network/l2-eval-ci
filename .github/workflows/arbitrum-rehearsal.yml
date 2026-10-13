@@ -34,6 +34,8 @@ jobs:
       PARENT_RPC: ${{ secrets.ARB_SEPOLIA_RPC }}
       MIN_BASE_FEE_WEI: ${{ inputs.min_base_fee_wei }}
       NITRO_IMAGE: ${{ inputs.nitro_image }}
+      CHAIN_NAME: latheon-rehearsal
+      BATCH_MAX_DELAY: 30s
     steps:
       - uses: actions/checkout@v4
 
@@ -56,19 +58,19 @@ jobs:
 
       - name: Install
         run: |
-          (cd arbitrum/rehearsal && npm install --no-audit --no-fund > /dev/null)
+          (cd testnet/chain && npm install --no-audit --no-fund > /dev/null)
           (cd arbitrum/l2-eval && npm install --no-audit --no-fund > /dev/null)
           docker pull -q "$NITRO_IMAGE"
 
       - name: Deploy test LTH, fee token pricer and the rollup on Arbitrum Sepolia
-        working-directory: arbitrum/rehearsal
+        working-directory: testnet/chain
         run: |
-          node rehearsal.mjs deploy 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+          node chain.mjs deploy 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
           while read -r k; do [ -n "$k" ] && echo "::add-mask::$k" && echo "::add-mask::${k#0x}"; done < secret/mask.txt
 
       - name: Start the L3 node
         run: |
-          mkdir -p /tmp/l3 && cp arbitrum/rehearsal/secret/node-config.json /tmp/l3/ && chmod -R 777 /tmp/l3
+          mkdir -p /tmp/l3 && cp testnet/chain/secret/node-config.json /tmp/l3/ && chmod -R 777 /tmp/l3
           docker run -d --name l3node -v /tmp/l3:/home/user/.arbitrum -p 8449:8449 "$NITRO_IMAGE" --conf.file /home/user/.arbitrum/node-config.json --log-level=DEBUG --ensure-rollup-deployment=false
           for i in $(seq 1 120); do
             if curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' http://127.0.0.1:8449 | grep -q result; then echo "L3 RPC up after $((i*5))s"; exit 0; fi
@@ -77,13 +79,13 @@ jobs:
           echo "::error::L3 RPC did not come up"; docker logs l3node 2>&1 | grep -v "^DEBUG\|^TRACE" | tail -40; exit 1
 
       - name: Deposit test LTH into the L3 (chain's own inbox)
-        working-directory: arbitrum/rehearsal
-        run: node rehearsal.mjs fund 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+        working-directory: testnet/chain
+        run: node chain.mjs fund 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
 
       - name: Token bridge for other ERC-20s
         continue-on-error: true
-        working-directory: arbitrum/rehearsal
-        run: node rehearsal.mjs bridge 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+        working-directory: testnet/chain
+        run: node chain.mjs bridge 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
 
       - name: Lower the minimum base fee (chain owner)
         if: env.MIN_BASE_FEE_WEI != '0'
@@ -102,15 +104,15 @@ jobs:
           node eval.js rehearsal-l3 --fresh 2>&1 | tee $GITHUB_WORKSPACE/eval-rehearsal.txt
 
       - name: Batches posted to Arbitrum Sepolia
-        working-directory: arbitrum/rehearsal
-        run: node rehearsal.mjs batches 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
+        working-directory: testnet/chain
+        run: node chain.mjs batches 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt
 
       - name: Stop the node and return leftover ETH
         if: always()
         run: |
           docker logs l3node > /tmp/l3-node-full.txt 2>&1 || true
           docker stop l3node > /dev/null 2>&1 || true
-          cd arbitrum/rehearsal && [ -f secret/state.json ] && node rehearsal.mjs sweep 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt || true
+          cd testnet/chain && [ -f secret/state.json ] && node chain.mjs sweep 2>&1 | tee -a $GITHUB_WORKSPACE/rehearsal-log.txt || true
 
       - name: Save public results to the results branch
         if: always()
@@ -119,12 +121,12 @@ jobs:
         run: |
           mkdir -p /tmp/out
           cp -f rehearsal-log.txt min-base-fee.txt eval-rehearsal.txt /tmp/out/ 2>/dev/null || true
-          cp -f arbitrum/rehearsal/out/chain.json /tmp/out/ 2>/dev/null || true
+          cp -f testnet/chain/out/chain.json /tmp/out/ 2>/dev/null || true
           cp -f arbitrum/l2-eval/results/*.json /tmp/out/ 2>/dev/null || true
           grep -v '^TRACE' /tmp/l3-node-full.txt | tail -1500 > /tmp/out/l3-node-log-tail.txt 2>/dev/null || true
           # scrub the generated keys from anything saved, in case a tool printed them
-          if [ -f arbitrum/rehearsal/secret/mask.txt ]; then
-            while read -r k; do [ -n "$k" ] && sed -i "s/${k#0x}/<redacted>/gI" /tmp/out/* ; done < arbitrum/rehearsal/secret/mask.txt
+          if [ -f testnet/chain/secret/mask.txt ]; then
+            while read -r k; do [ -n "$k" ] && sed -i "s/${k#0x}/<redacted>/gI" /tmp/out/* ; done < testnet/chain/secret/mask.txt
           fi
           K="${DEPLOYER_KEY#0x}"; [ -n "$K" ] && sed -i "s/$K/<redacted>/gI" /tmp/out/*
           if grep -rqi "private-key\|privatekey" /tmp/out; then echo "::warning::key-like field names found, removing those lines"; sed -i '/private-key\|privateKey/Id' /tmp/out/*; fi

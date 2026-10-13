@@ -1,0 +1,126 @@
+name: testnet server stack (rehearsal)
+
+# Manual only: spends a little Arbitrum Sepolia ETH from REHEARSAL_DEPLOYER_KEY.
+# Runs the exact server procedure from testnet/ on a GitHub runner: setup, deploy-chain.sh,
+# docker compose (node, explorer, HTTPS proxy), then checks the public endpoints the way a user would.
+# The chain ends with the job.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rehearsal
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  stack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Latheon circuits (public repo, for the scenario)
+        uses: actions/checkout@v4
+        with:
+          repository: latheon-network/Latheon
+          ref: 0cb805276d47b03ae22e9fd0ec3fb4458fbfbce5
+          path: latheon
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Server setup (as on the server, without apt and firewall)
+        working-directory: testnet
+        env:
+          PARENT_RPC_SECRET: ${{ secrets.ARB_SEPOLIA_RPC }}
+        run: |
+          if [ -z "${{ secrets.REHEARSAL_DEPLOYER_KEY }}" ]; then echo "::error::REHEARSAL_DEPLOYER_KEY is not set"; exit 1; fi
+          cp .env.example .env
+          sed -i 's|^RPC_HOST=.*|RPC_HOST=rpc.localhost|; s|^EXPLORER_HOST=.*|EXPLORER_HOST=explorer.localhost|' .env
+          sed -i 's|^TLS_LINE=.*|TLS_LINE="tls internal"|; s|^NITRO_EXTRA_ARGS=.*|NITRO_EXTRA_ARGS=--ensure-rollup-deployment=false|; s|^BATCH_MAX_DELAY=.*|BATCH_MAX_DELAY=30s|' .env
+          [ -n "$PARENT_RPC_SECRET" ] && sed -i "s|^PARENT_RPC=.*|PARENT_RPC=$PARENT_RPC_SECRET|" .env
+          sudo SKIP_PACKAGES=1 ./setup-server.sh
+
+      - name: deploy-chain.sh (create chain, start stack, deposit, token bridge, batches)
+        working-directory: testnet
+        env:
+          DEPLOYER_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+        run: |
+          set -o pipefail
+          sudo -E ./deploy-chain.sh 2>&1 | tee $GITHUB_WORKSPACE/deploy-log.txt
+          sudo docker compose ps | tee $GITHUB_WORKSPACE/compose-ps.txt
+
+      - name: Public RPC over HTTPS
+        run: |
+          set -o pipefail
+          R() { curl -sk --resolve rpc.localhost:443:127.0.0.1 https://rpc.localhost -H 'content-type: application/json' --data "$1"; echo; }
+          {
+            echo "eth_chainId:";     R '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}'
+            echo "eth_blockNumber:"; R '{"jsonrpc":"2.0","id":1,"method":"eth_blockNumber","params":[]}'
+            echo "debug_* must be unavailable:"; R '{"jsonrpc":"2.0","id":1,"method":"debug_traceBlockByNumber","params":["latest",{}]}'
+          } | tee $GITHUB_WORKSPACE/rpc-check.txt
+          grep -q '"result"' <(R '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}')
+          ! grep -q '"result"' <(R '{"jsonrpc":"2.0","id":1,"method":"debug_traceBlockByNumber","params":["latest",{}]}')
+
+      - name: Latheon scenario on the chain (traffic for the explorer)
+        working-directory: arbitrum/l2-eval
+        env:
+          LATHEON_REPO: ${{ github.workspace }}/latheon
+          LATHEON_EVAL_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+        run: |
+          set -o pipefail
+          npm install --no-audit --no-fund > /dev/null
+          node eval.js rehearsal-l3 --fresh 2>&1 | tee $GITHUB_WORKSPACE/eval-stack.txt
+
+      - name: Explorer over HTTPS (API indexes the chain, web page loads)
+        run: |
+          E() { curl -sk --resolve explorer.localhost:443:127.0.0.1 "https://explorer.localhost$1"; }
+          ok=""
+          for i in $(seq 1 60); do
+            n=$(E /api/v2/stats | python3 -c "import sys,json; print(json.load(sys.stdin).get('total_transactions','0'))" 2>/dev/null || echo 0)
+            echo "indexed transactions: $n"
+            if [ "${n:-0}" -ge 20 ] 2>/dev/null; then ok=1; break; fi
+            sleep 10
+          done
+          { echo "stats:"; E /api/v2/stats; echo; echo "latest blocks:"; E '/api/v2/blocks' | head -c 1500; echo;
+            echo "home page HTTP status: $(curl -sk -o /dev/null -w '%{http_code}' --resolve explorer.localhost:443:127.0.0.1 https://explorer.localhost/)"; } | tee $GITHUB_WORKSPACE/explorer-check.txt
+          [ -n "$ok" ] && grep -q "home page HTTP status: 200" $GITHUB_WORKSPACE/explorer-check.txt
+
+      - name: Stop, return leftover ETH, save public results
+        if: always()
+        env:
+          DEPLOYER_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        working-directory: testnet
+        run: |
+          sudo docker compose logs --no-color nitro 2>&1 | grep -v '^.*DEBUG' | tail -200 > /tmp/nitro-log.txt || true
+          sudo docker compose logs --no-color blockscout frontend caddy 2>&1 | tail -300 > /tmp/services-log.txt || true
+          sudo docker compose down || true
+          [ -f chain/secret/state.json ] && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
+          mkdir -p /tmp/out
+          cd $GITHUB_WORKSPACE
+          cp -f deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt /tmp/out/ 2>/dev/null || true
+          cp -f /tmp/nitro-log.txt /tmp/services-log.txt /tmp/out/ 2>/dev/null || true
+          sudo cp -f testnet/chain/out/chain.json /tmp/out/ 2>/dev/null || true
+          sudo chown -R "$(id -u)" /tmp/out
+          # scrub keys and secrets in case any tool printed them
+          for k in $(sudo python3 -c "import json;d=json.load(open('testnet/chain/secret/state.json'));print(d.get('batchPosterKey',''),d.get('validatorKey',''))" 2>/dev/null) "$DEPLOYER_KEY"; do
+            [ -n "$k" ] && sed -i "s/${k#0x}/<redacted>/gI" /tmp/out/* || true
+          done
+          for v in BS_DB_PASSWORD BS_SECRET_KEY_BASE; do
+            val=$(sed -n "s/^$v=//p" testnet/.env); [ -n "$val" ] && sed -i "s/$val/<redacted>/g" /tmp/out/* || true
+          done
+          sed -i '/private-key\|privateKey/Id' /tmp/out/* || true
+          cd /tmp && rm -rf res
+          git clone -q --depth 1 --branch results "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" res
+          cd res && git config user.name "latheon-network" && git config user.email "latheon.protocol@gmail.com"
+          D="run-${{ github.run_id }}-testnet-stack"; mkdir -p "$D" && cp /tmp/out/* "$D/"
+          git add "$D" && git commit -qm "testnet stack rehearsal, run ${{ github.run_id }}" && git push -q origin results

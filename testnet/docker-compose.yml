@@ -1,0 +1,112 @@
+# Latheon testnet server: L3 node, public RPC and block explorer behind HTTPS.
+# Values come from .env (copy .env.example, run ./setup-server.sh) and chain/out/chain.env (written by deploy).
+
+name: latheon-testnet
+
+services:
+  nitro:
+    image: ${NITRO_IMAGE}
+    restart: unless-stopped
+    command: --conf.file /config/node-config.json ${NITRO_EXTRA_ARGS:-}
+    volumes:
+      - nitro-data:/home/user/.arbitrum
+      - ./chain/secret/node-config.json:/config/node-config.json:ro
+    ports:
+      - "127.0.0.1:8449:8449"   # local scripts on the server; the public reaches it through Caddy only
+    stop_grace_period: 2m
+
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    shm_size: 256m
+    environment:
+      POSTGRES_DB: blockscout
+      POSTGRES_USER: blockscout
+      POSTGRES_PASSWORD: ${BS_DB_PASSWORD}
+    volumes:
+      - blockscout-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blockscout -d blockscout"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  blockscout:
+    image: ghcr.io/blockscout/blockscout:${BLOCKSCOUT_TAG}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      nitro:
+        condition: service_started
+    command: sh -c 'bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()" && bin/blockscout start'
+    environment:
+      DATABASE_URL: postgresql://blockscout:${BS_DB_PASSWORD}@db:5432/blockscout
+      ECTO_SSL_MODE: disable
+      SECRET_KEY_BASE: ${BS_SECRET_KEY_BASE}
+      ETHEREUM_JSONRPC_VARIANT: geth
+      ETHEREUM_JSONRPC_TRANSPORT: http
+      ETHEREUM_JSONRPC_HTTP_URL: http://nitro:8449/
+      ETHEREUM_JSONRPC_TRACE_URL: http://nitro:8449/
+      ETHEREUM_JSONRPC_DISABLE_ARCHIVE_BALANCES: "false"
+      CHAIN_ID: ${CHAIN_ID}
+      COIN: LTH
+      COIN_NAME: LTH (test)
+      PORT: "4000"
+      DISABLE_MARKET: "true"
+      ACCOUNT_ENABLED: "false"
+      # debug_* is not exposed by the node, so no internal-transaction tracing on this testnet
+      INDEXER_DISABLE_INTERNAL_TRANSACTIONS_FETCHER: "true"
+      INDEXER_DISABLE_PENDING_TRANSACTIONS_FETCHER: "true"
+      MICROSERVICE_SC_VERIFIER_ENABLED: "false"
+      MICROSERVICE_VISUALIZE_SOL2UML_ENABLED: "false"
+      MICROSERVICE_SIG_PROVIDER_ENABLED: "false"
+      API_V1_READ_METHODS_DISABLED: "false"
+      API_V1_WRITE_METHODS_DISABLED: "false"
+      DISABLE_FILE_LOGGING: "true"
+
+  frontend:
+    image: ghcr.io/blockscout/frontend:${FRONTEND_TAG}
+    restart: unless-stopped
+    depends_on:
+      - blockscout
+    environment:
+      NEXT_PUBLIC_API_HOST: ${EXPLORER_HOST}
+      NEXT_PUBLIC_API_PROTOCOL: https
+      NEXT_PUBLIC_API_WEBSOCKET_PROTOCOL: wss
+      NEXT_PUBLIC_API_BASE_PATH: /
+      NEXT_PUBLIC_APP_HOST: ${EXPLORER_HOST}
+      NEXT_PUBLIC_APP_PROTOCOL: https
+      NEXT_PUBLIC_NETWORK_NAME: Latheon Testnet
+      NEXT_PUBLIC_NETWORK_SHORT_NAME: Latheon Testnet
+      NEXT_PUBLIC_NETWORK_ID: ${CHAIN_ID}
+      NEXT_PUBLIC_NETWORK_RPC_URL: https://${RPC_HOST}
+      NEXT_PUBLIC_NETWORK_CURRENCY_NAME: LTH (test)
+      NEXT_PUBLIC_NETWORK_CURRENCY_SYMBOL: LTH
+      NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS: "18"
+      NEXT_PUBLIC_IS_TESTNET: "true"
+      NEXT_PUBLIC_HOMEPAGE_CHARTS: "[]"
+
+  caddy:
+    image: caddy:${CADDY_TAG}
+    restart: unless-stopped
+    depends_on:
+      - nitro
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      RPC_HOST: ${RPC_HOST}
+      EXPLORER_HOST: ${EXPLORER_HOST}
+      TLS_LINE: ${TLS_LINE:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  nitro-data:
+  blockscout-db:
+  caddy-data:
+  caddy-config:
