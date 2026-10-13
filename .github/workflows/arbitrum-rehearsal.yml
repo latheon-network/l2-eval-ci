@@ -69,12 +69,12 @@ jobs:
       - name: Start the L3 node
         run: |
           mkdir -p /tmp/l3 && cp arbitrum/rehearsal/secret/node-config.json /tmp/l3/ && chmod -R 777 /tmp/l3
-          docker run -d --name l3node -v /tmp/l3:/home/user/.arbitrum -p 8449:8449 "$NITRO_IMAGE" --conf.file /home/user/.arbitrum/node-config.json
-          for i in $(seq 1 60); do
+          docker run -d --name l3node -v /tmp/l3:/home/user/.arbitrum -p 8449:8449 "$NITRO_IMAGE" --conf.file /home/user/.arbitrum/node-config.json --log-level=DEBUG
+          for i in $(seq 1 120); do
             if curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' http://127.0.0.1:8449 | grep -q result; then echo "L3 RPC up after $((i*5))s"; exit 0; fi
             sleep 5
           done
-          echo "::error::L3 RPC did not come up"; docker logs --tail 80 l3node; exit 1
+          echo "::error::L3 RPC did not come up"; docker logs l3node 2>&1 | grep -v "^DEBUG\|^TRACE" | tail -40; exit 1
 
       - name: Deposit test LTH into the L3 (chain's own inbox)
         working-directory: arbitrum/rehearsal
@@ -121,7 +121,7 @@ jobs:
           cp -f rehearsal-log.txt min-base-fee.txt eval-rehearsal.txt /tmp/out/ 2>/dev/null || true
           cp -f arbitrum/rehearsal/out/chain.json /tmp/out/ 2>/dev/null || true
           cp -f arbitrum/l2-eval/results/*.json /tmp/out/ 2>/dev/null || true
-          tail -300 /tmp/l3-node-full.txt > /tmp/out/l3-node-log-tail.txt 2>/dev/null || true
+          grep -v '^TRACE' /tmp/l3-node-full.txt | tail -1500 > /tmp/out/l3-node-log-tail.txt 2>/dev/null || true
           # scrub the generated keys from anything saved, in case a tool printed them
           if [ -f arbitrum/rehearsal/secret/mask.txt ]; then
             while read -r k; do [ -n "$k" ] && sed -i "s/${k#0x}/<redacted>/gI" /tmp/out/* ; done < arbitrum/rehearsal/secret/mask.txt

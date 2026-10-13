@@ -235,4 +235,4 @@ async function sweep() {
 const cmd = process.argv[2];
 const fn = { deploy, fund, bridge, batches, sweep }[cmd];
 if (!fn) { console.error('usage: node rehearsal.mjs deploy|fund|bridge|batches|sweep'); process.exit(2); }
-fn().catch((e) => { console.error(e?.shortMessage || e?.message || e); process.exit(1); });
+fn().then(() => process.exit(process.exitCode || 0)).catch((e) => { console.error(e?.shortMessage || e?.message || e); process.exit(1); });
