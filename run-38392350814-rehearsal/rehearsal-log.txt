@@ -1,0 +1,16 @@
+11:46:06 deployer 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38, 0.2187265775622588 ETH on Arbitrum Sepolia
+11:46:07 deploy test LTH: 0xa5d87a535c6e04acac5770ce701c96c287ba443b2f202e24d4f20af01dc7639e (gas 681267)
+11:46:09 deploy fee token pricer: 0x25882853f980f4c3aa9fea826bb82ac25c16214034f2253112bc86238eeac31d (gas 115773)
+11:46:09 createRollup: chainId 51354966463, stake token 0x980B62Da83eFf3D4576C647993b0c1D7faf17c73
+Approving custom fee token allowance for RollupCreator...
+Tokens approved in https://sepolia.arbiscan.io/tx/0xe79ca9dd1cf54ebbfa6a3346b620ceccbaf2033c68065a8d47209f346277d88b
+Approval transaction hash is 0xe79ca9dd1cf54ebbfa6a3346b620ceccbaf2033c68065a8d47209f346277d88b
+Deploying the Rollup...
+Deployed in https://sepolia.arbiscan.io/tx/0xe07aa31486d0fedac695421261237f239cdce10214aeb978bde9e27621a79dd5
+Deployment transaction hash is 0xe07aa31486d0fedac695421261237f239cdce10214aeb978bde9e27621a79dd5
+11:46:16 fund batch poster: 0x149980148eb633e2c950bad44dc885d41cc3cffe61858bf65c57cc2ab75c3c2e (gas 21000)
+11:46:16 deployed: chainId 51354966463, rollup 0xc590D3d49183857E9fdcC5E4e1535C761895294F
+11:46:23 L3 block 8
+11:46:25 approve bridge for test LTH: 0x1bd047f16c3244dbcb1fac547db7fe61a338fd2793cb2e394d9fb8aeb8bbb999 (gas 46418)
+Execution reverted for an unknown reason.
+11:46:29 swept 0.0099878476 ETH back to the deployer: 0x27641820e433c383179f4a4dce8c059577fafbf0e8be792fa22b3614021627e6

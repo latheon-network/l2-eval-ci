@@ -1,0 +1,168 @@
+INFO [10-13|11:46:17.579] retaining ability to lookup full transaction history as archive mode is enabled
+INFO [10-13|11:46:17.579] created jwt file                         filename=/home/user/.arbitrum/jwtsecret
+INFO [10-13|11:46:17.579] writing crash output to file             file=/home/user/.arbitrum/latheon-rehearsal/nitro.log.crash
+INFO [10-13|11:46:17.579] Running Arbitrum nitro node              revision=v3.11.2-3599aca vcs.time=2026-07-01T04:16:44-05:00
+INFO [10-13|11:46:17.579] Resources detected                       GOMAXPROCS=4
+INFO [10-13|11:46:17.835] connected to l1 chain                    l1url=https://sepolia-rollup.arbitrum.io/rpc l1chainid=421,614
+INFO [10-13|11:46:17.907] No memory free limit configured (--node.resource-mgmt.mem-free-limit), RPC requests will not be throttled based on memory usage
+INFO [10-13|11:46:17.988] Defaulting to pebble as the backing database
+INFO [10-13|11:46:17.988] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata cache=16.00MiB handles=16
+DEBUG[10-13|11:46:17.989] failed to open l2chaindata               err="error opening database at \"/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata\": pebble: database \"/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata\" does not exist"
+INFO [10-13|11:46:17.989] Defaulting to pebble as the backing database
+INFO [10-13|11:46:17.989] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata cache=2.00GiB handles=512
+DEBUG[10-13|11:46:17.992] Verified index file                      items=1 elapsed="4.517µs"
+DEBUG[10-13|11:46:17.992] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=receipts items=0 size=0.00B
+DEBUG[10-13|11:46:17.993] Verified index file                      items=1 elapsed="4.056µs"
+DEBUG[10-13|11:46:17.993] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=headers items=0 size=0.00B
+DEBUG[10-13|11:46:17.994] Verified index file                      items=1 elapsed="4.206µs"
+DEBUG[10-13|11:46:17.994] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=hashes items=0 size=0.00B
+DEBUG[10-13|11:46:17.995] Verified index file                      items=1 elapsed="4.046µs"
+DEBUG[10-13|11:46:17.995] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=bodies items=0 size=0.00B
+INFO [10-13|11:46:17.995] Opened ancient database                  database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain readonly=false
+INFO [10-13|11:46:17.995] Opened Era store                         datadir=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain/era
+INFO [10-13|11:46:17.995] Defaulting to pebble as the backing database
+INFO [10-13|11:46:17.995] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/wasm cache=2.00GiB handles=512
+WARN [10-13|11:46:17.995] Head block is not reachable
+DEBUG[10-13|11:46:17.995] Current full block not old enough to freeze err="freezing threshold is not available"
+WARN [10-13|11:46:17.997] Detected wasmer serialize version mismatch - removing old wasm entries detected=8 expected=16
+INFO [10-13|11:46:17.997] Wasm entries successfully removed.
+INFO [10-13|11:46:17.997] State scheme set by user                 scheme=hash
+INFO [10-13|11:46:17.997] Setting codehash position in rebuilding of wasm store to done
+ERROR[10-13|11:46:17.997] error getting genesis json file from directory err="error reading genesis json file directory : open : no such file or directory"
+INFO [10-13|11:46:18.228] Read serialized chain config from init message json="{\"chainId\":51354966463,\"homesteadBlock\":0,\"daoForkBlock\":null,\"daoForkSupport\":true,\"eip150Block\":0,\"eip150Hash\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"eip155Block\":0,\"eip158Block\":0,\"byzantiumBlock\":0,\"constantinopleBlock\":0,\"petersburgBlock\":0,\"istanbulBlock\":0,\"muirGlacierBlock\":0,\"berlinBlock\":0,\"londonBlock\":0,\"clique\":{\"period\":0,\"epoch\":0},\"arbitrum\":{\"EnableArbOS\":true,\"AllowDebugPrecompiles\":false,\"DataAvailabilityCommittee\":false,\"InitialArbOSVersion\":51,\"InitialChainOwner\":\"0x453fAbBEdf86cc7CC701a077F040c71d7a045b38\",\"GenesisBlockNum\":0,\"MaxCodeSize\":24576,\"MaxInitCodeSize\":49152}}"
+INFO [10-13|11:46:18.228] Initializing                             ancients=0 genesisBlockNr=0
+INFO [10-13|11:46:18.228] addresss table import complete
+INFO [10-13|11:46:18.228] retryables import complete
+INFO [10-13|11:46:18.229] Persisted trie from memory database      nodes=94 flushnodes=0 size=10.84KiB flushsize=0.00B time="360.904µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:18.229] Persisted trie from memory database      nodes=0  flushnodes=0 size=0.00B    flushsize=0.00B time="2.354µs"   flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:18.230] wrote genesis block                      number=0 hash=dc9de2..4d35b5
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [10-13|11:46:18.230] Chain ID:  51354966463 (unknown)
+INFO [10-13|11:46:18.230] Consensus: Beacon (proof-of-stake), merged from Clique (proof-of-authority)
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] Pre-Merge hard forks (block based):
+INFO [10-13|11:46:18.230]  - Homestead:                   #0       
+INFO [10-13|11:46:18.230]  - Tangerine Whistle (EIP 150): #0       
+INFO [10-13|11:46:18.230]  - Spurious Dragon/1 (EIP 155): #0       
+INFO [10-13|11:46:18.230]  - Spurious Dragon/2 (EIP 158): #0       
+INFO [10-13|11:46:18.230]  - Byzantium:                   #0       
+INFO [10-13|11:46:18.230]  - Constantinople:              #0       
+INFO [10-13|11:46:18.230]  - Petersburg:                  #0       
+INFO [10-13|11:46:18.230]  - Istanbul:                    #0       
+INFO [10-13|11:46:18.230]  - Muir Glacier:                #0       
+INFO [10-13|11:46:18.230]  - Berlin:                      #0       
+INFO [10-13|11:46:18.230]  - London:                      #0       
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] Merge configured:
+INFO [10-13|11:46:18.230]  - Total terminal difficulty:  <nil>
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] Post-Merge hard forks (timestamp based):
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] All fork specifications can be found at https://ethereum.github.io/execution-specs/src/ethereum/forks/
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [10-13|11:46:18.230] 
+INFO [10-13|11:46:18.230] Loaded most recent local block           number=0 hash=dc9de2..4d35b5 age=57y7mo1w
+WARN [10-13|11:46:18.230] Failed to load snapshot                  err="missing or corrupted snapshot"
+INFO [10-13|11:46:18.230] Rebuilding state snapshot
+DEBUG[10-13|11:46:18.230] Journalled generator progress            progress=empty
+DEBUG[10-13|11:46:18.230] Start snapshot generation                root=9117d2..2e029e
+INFO [10-13|11:46:18.230] Resuming state snapshot generation       root=9117d2..2e029e accounts=0 slots=0 storage=0.00B dangling=0 elapsed="197.647µs"
+INFO [10-13|11:46:18.230] Initialized transaction indexer          range="entire chain"
+DEBUG[10-13|11:46:18.231] Regenerated state range                  kind=storage prefix=0x6fb4d14ec89c201c23aa60e231e3993b3966b33ff1f55d198ec25980957ab32065 root=5d7e6e..702ee6 last=0x count=52 created=52 updated=0 untouched=0 deleted=0
+DEBUG[10-13|11:46:18.231] Regenerated state range                  kind=account prefix=0x61 root=9117d2..2e029e last=0x count=19 created=19 updated=0 untouched=0 deleted=0
+DEBUG[10-13|11:46:18.231] Journalled generator progress            progress=done
+INFO [10-13|11:46:18.231] Generated state snapshot                 accounts=19 slots=52 storage=5.44KiB dangling=0 elapsed="619.093µs"
+INFO [10-13|11:46:18.232] Setting rebuilding of wasm store to done
+INFO [10-13|11:46:18.605] Genesis assertion validated              genesisAssertionHash="[117 194 223 29 154 111 152 209 222 98 200 252 149 95 145 184 127 22 254 250 47 175 228 214 181 33 24 252 48 225 194 120]" genesisBlockHash=dc9de2..4d35b5 genesisSendRoot=000000..000000
+INFO [10-13|11:46:18.605] Defaulting to pebble as the backing database
+INFO [10-13|11:46:18.605] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/arbitrumdata cache=16.00MiB handles=16
+DEBUG[10-13|11:46:18.704] eth_config returned nil BlobSchedule, skipping cache update chainID=421,614 consecutiveNilPolls=1
+INFO [10-13|11:46:18.778] State scheme set by user                 scheme=hash
+INFO [10-13|11:46:18.851] DA providers configured                  totalWriters=0
+WARN [10-13|11:46:18.851] validation not supported                 err="latestWasmModuleRoot not set"
+INFO [10-13|11:46:18.851] Disabling data poster storage, as parent chain appears to be an Arbitrum chain without a mempool
+INFO [10-13|11:46:18.928] Compiler fallback for Stylus compilation configured enabled=true
+DEBUG[10-13|11:46:18.928] SafeDeleteRange finished                 deleted=0 skipped=0 elapsed="48.022µs"
+DEBUG[10-13|11:46:18.928] SafeDeleteRange finished                 deleted=0 skipped=0 elapsed="4.717µs"
+INFO [10-13|11:46:18.928] Started log indexer
+INFO [10-13|11:46:18.998] Starting peer-to-peer node               instance=nitro/v3.11.2-3599aca/linux-amd64/go1.25.11
+WARN [10-13|11:46:18.998] P2P server will be useless, neither dialing nor listening
+INFO [10-13|11:46:19.001] HTTP server started                      endpoint=[::]:8449 auth=false prefix= cors=* vhosts=*
+INFO [10-13|11:46:19.002] New local node record                    seq=1,791,891,979,001 id=02582ffa9d67d0ee ip=127.0.0.1 udp=0 tcp=0
+INFO [10-13|11:46:19.002] Started P2P networking                   self=enode://7cab5a076fd4ba719384be95f35747b6fc20d745bf0474f5697f069b8d72afacbd2db675edc11a7853a672209403d65fc9a16bcd8d1bcf1b065925918836442f@127.0.0.1:0
+INFO [10-13|11:46:19.073] expected surplus calculation is set to use blob price but latest parent chain header has BlobGasUsed or ExcessBlobGas as nil, falling back to calldata price model
+INFO [10-13|11:46:19.073] InboxTracker                             SequencerBatchCount=0
+DEBUG[10-13|11:46:19.147] eth_config returned nil BlobSchedule, skipping cache update chainID=421,614 consecutiveNilPolls=2
+DEBUG[10-13|11:46:19.221] Expecting to find delayed messages       checkingDelayedCount=9 ourLatestDelayedCount=0 currentHeight=318,740,431
+DEBUG[10-13|11:46:19.297] Expecting to find sequencer batches      checkingBatchCount=1 ourLatestBatchCount=0 currentHeight=318,740,431
+DEBUG[10-13|11:46:19.297] Looking up messages                      from=318740416 to=318740431 missingDelayed=true missingSequencer=true reorgingDelayed=false reorgingSequencer=false
+DEBUG[10-13|11:46:19.602] Found sequencer batches                  firstSequenceNumber=0 newBatchesCount=1 duplicateBatches=0 reorgingSequencer=false readBeforeAcc=000000..000000 haveBeforeAcc=000000..000000 readLastAcc=ff592c..227e44
+DEBUG[10-13|11:46:19.602] Found delayed messages                   firstSequenceNumber=0 count=9 reorgingDelayed=false readBeforeAcc=000000..000000 haveBeforeAcc=000000..000000 readLastAcc=8f1b59..8ced24
+WARN [10-13|11:46:19.677] empty sequencer message
+WARN [10-13|11:46:19.677] reading virtual delayed message segment  delayedMessagesRead=0 afterDelayedMessages=1
+INFO [10-13|11:46:19.677] InboxTracker                             sequencerBatchCount=1 messageCount=1 l1Block=318,740,416 l1Timestamp=2026-10-13T11:46:13+0000
+DEBUG[10-13|11:46:19.777] ParentChain already started (shared between execution and consensus nodes)
+DEBUG[10-13|11:46:19.777] maintenance is disabled, skipping
+DEBUG[10-13|11:46:19.778] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:46:19+0000 hasProgressMap=true
+DEBUG[10-13|11:46:20.075] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:20.078] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:46:20+0000 hasProgressMap=true
+DEBUG[10-13|11:46:20.378] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:46:20+0000 hasProgressMap=true
+DEBUG[10-13|11:46:20.667] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:20.679] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:46:20+0000 hasProgressMap=true
+DEBUG[10-13|11:46:20.932] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=1
+DEBUG[10-13|11:46:20.933] Persisted trie from memory database      nodes=400 flushnodes=0 size=47.30KiB flushsize=0.00B time="989.431µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.934] ExecutionEngine: Added DelayedMessages   msgIdx=1 delayedMsgIdx=1 block-header="&{ParentHash:0xdc9de2d02ae0c4d6c7308a824c1af4670166cef41574a9b3794ccfa8af4d35b5 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0xdd58e1d10a0838d15fecb68113d5241210ff8ff7f9085332f43f5dfe888c2316 TxHash:0xd49c750940f17a87a30dd77ad3d5f1160b36886dee58d420f75acdc6d3e91ede ReceiptHash:0x0912a89e473644da9bf1ee43000d4b7c09711c57d9c68d5143c0bf3ee101a6ea Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 1 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 0 8 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 8 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+1 GasLimit:1125899906842624 GasUsed:42000 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 2] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.934] SafeDeleteRange finished                 deleted=0 skipped=0 elapsed="21.723µs"
+INFO [10-13|11:46:20.934] Indexed transactions                     blocks=2 txs=3 tail=0 elapsed="87.943µs"
+DEBUG[10-13|11:46:20.935] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=2
+DEBUG[10-13|11:46:20.936] Persisted trie from memory database      nodes=21  flushnodes=0 size=3.87KiB  flushsize=0.00B time="60.772µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.936] ExecutionEngine: Added DelayedMessages   msgIdx=2 delayedMsgIdx=2 block-header="&{ParentHash:0xecf660a48ddc9201f841729d29956d23e8ec4de7dde96c85b4414ea078f30a76 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0xdeddd6f21c83a4f45a7fa99a7167b8b84a678e6449391f58553b129f2b3b468d TxHash:0xd2c3cae7ae29e1936ab4753a7f2433254e0f725d75df5ea39633d461126ac9a3 ReceiptHash:0x854604420caba01f680f3ac269bcbb77580d4d864a3331fd7401fffe2fecda3d Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+2 GasLimit:1125899906842624 GasUsed:68137 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 3] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.938] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=3
+DEBUG[10-13|11:46:20.938] Persisted trie from memory database      nodes=24  flushnodes=0 size=4.59KiB  flushsize=0.00B time="54.292µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.939] ExecutionEngine: Added DelayedMessages   msgIdx=3 delayedMsgIdx=3 block-header="&{ParentHash:0x3cb44ce7217cbee9cf282b68607a69e0217e6fba80bddc5c9ceb121f071682f6 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x81b8a599106c8feb8b549d3fbc9579ecc713e361775149f5065662cc3b8b026d TxHash:0xeecd337592ad0ba432f435b7673552ab1da69043d8e483772ab4932a02ad26ce ReceiptHash:0xcc3c2c90da9c979e9943c532e054fef487033a12dfed952a9ab6b26fa0e87ee3 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 128 0 0 0 0 4 0 64 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 48 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+3 GasLimit:1125899906842624 GasUsed:42000 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 4] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.940] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=4
+DEBUG[10-13|11:46:20.941] Persisted trie from memory database      nodes=22  flushnodes=0 size=4.23KiB  flushsize=0.00B time="140.101µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.941] ExecutionEngine: Added DelayedMessages   msgIdx=4 delayedMsgIdx=4 block-header="&{ParentHash:0xabc6f9ea441998a212a06de1da65c43e8501178913601f37affb706fc93e3c9e UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0xed20b3d20df3b003a2c860e013004d08d90c591efe73243439bfd0754f991a5a TxHash:0xe25e218cc9d37f2e1f4692697d42a61a8c508d7eee7dcdf678754627fbc1fd8b ReceiptHash:0x83dee282fb85e2abc73136e1a00cfb4c68e328df694b70af52dbdb116a7be1d4 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+4 GasLimit:1125899906842624 GasUsed:119873 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 5] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.942] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=5
+DEBUG[10-13|11:46:20.943] Persisted trie from memory database      nodes=23  flushnodes=0 size=4.56KiB  flushsize=0.00B time="323.483µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.943] ExecutionEngine: Added DelayedMessages   msgIdx=5 delayedMsgIdx=5 block-header="&{ParentHash:0x03f8a68d5aae8d7dc3208eabdc868fa48e644d6e691a201f4fd29fece87de935 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x07b093fc6e7a6134c50b3786f9337ed175e0c4bb1b24b9db37c449848a0f2029 TxHash:0xdfd9624be953eb34e676fdedad1e36348cb9e37facd9c4978399a09ac719c8ed ReceiptHash:0xc3efed2818c7cea16af4e29455f1b240fe16660bc4ec28ca2509113db3ae83e3 Bloom:[0 64 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 16 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 1 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+5 GasLimit:1125899906842624 GasUsed:42000 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 6] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.944] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=6
+DEBUG[10-13|11:46:20.944] Persisted trie from memory database      nodes=20  flushnodes=0 size=4.06KiB  flushsize=0.00B time="33.521µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.944] ExecutionEngine: Added DelayedMessages   msgIdx=6 delayedMsgIdx=6 block-header="&{ParentHash:0x2b050133a523f85517dee9780f419137b7545d13c1743190cea446b834280179 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x458422a35b5158b70d487ce6578d7bc4b3038269bd6df10f3e1080086c9f99fe TxHash:0x660bc161a04a6881572c3b17140051d1b6f69766d6f155e465813175eea16afd ReceiptHash:0xf67c3c3cdb88262636d2937ecc0586f2e7e9b5cf73d0369b3f6b186610f926bd Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+6 GasLimit:1125899906842624 GasUsed:59915 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 7] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.945] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=7
+DEBUG[10-13|11:46:20.945] Persisted trie from memory database      nodes=21  flushnodes=0 size=4.15KiB  flushsize=0.00B time="32.129µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.945] ExecutionEngine: Added DelayedMessages   msgIdx=7 delayedMsgIdx=7 block-header="&{ParentHash:0x82e0dd6f2335cb1ba051d232a49e39778d9bc86403acaed09aff600aeedf18cb UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0xe143711415cc2ca5e0b1e686f8480aedc375e54646a8ee5c0689e38b096cec43 TxHash:0xc16dcf6e208c695778c2561b61dd509f5c97b1f52ab0f7cd6295e7bb2213338d ReceiptHash:0x1419b0a44679846560332e9d26373562e7f7e43094368d70bc33cc6ee41875dc Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 8 0 0 2 0 0 0 0 0 16 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+7 GasLimit:1125899906842624 GasUsed:42000 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 8] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:46:20.946] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=8
+DEBUG[10-13|11:46:20.946] Persisted trie from memory database      nodes=22  flushnodes=0 size=4.53KiB  flushsize=0.00B time="110.877µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:46:20.946] ExecutionEngine: Added DelayedMessages   msgIdx=8 delayedMsgIdx=8 block-header="&{ParentHash:0x585e590dc7bb12074c9002b213682f17416cdbf754df1f9f75611301f64700d1 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x3d52207a002d13f032e52aa7101305a0e4b9423d9f5daabf2428206d4941f32c TxHash:0x6fc0b56ec356870631bd04d30af8a4ffd92035c68b2efea817e11d185b2bab32 ReceiptHash:0x3a71274452f4cba93b05453c60d5a9e2fc12eacdc956983aaf8da0cc43e61ed2 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+8 GasLimit:1125899906842624 GasUsed:591701 Time:1791891973 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab4700000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 9] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+INFO [10-13|11:46:20.947] DelayedSequencer: Sequenced              msgnum=8 startpos=1
+DEBUG[10-13|11:46:20.979] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:20+0000 hasProgressMap=false
+DEBUG[10-13|11:46:21.001] Couldn't get external IP                 err="no any router discovered"            interface=any
+DEBUG[10-13|11:46:21.262] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:21.280] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:21+0000 hasProgressMap=false
+DEBUG[10-13|11:46:21.581] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:21+0000 hasProgressMap=false
+DEBUG[10-13|11:46:21.857] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:21.881] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:21+0000 hasProgressMap=false
+DEBUG[10-13|11:46:22.182] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:22+0000 hasProgressMap=false
+DEBUG[10-13|11:46:22.450] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:22.483] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:22+0000 hasProgressMap=false
+DEBUG[10-13|11:46:22.568] Served eth_chainId                       conn=172.17.0.1:46000 reqid=1 duration="39.639µs"
+DEBUG[10-13|11:46:22.783] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:22+0000 hasProgressMap=false
+DEBUG[10-13|11:46:23.043] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:23.083] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:23+0000 hasProgressMap=false
+DEBUG[10-13|11:46:23.370] Served eth_blockNumber                   conn=172.17.0.1:46012 reqid=0 duration="55.834µs"
+DEBUG[10-13|11:46:23.384] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:23+0000 hasProgressMap=false
+DEBUG[10-13|11:46:23.634] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:23.685] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:23+0000 hasProgressMap=false
+DEBUG[10-13|11:46:23.985] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:23+0000 hasProgressMap=false
+DEBUG[10-13|11:46:24.227] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:24.286] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:24+0000 hasProgressMap=false
+DEBUG[10-13|11:46:24.586] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:24+0000 hasProgressMap=false
+DEBUG[10-13|11:46:24.822] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:24.887] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:24+0000 hasProgressMap=false
+DEBUG[10-13|11:46:25.072] Served eth_getBalance                    conn=172.17.0.1:46012 reqid=13 duration="114.532µs"
+DEBUG[10-13|11:46:25.188] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:25+0000 hasProgressMap=false
+DEBUG[10-13|11:46:25.411] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:46:25.488] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:46:25+0000 hasProgressMap=false
