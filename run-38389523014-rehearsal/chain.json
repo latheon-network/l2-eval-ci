@@ -1,0 +1,33 @@
+{
+  "parentChain": "Arbitrum Sepolia (421614)",
+  "txs": {
+    "token": "0x13c69db1d3ab69f35ec195a3ec7447c1ca57822a4c16d838f97b0aeffbed1001",
+    "pricer": "0xd85c0cbe41583a8cacc66f81e01fa237e226f279559c26e12eb2a4fde86daf4c",
+    "createRollup": "0xec4f61275f34896791823030ff97088f781d964a8803f9102dcc6a3f2b5b50cb",
+    "fundBatchPoster": "0x16349e6b538db0003c919924cbdedbd311033935c0d49bb26926fec532f582ff",
+    "sweep": "0x16765ee0ea1f55fbd7092dafedab47fea31348f5ab9ac32fe644f75aa88a5a96"
+  },
+  "deployer": "0x453fAbBEdf86cc7CC701a077F040c71d7a045b38",
+  "deployerBalanceStart": "0.2190978408309368",
+  "feeToken": "0xba04023dc8d97e145dd7ccbff467f59bfc1906a2",
+  "feeTokenPricer": "0x634906f5e52eff8ace23f73ab7bb18c174f543ba",
+  "feeTokenPricerRate": "10000 LTH per ETH (test value)",
+  "batchPoster": "0x46b49fd27c0c13d38dc71D8927F9bcd09045396b",
+  "validator": "0xE48Ac611Bc30617bac93C94F6A1e8160838263d8",
+  "chainId": 50412352664,
+  "coreContracts": {
+    "rollup": "0x19D884E9F998166d97Fa062616bb3C3c3Fd2bC45",
+    "inbox": "0x6229CcF96E26c227208860afD5B947b1c9e951AD",
+    "nativeToken": "0xBa04023Dc8d97e145dD7CcBfF467f59BFc1906a2",
+    "outbox": "0x650B07B3d4215F1265Ff01273c8C20aEeB565D96",
+    "rollupEventInbox": "0x5125E2B544F573568a4Ac5e1E8BFf76b464671c0",
+    "challengeManager": "0x5F358Dd795C6494D7a325a3F3f53f39BdA90D93f",
+    "adminProxy": "0xE5b1772dbA31f7A82e3fb9A17D7038DD8E164026",
+    "sequencerInbox": "0xBB81c068A02a55c5F14eD04832d52FCf64D10748",
+    "bridge": "0x14114b4E86De9d734CfeFaDa30684794200B01Cc",
+    "upgradeExecutor": "0x5fdF2994659f0419F551a1085b104E791F2A7747",
+    "validatorWalletCreator": "0xB7FE37712e46F28C8f22Ec4bAA33A09fb8B52BD0",
+    "deployedAtBlockNumber": 318734587
+  },
+  "deployerBalanceEnd": "0.2189111336750468"
+}
