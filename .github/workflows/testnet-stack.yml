@@ -47,6 +47,14 @@ jobs:
           sed -i 's|^RPC_HOST=.*|RPC_HOST=rpc.localhost|; s|^EXPLORER_HOST=.*|EXPLORER_HOST=explorer.localhost|' .env
           sed -i 's|^TLS_LINE=.*|TLS_LINE="tls internal"|; s|^NITRO_EXTRA_ARGS=.*|NITRO_EXTRA_ARGS=--ensure-rollup-deployment=false|; s|^BATCH_MAX_DELAY=.*|BATCH_MAX_DELAY=30s|' .env
           [ -n "$PARENT_RPC_SECRET" ] && sed -i "s|^PARENT_RPC=.*|PARENT_RPC=$PARENT_RPC_SECRET|" .env
+          # pick the newest published image tags (Blockscout publishes public images manually, sometimes later than the git tag)
+          pick() { for t in "${@:2}"; do if docker manifest inspect "$1:$t" > /dev/null 2>&1; then echo "$t"; return; fi; done; echo "none"; }
+          BT=$(pick ghcr.io/blockscout/blockscout 12.0.1 v12.0.1 12.0.0 v12.0.0 11.3.3 v11.3.3 11.3.2 v11.3.2)
+          FT=$(pick ghcr.io/blockscout/frontend v2.12.0 v2.11.5 v2.11.4 v2.11.3 v2.11.2 v2.11.1 v2.11.0)
+          CT=$(pick caddy 2.11.7 2.11.6 2.11.5 2.11 2.10.2)
+          echo "blockscout=$BT frontend=$FT caddy=$CT" | tee $GITHUB_WORKSPACE/image-tags.txt
+          if [ "$BT" = none ] || [ "$FT" = none ] || [ "$CT" = none ]; then echo "::error::no published image tag found"; exit 1; fi
+          sed -i "s|^BLOCKSCOUT_TAG=.*|BLOCKSCOUT_TAG=$BT|; s|^FRONTEND_TAG=.*|FRONTEND_TAG=$FT|; s|^CADDY_TAG=.*|CADDY_TAG=$CT|" .env
           sudo SKIP_PACKAGES=1 ./setup-server.sh
 
       - name: deploy-chain.sh (create chain, start stack, deposit, token bridge, batches)
@@ -107,7 +115,7 @@ jobs:
           [ -f chain/secret/state.json ] && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
           mkdir -p /tmp/out
           cd $GITHUB_WORKSPACE
-          cp -f deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt /tmp/out/ 2>/dev/null || true
+          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt /tmp/out/ 2>/dev/null || true
           cp -f /tmp/nitro-log.txt /tmp/services-log.txt /tmp/out/ 2>/dev/null || true
           sudo cp -f testnet/chain/out/chain.json /tmp/out/ 2>/dev/null || true
           sudo chown -R "$(id -u)" /tmp/out
