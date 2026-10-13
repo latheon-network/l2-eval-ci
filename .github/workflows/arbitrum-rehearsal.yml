@@ -69,7 +69,7 @@ jobs:
       - name: Start the L3 node
         run: |
           mkdir -p /tmp/l3 && cp arbitrum/rehearsal/secret/node-config.json /tmp/l3/ && chmod -R 777 /tmp/l3
-          docker run -d --name l3node -v /tmp/l3:/home/user/.arbitrum -p 8449:8449 "$NITRO_IMAGE" --conf.file /home/user/.arbitrum/node-config.json --log-level=DEBUG
+          docker run -d --name l3node -v /tmp/l3:/home/user/.arbitrum -p 8449:8449 "$NITRO_IMAGE" --conf.file /home/user/.arbitrum/node-config.json --log-level=DEBUG --ensure-rollup-deployment=false
           for i in $(seq 1 120); do
             if curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_chainId","params":[]}' http://127.0.0.1:8449 | grep -q result; then echo "L3 RPC up after $((i*5))s"; exit 0; fi
             sleep 5
