@@ -1,0 +1,1307 @@
+INFO [10-13|11:48:23.403] retaining ability to lookup full transaction history as archive mode is enabled
+INFO [10-13|11:48:23.403] created jwt file                         filename=/home/user/.arbitrum/jwtsecret
+INFO [10-13|11:48:23.403] writing crash output to file             file=/home/user/.arbitrum/latheon-rehearsal/nitro.log.crash
+INFO [10-13|11:48:23.403] Running Arbitrum nitro node              revision=v3.11.2-3599aca vcs.time=2026-07-01T04:16:44-05:00
+INFO [10-13|11:48:23.404] Resources detected                       GOMAXPROCS=4
+INFO [10-13|11:48:23.541] connected to l1 chain                    l1url=https://sepolia-rollup.arbitrum.io/rpc l1chainid=421,614
+INFO [10-13|11:48:23.629] No memory free limit configured (--node.resource-mgmt.mem-free-limit), RPC requests will not be throttled based on memory usage
+INFO [10-13|11:48:23.719] Defaulting to pebble as the backing database
+INFO [10-13|11:48:23.719] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata cache=16.00MiB handles=16
+DEBUG[10-13|11:48:23.719] failed to open l2chaindata               err="error opening database at \"/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata\": pebble: database \"/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata\" does not exist"
+INFO [10-13|11:48:23.719] Defaulting to pebble as the backing database
+INFO [10-13|11:48:23.719] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata cache=2.00GiB handles=512
+DEBUG[10-13|11:48:23.723] Verified index file                      items=1 elapsed="4.809µs"
+DEBUG[10-13|11:48:23.723] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=hashes items=0 size=0.00B
+DEBUG[10-13|11:48:23.724] Verified index file                      items=1 elapsed="4.518µs"
+DEBUG[10-13|11:48:23.724] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=bodies items=0 size=0.00B
+DEBUG[10-13|11:48:23.725] Verified index file                      items=1 elapsed="4.639µs"
+DEBUG[10-13|11:48:23.725] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=receipts items=0 size=0.00B
+DEBUG[10-13|11:48:23.726] Verified index file                      items=1 elapsed="4.508µs"
+DEBUG[10-13|11:48:23.726] Chain freezer table opened               database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain table=headers items=0 size=0.00B
+INFO [10-13|11:48:23.726] Opened ancient database                  database=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain readonly=false
+INFO [10-13|11:48:23.726] Opened Era store                         datadir=/home/user/.arbitrum/latheon-rehearsal/nitro/l2chaindata/ancient/chain/era
+INFO [10-13|11:48:23.726] Defaulting to pebble as the backing database
+INFO [10-13|11:48:23.726] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/wasm cache=2.00GiB handles=512
+WARN [10-13|11:48:23.726] Head block is not reachable
+DEBUG[10-13|11:48:23.726] Current full block not old enough to freeze err="freezing threshold is not available"
+WARN [10-13|11:48:23.732] Detected wasmer serialize version mismatch - removing old wasm entries detected=8 expected=16
+INFO [10-13|11:48:23.732] Wasm entries successfully removed.
+INFO [10-13|11:48:23.732] State scheme set by user                 scheme=hash
+INFO [10-13|11:48:23.732] Setting codehash position in rebuilding of wasm store to done
+ERROR[10-13|11:48:23.732] error getting genesis json file from directory err="error reading genesis json file directory : open : no such file or directory"
+INFO [10-13|11:48:23.955] Read serialized chain config from init message json="{\"chainId\":65729080622,\"homesteadBlock\":0,\"daoForkBlock\":null,\"daoForkSupport\":true,\"eip150Block\":0,\"eip150Hash\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"eip155Block\":0,\"eip158Block\":0,\"byzantiumBlock\":0,\"constantinopleBlock\":0,\"petersburgBlock\":0,\"istanbulBlock\":0,\"muirGlacierBlock\":0,\"berlinBlock\":0,\"londonBlock\":0,\"clique\":{\"period\":0,\"epoch\":0},\"arbitrum\":{\"EnableArbOS\":true,\"AllowDebugPrecompiles\":false,\"DataAvailabilityCommittee\":false,\"InitialArbOSVersion\":51,\"InitialChainOwner\":\"0x453fAbBEdf86cc7CC701a077F040c71d7a045b38\",\"GenesisBlockNum\":0,\"MaxCodeSize\":24576,\"MaxInitCodeSize\":49152}}"
+INFO [10-13|11:48:23.955] Initializing                             ancients=0 genesisBlockNr=0
+INFO [10-13|11:48:23.958] addresss table import complete
+INFO [10-13|11:48:23.958] retryables import complete
+INFO [10-13|11:48:23.959] Persisted trie from memory database      nodes=94 flushnodes=0 size=10.84KiB flushsize=0.00B time="470.93µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:23.959] Persisted trie from memory database      nodes=0  flushnodes=0 size=0.00B    flushsize=0.00B time="1.943µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:23.959] wrote genesis block                      number=0 hash=5679d5..6fcc1e
+INFO [10-13|11:48:23.959] 
+INFO [10-13|11:48:23.959] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [10-13|11:48:23.959] Chain ID:  65729080622 (unknown)
+INFO [10-13|11:48:23.959] Consensus: Beacon (proof-of-stake), merged from Clique (proof-of-authority)
+INFO [10-13|11:48:23.959] 
+INFO [10-13|11:48:23.959] Pre-Merge hard forks (block based):
+INFO [10-13|11:48:23.959]  - Homestead:                   #0       
+INFO [10-13|11:48:23.959]  - Tangerine Whistle (EIP 150): #0       
+INFO [10-13|11:48:23.960]  - Spurious Dragon/1 (EIP 155): #0       
+INFO [10-13|11:48:23.960]  - Spurious Dragon/2 (EIP 158): #0       
+INFO [10-13|11:48:23.960]  - Byzantium:                   #0       
+INFO [10-13|11:48:23.960]  - Constantinople:              #0       
+INFO [10-13|11:48:23.960]  - Petersburg:                  #0       
+INFO [10-13|11:48:23.960]  - Istanbul:                    #0       
+INFO [10-13|11:48:23.960]  - Muir Glacier:                #0       
+INFO [10-13|11:48:23.960]  - Berlin:                      #0       
+INFO [10-13|11:48:23.960]  - London:                      #0       
+INFO [10-13|11:48:23.960] 
+INFO [10-13|11:48:23.960] Merge configured:
+INFO [10-13|11:48:23.960]  - Total terminal difficulty:  <nil>
+INFO [10-13|11:48:23.960] 
+INFO [10-13|11:48:23.960] Post-Merge hard forks (timestamp based):
+INFO [10-13|11:48:23.960] 
+INFO [10-13|11:48:23.960] All fork specifications can be found at https://ethereum.github.io/execution-specs/src/ethereum/forks/
+INFO [10-13|11:48:23.960] 
+INFO [10-13|11:48:23.960] ---------------------------------------------------------------------------------------------------------------------------------------------------------
+INFO [10-13|11:48:23.960] 
+INFO [10-13|11:48:23.960] Loaded most recent local block           number=0 hash=5679d5..6fcc1e age=57y7mo1w
+WARN [10-13|11:48:23.960] Failed to load snapshot                  err="missing or corrupted snapshot"
+INFO [10-13|11:48:23.960] Rebuilding state snapshot
+DEBUG[10-13|11:48:23.960] Journalled generator progress            progress=empty
+DEBUG[10-13|11:48:23.960] Start snapshot generation                root=6a4097..dadc91
+INFO [10-13|11:48:23.960] Resuming state snapshot generation       root=6a4097..dadc91 accounts=0 slots=0 storage=0.00B dangling=0 elapsed="263.858µs"
+INFO [10-13|11:48:23.960] Initialized transaction indexer          range="entire chain"
+DEBUG[10-13|11:48:23.961] Regenerated state range                  kind=storage prefix=0x6fb4d14ec89c201c23aa60e231e3993b3966b33ff1f55d198ec25980957ab32065 root=8b6964..861d15 last=0x count=52 created=52 updated=0 untouched=0 deleted=0
+DEBUG[10-13|11:48:23.961] Regenerated state range                  kind=account prefix=0x61 root=6a4097..dadc91 last=0x count=19 created=19 updated=0 untouched=0 deleted=0
+DEBUG[10-13|11:48:23.961] Journalled generator progress            progress=done
+INFO [10-13|11:48:23.961] Generated state snapshot                 accounts=19 slots=52 storage=5.44KiB dangling=0 elapsed="869.84µs"
+INFO [10-13|11:48:23.963] Setting rebuilding of wasm store to done
+INFO [10-13|11:48:24.360] Genesis assertion validated              genesisAssertionHash="[117 194 223 29 154 111 152 209 222 98 200 252 149 95 145 184 127 22 254 250 47 175 228 214 181 33 24 252 48 225 194 120]" genesisBlockHash=5679d5..6fcc1e genesisSendRoot=000000..000000
+INFO [10-13|11:48:24.361] Defaulting to pebble as the backing database
+INFO [10-13|11:48:24.361] Allocated cache and file handles         database=/home/user/.arbitrum/latheon-rehearsal/nitro/arbitrumdata cache=16.00MiB handles=16
+DEBUG[10-13|11:48:24.449] eth_config returned nil BlobSchedule, skipping cache update chainID=421,614 consecutiveNilPolls=1
+INFO [10-13|11:48:24.536] State scheme set by user                 scheme=hash
+INFO [10-13|11:48:24.625] DA providers configured                  totalWriters=0
+WARN [10-13|11:48:24.625] validation not supported                 err="latestWasmModuleRoot not set"
+INFO [10-13|11:48:24.626] Disabling data poster storage, as parent chain appears to be an Arbitrum chain without a mempool
+INFO [10-13|11:48:24.714] Compiler fallback for Stylus compilation configured enabled=true
+INFO [10-13|11:48:24.714] Started log indexer
+DEBUG[10-13|11:48:24.715] SafeDeleteRange finished                 deleted=0 skipped=0 elapsed="235.971µs"
+DEBUG[10-13|11:48:24.715] SafeDeleteRange finished                 deleted=0 skipped=0 elapsed="3.907µs"
+INFO [10-13|11:48:24.780] Starting peer-to-peer node               instance=nitro/v3.11.2-3599aca/linux-amd64/go1.25.11
+WARN [10-13|11:48:24.780] P2P server will be useless, neither dialing nor listening
+INFO [10-13|11:48:24.785] New local node record                    seq=1,791,892,104,784 id=e9bfbce2f6b9d7e7 ip=127.0.0.1 udp=0 tcp=0
+INFO [10-13|11:48:24.785] Started P2P networking                   self=enode://7f727fd438eabb35c363cc1712d94c131b1d4fc149f627bb02723726e4ba75f5ae9e230d202702ed29fed24dafe64a712f4a91d01640c87f737370e450cfd837@127.0.0.1:0
+INFO [10-13|11:48:24.785] HTTP server started                      endpoint=[::]:8449 auth=false prefix= cors=* vhosts=*
+INFO [10-13|11:48:24.850] expected surplus calculation is set to use blob price but latest parent chain header has BlobGasUsed or ExcessBlobGas as nil, falling back to calldata price model
+INFO [10-13|11:48:24.851] InboxTracker                             SequencerBatchCount=0
+DEBUG[10-13|11:48:24.933] eth_config returned nil BlobSchedule, skipping cache update chainID=421,614 consecutiveNilPolls=2
+DEBUG[10-13|11:48:25.021] Expecting to find delayed messages       checkingDelayedCount=9 ourLatestDelayedCount=0 currentHeight=318,740,921
+DEBUG[10-13|11:48:25.112] Expecting to find sequencer batches      checkingBatchCount=1 ourLatestBatchCount=0 currentHeight=318,740,921
+DEBUG[10-13|11:48:25.112] Looking up messages                      from=318740900 to=318740921 missingDelayed=true missingSequencer=true reorgingDelayed=false reorgingSequencer=false
+DEBUG[10-13|11:48:25.428] Found sequencer batches                  firstSequenceNumber=0 newBatchesCount=1 duplicateBatches=0 reorgingSequencer=false readBeforeAcc=000000..000000 haveBeforeAcc=000000..000000 readLastAcc=20a6ed..2ffb2d
+DEBUG[10-13|11:48:25.428] Found delayed messages                   firstSequenceNumber=0 count=9 reorgingDelayed=false readBeforeAcc=000000..000000 haveBeforeAcc=000000..000000 readLastAcc=469c28..229059
+WARN [10-13|11:48:25.517] empty sequencer message
+WARN [10-13|11:48:25.517] reading virtual delayed message segment  delayedMessagesRead=0 afterDelayedMessages=1
+INFO [10-13|11:48:25.517] InboxTracker                             sequencerBatchCount=1 messageCount=1 l1Block=318,740,900 l1Timestamp=2026-10-13T11:48:18+0000
+DEBUG[10-13|11:48:25.554] ParentChain already started (shared between execution and consensus nodes)
+DEBUG[10-13|11:48:25.554] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:48:25+0000 hasProgressMap=true
+DEBUG[10-13|11:48:25.554] maintenance is disabled, skipping
+DEBUG[10-13|11:48:25.855] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:48:25+0000 hasProgressMap=true
+DEBUG[10-13|11:48:25.902] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:26.156] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:48:26+0000 hasProgressMap=true
+DEBUG[10-13|11:48:26.457] Pushed sync data from consensus to execution synced=false maxMessageCount=1 updatedAt=2026-10-13T11:48:26+0000 hasProgressMap=true
+DEBUG[10-13|11:48:26.550] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:26.736] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=1
+DEBUG[10-13|11:48:26.739] Persisted trie from memory database      nodes=400 flushnodes=0 size=47.30KiB flushsize=0.00B time=1.483358ms flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.739] ExecutionEngine: Added DelayedMessages   msgIdx=1 delayedMsgIdx=1 block-header="&{ParentHash:0x5679d54a38af4359cbb388ff9c68e6772a62e8d8c10af26b8ea471062d6fcc1e UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x200ebd13205984f053c830f981fcd293abe5e324a248dfe0503e23713900d5f2 TxHash:0x029f84ad4d3158c1ead8c49ba4aaa75e2a1aa1f0cbcfb9692d60a5acdf79b281 ReceiptHash:0x2b57bf715dc5d4ca945d09aff25ebe38c0de93ee4746c750c26f9ab768cee157 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 2 0 4 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+1 GasLimit:1125899906842624 GasUsed:42000 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 2] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.739] SafeDeleteRange finished                 deleted=0 skipped=0 elapsed="28.734µs"
+INFO [10-13|11:48:26.739] Indexed transactions                     blocks=2 txs=3 tail=0 elapsed="159.989µs"
+DEBUG[10-13|11:48:26.741] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=2
+DEBUG[10-13|11:48:26.743] Persisted trie from memory database      nodes=21  flushnodes=0 size=3.87KiB  flushsize=0.00B time="74.599µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.743] ExecutionEngine: Added DelayedMessages   msgIdx=2 delayedMsgIdx=2 block-header="&{ParentHash:0xe52b465acbe33efa5a8b4c0785b9bc47b62a9e82159b81adcbacd2f620ef5b98 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x66197f212b8dbfdfed9d5e1f851c8025bc8df9537c0005d15af1072811ca24af TxHash:0xb51ce34163276051bab8deed91c4653a4566048a9a4483794d9b89df548a7e4a ReceiptHash:0x854604420caba01f680f3ac269bcbb77580d4d864a3331fd7401fffe2fecda3d Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+2 GasLimit:1125899906842624 GasUsed:68137 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 3] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.744] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=3
+DEBUG[10-13|11:48:26.752] Persisted trie from memory database      nodes=24  flushnodes=0 size=4.59KiB  flushsize=0.00B time="228.606µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.752] ExecutionEngine: Added DelayedMessages   msgIdx=3 delayedMsgIdx=3 block-header="&{ParentHash:0x7e4cd3e92610836223bd5c5e407c9e664fedf71e2b9cc9e35e7258cd639cafe4 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x9a43c5e36aa27db2e5412f3c9c5cbd64c8c0ff9e7ac043d9860085554c680356 TxHash:0x1b0c8cf2e1d7dca26a879bf9ae3bca52d2232f4cf53cfaf6ab37ced4b307fb6b ReceiptHash:0xd965d2a7b35dbab683fea2c5b635a93a31bef75ef10479a96403e8a4d3640a60 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 64 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 16 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 2 0 0 0 0 0] Difficulty:+1 Number:+3 GasLimit:1125899906842624 GasUsed:42000 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 4] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.753] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=4
+DEBUG[10-13|11:48:26.755] Persisted trie from memory database      nodes=22  flushnodes=0 size=4.23KiB  flushsize=0.00B time="83.746µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.755] ExecutionEngine: Added DelayedMessages   msgIdx=4 delayedMsgIdx=4 block-header="&{ParentHash:0xa54985321b786aa9b334e4adac1fd5dc4b581a018537799652e70e5ba109c24b UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x3ec3ad167b82cd1fb79382cea3992a45c98df5ae7631d12d2c9e6863694f3915 TxHash:0xd4d0a37e7c656f54d8a22887e313de4964bc3b56e0740ad4522de2e514fbc977 ReceiptHash:0x83dee282fb85e2abc73136e1a00cfb4c68e328df694b70af52dbdb116a7be1d4 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+4 GasLimit:1125899906842624 GasUsed:119873 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 5] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.756] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=5
+DEBUG[10-13|11:48:26.756] Persisted trie from memory database      nodes=23  flushnodes=0 size=4.56KiB  flushsize=0.00B time="44.573µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.757] ExecutionEngine: Added DelayedMessages   msgIdx=5 delayedMsgIdx=5 block-header="&{ParentHash:0x885f227131f9f47bb6e31946120f0d9e06992343fca061c33cfbbe03f7656b32 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x404225b8d60f020f656d74f4282bebaafea3dfd6a2d9ad14012adfb2cf304ac1 TxHash:0xa74e2f8220d707edb67f8fb150dab6ce256bc528c2496c957a785f1f669d1215 ReceiptHash:0x10b6915d7bac7ab34e940d96637bd71a052cdc0e7f85bf3f83f2cdf64b8f1d47 Bloom:[0 0 0 0 0 0 0 0 0 0 0 32 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 64 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 64 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 8 0 0] Difficulty:+1 Number:+5 GasLimit:1125899906842624 GasUsed:42000 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 6] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.757] Pushed sync data from consensus to execution synced=true  maxMessageCount=6 updatedAt=2026-10-13T11:48:26+0000 hasProgressMap=false
+DEBUG[10-13|11:48:26.758] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=6
+DEBUG[10-13|11:48:26.758] Persisted trie from memory database      nodes=20  flushnodes=0 size=4.06KiB  flushsize=0.00B time="168.464µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.758] ExecutionEngine: Added DelayedMessages   msgIdx=6 delayedMsgIdx=6 block-header="&{ParentHash:0x4e276698c56af781d1856c0d88150b58561eccfa147d4e2d3ea2ccdb7d8b726e UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0xf406e9f4df681a8eb699447b47f5b944e4ea7bb436353d8a3ac29775594b6adf TxHash:0x38e9f67b0ddf92b64bda201aca9f35ddddbb0cfbc6d7a3429655c8d1ca49cfe5 ReceiptHash:0xf67c3c3cdb88262636d2937ecc0586f2e7e9b5cf73d0369b3f6b186610f926bd Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+6 GasLimit:1125899906842624 GasUsed:59915 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 7] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.760] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=7
+DEBUG[10-13|11:48:26.760] Persisted trie from memory database      nodes=21  flushnodes=0 size=4.15KiB  flushsize=0.00B time="439.045µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.761] ExecutionEngine: Added DelayedMessages   msgIdx=7 delayedMsgIdx=7 block-header="&{ParentHash:0x086e884eb5998813ebe87d2b9191eaa13596df7dd4b289771418d287ac7456f8 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0xc600c4b39d8b9a016902d9dbbb8d1ddaa64e32fa175564c4692b8c5c1fa0b46a TxHash:0xa5b271739a000ad125e214825f8e93be055faf6e483a1ea3740b76ff91f3782c ReceiptHash:0x1ae1b504ba8227b7276a5505821a559e52b6ba5f21744c27b0dfab0402c800fd Bloom:[0 0 0 0 0 0 2 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 2 0 0 0 0 0 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 1 0] Difficulty:+1 Number:+7 GasLimit:1125899906842624 GasUsed:42000 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 8] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:26.762] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=8
+DEBUG[10-13|11:48:26.762] Persisted trie from memory database      nodes=22  flushnodes=0 size=4.53KiB  flushsize=0.00B time="102.782µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:26.762] ExecutionEngine: Added DelayedMessages   msgIdx=8 delayedMsgIdx=8 block-header="&{ParentHash:0x17a62fbd128693155a9345c195c4a0f010f61cb03eb3828a52f2307caa8a93c7 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xE6BD692Ad897742efe44D54FdA338B244fC7e0c7 Root:0x0e731a94ecd5634e036c8b4e27b51ba054a362a3a6303b42c9311fa20c09cf7e TxHash:0x282740709e1d20c0cb5b71824dff7ccab73ac90d7526bb628581d8ace6c909ea ReceiptHash:0x3a71274452f4cba93b05453c60d5a9e2fc12eacdc956983aaf8da0cc43e61ed2 Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+8 GasLimit:1125899906842624 GasUsed:591701 Time:1791892098 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5100000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 9] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+INFO [10-13|11:48:26.762] DelayedSequencer: Sequenced              msgnum=8 startpos=1
+DEBUG[10-13|11:48:26.784] Couldn't get external IP                 err="no any router discovered"            interface=any
+DEBUG[10-13|11:48:27.057] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:27+0000 hasProgressMap=false
+DEBUG[10-13|11:48:27.123] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:27.358] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:27+0000 hasProgressMap=false
+DEBUG[10-13|11:48:27.658] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:27+0000 hasProgressMap=false
+DEBUG[10-13|11:48:27.725] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:27.959] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:27+0000 hasProgressMap=false
+DEBUG[10-13|11:48:28.260] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:28+0000 hasProgressMap=false
+DEBUG[10-13|11:48:28.353] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:28.388] Served eth_chainId                       conn=172.17.0.1:60704 reqid=1 duration="46.927µs"
+DEBUG[10-13|11:48:28.560] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:28+0000 hasProgressMap=false
+DEBUG[10-13|11:48:28.861] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:28+0000 hasProgressMap=false
+DEBUG[10-13|11:48:28.973] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:29.162] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:29+0000 hasProgressMap=false
+DEBUG[10-13|11:48:29.462] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:29+0000 hasProgressMap=false
+DEBUG[10-13|11:48:29.466] Served eth_blockNumber                   conn=172.17.0.1:36156 reqid=0 duration="77.765µs"
+DEBUG[10-13|11:48:29.763] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:29+0000 hasProgressMap=false
+DEBUG[10-13|11:48:29.961] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:30.063] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:30+0000 hasProgressMap=false
+DEBUG[10-13|11:48:30.364] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:30+0000 hasProgressMap=false
+DEBUG[10-13|11:48:30.590] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:30.665] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:30+0000 hasProgressMap=false
+DEBUG[10-13|11:48:30.965] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:30+0000 hasProgressMap=false
+DEBUG[10-13|11:48:31.117] Served eth_getBalance                    conn=172.17.0.1:36156 reqid=13 duration="111.929µs"
+DEBUG[10-13|11:48:31.224] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:31.266] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:31+0000 hasProgressMap=false
+DEBUG[10-13|11:48:31.566] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:31+0000 hasProgressMap=false
+DEBUG[10-13|11:48:31.826] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:31.867] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:31+0000 hasProgressMap=false
+DEBUG[10-13|11:48:32.167] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:32+0000 hasProgressMap=false
+DEBUG[10-13|11:48:32.458] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:32.467] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:32+0000 hasProgressMap=false
+DEBUG[10-13|11:48:32.602] Served eth_getBalance                    conn=172.17.0.1:36156 reqid=25 duration="105.758µs"
+DEBUG[10-13|11:48:32.768] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:32+0000 hasProgressMap=false
+DEBUG[10-13|11:48:33.069] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:33+0000 hasProgressMap=false
+DEBUG[10-13|11:48:33.083] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:33.369] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:33+0000 hasProgressMap=false
+DEBUG[10-13|11:48:33.670] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:33+0000 hasProgressMap=false
+DEBUG[10-13|11:48:33.686] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:33.970] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:33+0000 hasProgressMap=false
+DEBUG[10-13|11:48:34.271] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:34+0000 hasProgressMap=false
+DEBUG[10-13|11:48:34.311] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:34.571] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:34+0000 hasProgressMap=false
+DEBUG[10-13|11:48:34.872] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:34+0000 hasProgressMap=false
+DEBUG[10-13|11:48:34.934] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:35.173] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:35+0000 hasProgressMap=false
+DEBUG[10-13|11:48:35.473] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:35+0000 hasProgressMap=false
+DEBUG[10-13|11:48:35.537] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:35.774] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:35+0000 hasProgressMap=false
+DEBUG[10-13|11:48:36.075] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:36+0000 hasProgressMap=false
+DEBUG[10-13|11:48:36.145] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:36.376] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:36+0000 hasProgressMap=false
+DEBUG[10-13|11:48:36.677] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:36+0000 hasProgressMap=false
+DEBUG[10-13|11:48:36.755] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:36.978] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:36+0000 hasProgressMap=false
+WARN [10-13|11:48:37.020] error getting max time variation on L1 bound block; falling back on latest block err="no contract code at given address"
+DEBUG[10-13|11:48:37.278] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:37+0000 hasProgressMap=false
+DEBUG[10-13|11:48:37.317] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:37.579] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:37+0000 hasProgressMap=false
+DEBUG[10-13|11:48:37.879] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:37+0000 hasProgressMap=false
+DEBUG[10-13|11:48:37.937] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:38.180] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:38+0000 hasProgressMap=false
+DEBUG[10-13|11:48:38.481] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:38+0000 hasProgressMap=false
+DEBUG[10-13|11:48:38.547] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:38.782] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:38+0000 hasProgressMap=false
+DEBUG[10-13|11:48:39.082] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:39+0000 hasProgressMap=false
+DEBUG[10-13|11:48:39.153] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:39.383] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:39+0000 hasProgressMap=false
+DEBUG[10-13|11:48:39.683] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:39+0000 hasProgressMap=false
+DEBUG[10-13|11:48:39.877] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:39.983] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:39+0000 hasProgressMap=false
+DEBUG[10-13|11:48:40.284] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:40+0000 hasProgressMap=false
+DEBUG[10-13|11:48:40.462] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:40.585] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:40+0000 hasProgressMap=false
+DEBUG[10-13|11:48:40.732] Expecting to find delayed messages       checkingDelayedCount=10 ourLatestDelayedCount=9 currentHeight=318,740,982
+DEBUG[10-13|11:48:40.848] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:40.886] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:40+0000 hasProgressMap=false
+DEBUG[10-13|11:48:40.979] Looking up messages                      from=318740931 to=318740982 missingDelayed=true missingSequencer=false reorgingDelayed=false reorgingSequencer=false
+DEBUG[10-13|11:48:41.148] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:41.187] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:41+0000 hasProgressMap=false
+DEBUG[10-13|11:48:41.307] Found delayed messages                   firstSequenceNumber=9 count=1 reorgingDelayed=false readBeforeAcc=469c28..229059 haveBeforeAcc=469c28..229059 readLastAcc=baac2d..1e4892
+DEBUG[10-13|11:48:41.449] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:41.487] Pushed sync data from consensus to execution synced=true  maxMessageCount=9 updatedAt=2026-10-13T11:48:41+0000 hasProgressMap=false
+DEBUG[10-13|11:48:41.733] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=9
+DEBUG[10-13|11:48:41.733] Persisted trie from memory database      nodes=18  flushnodes=0 size=3.95KiB  flushsize=0.00B time="44.854µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s livenodes=0 livesize=0.00B
+INFO [10-13|11:48:41.734] ExecutionEngine: Added DelayedMessages   msgIdx=9 delayedMsgIdx=9 block-header="&{ParentHash:0x5148d739e7008562228c38f1557aba9bde7bb7a257c1004a4f3d509db7c80cb9 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0x5650ABBeDF86cc7cc701a077F040C71d7a046C49 Root:0x6913fb922635e1d419a8f5e582faed216b85871496c673efe38a4b536612f3e6 TxHash:0x12cfd9cbecec7ea2d02b80a1f730e2d3eaac209b43faf93afb89c30a9bdcc15e ReceiptHash:0xd7a92f3697d06225df2a55e920d2f7a04a4b78f19a42e774c4a3993e342c61bb Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+9 GasLimit:1125899906842624 GasUsed:0 Time:1791892111 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5300000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 10] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+INFO [10-13|11:48:41.734] DelayedSequencer: Sequenced              msgnum=1 startpos=9
+DEBUG[10-13|11:48:41.749] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:41.788] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:41+0000 hasProgressMap=false
+DEBUG[10-13|11:48:42.050] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:42.088] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:42+0000 hasProgressMap=false
+DEBUG[10-13|11:48:42.350] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:42.389] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:42+0000 hasProgressMap=false
+DEBUG[10-13|11:48:42.609] Served eth_getBalance                    conn=172.17.0.1:59536 reqid=26 duration="102.161µs"
+DEBUG[10-13|11:48:42.651] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:42.690] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:42+0000 hasProgressMap=false
+DEBUG[10-13|11:48:42.952] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:42.991] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:42+0000 hasProgressMap=false
+DEBUG[10-13|11:48:43.253] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:43.292] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:43+0000 hasProgressMap=false
+DEBUG[10-13|11:48:43.553] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:43.592] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:43+0000 hasProgressMap=false
+DEBUG[10-13|11:48:43.691] Served eth_blockNumber                   conn=172.17.0.1:59550 reqid=0 duration="41.959µs"
+DEBUG[10-13|11:48:43.854] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:43.893] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:43+0000 hasProgressMap=false
+DEBUG[10-13|11:48:44.154] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:44.193] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:44+0000 hasProgressMap=false
+DEBUG[10-13|11:48:44.455] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:44.494] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:44+0000 hasProgressMap=false
+DEBUG[10-13|11:48:44.756] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:44.795] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:44+0000 hasProgressMap=false
+DEBUG[10-13|11:48:45.057] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:45.096] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:45+0000 hasProgressMap=false
+DEBUG[10-13|11:48:45.357] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:45.397] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:45+0000 hasProgressMap=false
+DEBUG[10-13|11:48:45.658] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:45.697] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:45+0000 hasProgressMap=false
+DEBUG[10-13|11:48:45.958] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:45.998] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:45+0000 hasProgressMap=false
+DEBUG[10-13|11:48:46.259] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:46.299] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:46+0000 hasProgressMap=false
+DEBUG[10-13|11:48:46.560] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:46.600] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:46+0000 hasProgressMap=false
+DEBUG[10-13|11:48:46.860] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:46.901] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:46+0000 hasProgressMap=false
+DEBUG[10-13|11:48:47.161] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:47.202] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:47+0000 hasProgressMap=false
+DEBUG[10-13|11:48:47.462] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:47.503] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:47+0000 hasProgressMap=false
+DEBUG[10-13|11:48:47.763] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:47.803] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:47+0000 hasProgressMap=false
+WARN [10-13|11:48:48.006] error getting max time variation on L1 bound block; falling back on latest block err="no contract code at given address"
+DEBUG[10-13|11:48:48.064] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:48.104] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:48+0000 hasProgressMap=false
+DEBUG[10-13|11:48:48.232] Dereferenced trie from memory database   nodes=0   size=0.00B    time=972ns       gcnodes=0 gcsize=0.00B gctime=581ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:48:48.232] Dereferenced trie from memory database   nodes=0   size=0.00B    time=341ns       gcnodes=0 gcsize=0.00B gctime=761ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:48:48.232] Dereferenced trie from memory database   nodes=0   size=0.00B    time=241ns       gcnodes=0 gcsize=0.00B gctime=862ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:48:48.364] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:48.405] Pushed sync data from consensus to execution synced=true  maxMessageCount=10 updatedAt=2026-10-13T11:48:48+0000 hasProgressMap=false
+DEBUG[10-13|11:48:48.406] Begin checking the correctness of batch against inbox multiplexer startMsgSeqNum=1 endMsgSeqNum=9
+DEBUG[10-13|11:48:48.409] Successfully checked that the batch produces correct messages when ran through inbox multiplexer sequenceNumber=1
+DEBUG[10-13|11:48:48.441] Served eth_chainId                       conn=172.17.0.1:59560 reqid=1 duration="40.326µs"
+DEBUG[10-13|11:48:48.442] Executing EVM call finished              runtime="718.583µs"
+DEBUG[10-13|11:48:48.442] Served eth_call                          conn=172.17.0.1:59560 reqid=2 duration="888.27µs"
+DEBUG[10-13|11:48:48.457] Served eth_chainId                       conn=172.17.0.1:59560 reqid=3 duration="34.435µs"
+DEBUG[10-13|11:48:48.457] Served eth_getBlockByNumber              conn=172.17.0.1:59560 reqid=4 duration="256.95µs"
+DEBUG[10-13|11:48:48.473] Executing EVM call finished              runtime="581.957µs"
+DEBUG[10-13|11:48:48.473] Served eth_call                          conn=172.17.0.1:59560 reqid=5 duration="675.342µs"
+DEBUG[10-13|11:48:48.473] Served eth_chainId                       conn=172.17.0.1:59560 reqid=6 duration="11.652µs"
+DEBUG[10-13|11:48:48.486] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=7 duration="52.278µs"
+DEBUG[10-13|11:48:48.500] Served eth_getTransactionCount           conn=172.17.0.1:59560 reqid=8 duration="88.345µs"
+DEBUG[10-13|11:48:48.500] Served eth_chainId                       conn=172.17.0.1:59560 reqid=9 duration="11.492µs"
+DEBUG[10-13|11:48:48.512] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=56,327,200
+DEBUG[10-13|11:48:48.513] Served eth_estimateGas                   conn=172.17.0.1:59560 reqid=10 duration=1.041485ms
+DEBUG[10-13|11:48:48.525] Served eth_chainId                       conn=172.17.0.1:59560 reqid=11 duration="35.847µs"
+DEBUG[10-13|11:48:48.536] Served eth_chainId                       conn=172.17.0.1:59560 reqid=12 duration="25.257µs"
+DEBUG[10-13|11:48:48.549] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=13 duration="40.596µs"
+DEBUG[10-13|11:48:48.549] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:59560 reqid=14 duration="10.169µs"
+DEBUG[10-13|11:48:48.566] Served eth_blockNumber                   conn=172.17.0.1:59560 reqid=15 duration="39.113µs"
+DEBUG[10-13|11:48:48.568] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=10
+DEBUG[10-13|11:48:48.569] Persisted trie from memory database      nodes=29  flushnodes=0 size=6.30KiB  flushsize=0.00B time="236.893µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=862ns livenodes=0 livesize=0.00B
+INFO [10-13|11:48:48.569] Submitted transaction                    hash=0x8812c63ccdd904602c3039a9a70bcd0e670b1815cf0de5202429eb52ac495638 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=0 recipient=0x0000000000000000000000000000000000000070 value=0
+DEBUG[10-13|11:48:48.569] Served eth_sendRawTransaction            conn=172.17.0.1:59560 reqid=16 duration=2.596646ms
+DEBUG[10-13|11:48:48.569] Served eth_chainId                       conn=172.17.0.1:59560 reqid=17 duration="11.422µs"
+DEBUG[10-13|11:48:48.587] Served eth_chainId                       conn=172.17.0.1:59560 reqid=18 duration="32.781µs"
+DEBUG[10-13|11:48:48.587] Served eth_getTransactionReceipt         conn=172.17.0.1:59560 reqid=19 duration="307.284µs"
+DEBUG[10-13|11:48:48.601] Served eth_chainId                       conn=172.17.0.1:59560 reqid=20 duration="30.137µs"
+DEBUG[10-13|11:48:48.613] Executing EVM call finished              runtime="504.071µs"
+DEBUG[10-13|11:48:48.613] Served eth_call                          conn=172.17.0.1:59560 reqid=21 duration="636.108µs"
+DEBUG[10-13|11:48:48.613] Served eth_chainId                       conn=172.17.0.1:59560 reqid=22 duration="9.878µs"
+DEBUG[10-13|11:48:48.624] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=23 duration="32.291µs"
+DEBUG[10-13|11:48:48.665] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:48.706] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:48+0000 hasProgressMap=false
+WARN [10-13|11:48:48.889] lack of L1 balance prevents posting transaction with desired fee cap balance=10,000,000,000,000,000 weight=1 maxMempoolWeight=18 balanceForTransaction=10,000,000,000,000,000 gasLimit=202,955 targetMaxCost=12,182,679,293,049,480 nonce=0 softConfNonce=0
+DEBUG[10-13|11:48:48.889] calculated data poster fee and tip caps  targetMaxCost=10,000,000,000,000,000 elapsed=30.889720382s dataPosterBacklog=0 nonce=0 isReplacing=false balanceForTx=10,000,000,000,000,000 currentBaseFee=20,000,000 newBasefeeCap=700,000,000 suggestedTip=0 newTipCap=50,000,000 currentBlobFee=0 newBlobFeeCap=0
+DEBUG[10-13|11:48:48.967] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:49.007] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:49+0000 hasProgressMap=false
+INFO [10-13|11:48:49.206] DataPoster sent transaction              nonce=0 hash=ed192e..096f98 feeCap=700,000,000 tipCap=50,000,000 blobFeeCap=<nil> gas=202,955
+INFO [10-13|11:48:49.207] BatchPoster: batch sent                  sequenceNumber=1 from=1         to=10        prevDelayed=1 currentDelayed=10 totalSegments=9 numBlobs=0
+DEBUG[10-13|11:48:49.268] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:49.308] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:49+0000 hasProgressMap=false
+DEBUG[10-13|11:48:49.569] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:49.608] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:49+0000 hasProgressMap=false
+DEBUG[10-13|11:48:49.870] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:49.910] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:49+0000 hasProgressMap=false
+DEBUG[10-13|11:48:50.171] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:50.210] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:50+0000 hasProgressMap=false
+DEBUG[10-13|11:48:50.472] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:50.511] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:50+0000 hasProgressMap=false
+DEBUG[10-13|11:48:50.637] Served eth_chainId                       conn=172.17.0.1:59560 reqid=24 duration="42.359µs"
+DEBUG[10-13|11:48:50.638] Served eth_getBlockByNumber              conn=172.17.0.1:59560 reqid=25 duration="221.043µs"
+DEBUG[10-13|11:48:50.650] Executing EVM call finished              runtime="468.114µs"
+DEBUG[10-13|11:48:50.650] Served eth_call                          conn=172.17.0.1:59560 reqid=26 duration="552.803µs"
+DEBUG[10-13|11:48:50.650] Served eth_chainId                       conn=172.17.0.1:59560 reqid=27 duration="11.983µs"
+DEBUG[10-13|11:48:50.661] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=28 duration="31.599µs"
+DEBUG[10-13|11:48:50.773] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:50.812] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:50+0000 hasProgressMap=false
+DEBUG[10-13|11:48:51.073] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:51.113] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:51+0000 hasProgressMap=false
+DEBUG[10-13|11:48:51.374] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:51.414] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:51+0000 hasProgressMap=false
+DEBUG[10-13|11:48:51.675] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:51.714] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:51+0000 hasProgressMap=false
+DEBUG[10-13|11:48:51.975] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:52.015] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:52+0000 hasProgressMap=false
+DEBUG[10-13|11:48:52.275] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:52.315] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:52+0000 hasProgressMap=false
+DEBUG[10-13|11:48:52.577] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:52.615] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:52+0000 hasProgressMap=false
+DEBUG[10-13|11:48:52.673] Served eth_chainId                       conn=172.17.0.1:59560 reqid=29 duration="40.185µs"
+DEBUG[10-13|11:48:52.673] Served eth_getBlockByNumber              conn=172.17.0.1:59560 reqid=30 duration="104.225µs"
+DEBUG[10-13|11:48:52.686] Executing EVM call finished              runtime="532.575µs"
+DEBUG[10-13|11:48:52.686] Served eth_call                          conn=172.17.0.1:59560 reqid=31 duration="631.249µs"
+DEBUG[10-13|11:48:52.686] Served eth_chainId                       conn=172.17.0.1:59560 reqid=32 duration="10.369µs"
+DEBUG[10-13|11:48:52.697] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=33 duration="23.854µs"
+DEBUG[10-13|11:48:52.877] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:52.915] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:52+0000 hasProgressMap=false
+DEBUG[10-13|11:48:53.177] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:53.216] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:53+0000 hasProgressMap=false
+DEBUG[10-13|11:48:53.478] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:53.517] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:53+0000 hasProgressMap=false
+DEBUG[10-13|11:48:53.779] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:53.817] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:53+0000 hasProgressMap=false
+DEBUG[10-13|11:48:54.079] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:54.118] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:54+0000 hasProgressMap=false
+DEBUG[10-13|11:48:54.380] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:54.418] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:54+0000 hasProgressMap=false
+DEBUG[10-13|11:48:54.681] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:54.709] Served eth_chainId                       conn=172.17.0.1:59560 reqid=34 duration="46.115µs"
+DEBUG[10-13|11:48:54.709] Served eth_getBlockByNumber              conn=172.17.0.1:59560 reqid=35 duration="93.094µs"
+DEBUG[10-13|11:48:54.718] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:54+0000 hasProgressMap=false
+DEBUG[10-13|11:48:54.722] Executing EVM call finished              runtime="396.561µs"
+DEBUG[10-13|11:48:54.722] Served eth_call                          conn=172.17.0.1:59560 reqid=36 duration="471.811µs"
+DEBUG[10-13|11:48:54.722] Served eth_chainId                       conn=172.17.0.1:59560 reqid=37 duration="8.606µs"
+DEBUG[10-13|11:48:54.733] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=38 duration="50.604µs"
+DEBUG[10-13|11:48:54.982] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:55.019] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:55+0000 hasProgressMap=false
+DEBUG[10-13|11:48:55.283] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:55.319] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:55+0000 hasProgressMap=false
+DEBUG[10-13|11:48:55.583] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:55.620] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:55+0000 hasProgressMap=false
+DEBUG[10-13|11:48:55.904] Expecting to find delayed messages       checkingDelayedCount=13 ourLatestDelayedCount=10 currentHeight=318,741,039
+DEBUG[10-13|11:48:55.920] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:55+0000 hasProgressMap=false
+INFO [10-13|11:48:55.994] Got successful receipt from batch poster transaction txHash=ed192e..096f98 blockNumber=318,741,018 blockHash=ecfe7e..ff21b0
+DEBUG[10-13|11:48:56.067] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:56.080] Expecting to find sequencer batches      checkingBatchCount=2 ourLatestBatchCount=1 currentHeight=318,741,039
+DEBUG[10-13|11:48:56.193] Looking up messages                      from=318740983 to=318741039 missingDelayed=true missingSequencer=true  reorgingDelayed=false reorgingSequencer=false
+DEBUG[10-13|11:48:56.221] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:56+0000 hasProgressMap=false
+INFO [10-13|11:48:56.276] Data poster transactions confirmed       previousNonce=0 newNonce=1 previousL1Block=318,741,013 newL1Block=318,741,041
+DEBUG[10-13|11:48:56.342] error posting batch                      err="error getting latest batch metadata: accumulator not found: no metadata for batch 1"
+DEBUG[10-13|11:48:56.368] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:56.522] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:56+0000 hasProgressMap=false
+DEBUG[10-13|11:48:56.668] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:56.746] Served eth_chainId                       conn=172.17.0.1:59560 reqid=39 duration="43.932µs"
+DEBUG[10-13|11:48:56.747] Served eth_getBlockByNumber              conn=172.17.0.1:59560 reqid=40 duration="106.769µs"
+DEBUG[10-13|11:48:56.755] Found sequencer batches                  firstSequenceNumber=1 newBatchesCount=1 duplicateBatches=0 reorgingSequencer=false readBeforeAcc=20a6ed..2ffb2d haveBeforeAcc=20a6ed..2ffb2d readLastAcc=440591..2ccf93
+DEBUG[10-13|11:48:56.755] Found delayed messages                   firstSequenceNumber=10 count=3 reorgingDelayed=false readBeforeAcc=baac2d..1e4892 haveBeforeAcc=baac2d..1e4892 readLastAcc=dab193..8dbe89
+INFO [10-13|11:48:56.756] InboxTracker                             sequencerBatchCount=2 messageCount=10 l1Block=318,741,018 l1Timestamp=2026-10-13T11:48:31+0000
+DEBUG[10-13|11:48:56.760] Executing EVM call finished              runtime="437.087µs"
+DEBUG[10-13|11:48:56.760] Served eth_call                          conn=172.17.0.1:59560 reqid=41 duration="519.911µs"
+DEBUG[10-13|11:48:56.760] Served eth_chainId                       conn=172.17.0.1:59560 reqid=42 duration="10.019µs"
+DEBUG[10-13|11:48:56.771] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=43 duration="41.738µs"
+DEBUG[10-13|11:48:56.822] Pushed sync data from consensus to execution synced=true  maxMessageCount=11 updatedAt=2026-10-13T11:48:56+0000 hasProgressMap=false
+DEBUG[10-13|11:48:56.891] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=11
+DEBUG[10-13|11:48:56.891] Persisted trie from memory database      nodes=30  flushnodes=0 size=5.36KiB  flushsize=0.00B time="58.239µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:48:56.892] ExecutionEngine: Added DelayedMessages   msgIdx=11 delayedMsgIdx=10 block-header="&{ParentHash:0xc711c2528a039260dbc18c4a2982b8059c71aaa345da03deec7492cb0cc55086 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0x67d586D3786Fa26cC61473C499a36eB9cC1FCe9f Root:0x51f5165adf45ab38317521d2ec6a584cd032496026172c2ddb1c0003edb93e83 TxHash:0x1caabc203d05abfc8b5631e9de89f3a98929aced3db9215a4ab4e10940656534 ReceiptHash:0x6e5394cd96431fd9cfc5f2d7f32672a203322f9375642029a6837d7fd20fd52b Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 128 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 64 0 0 0 64 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2 0 0 0 0 32 0 0 0 0 8 0 0 0 0 0 0 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 0 0 0 0 0 0 0 0 0 0 0 0 32 0 0 0 0 0 0 32 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+11 GasLimit:1125899906842624 GasUsed:11128519 Time:1791892128 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5400000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 11] BaseFee:+100000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:56.902] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=12
+DEBUG[10-13|11:48:56.903] Persisted trie from memory database      nodes=86  flushnodes=0 size=12.36KiB flushsize=0.00B time="256.709µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:48:56.903] ExecutionEngine: Added DelayedMessages   msgIdx=12 delayedMsgIdx=11 block-header="&{ParentHash:0xf4928e9bfd06ce1f38b286b6faf61487e65cd847ca3bb22b8d64aa356a0fa4ae UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0xb776705700774a40b73b4e3509AE01C7Ef05CB20 Root:0x7712262cfaab14aab08094856879b53d6784cb725903a4b2b1455185f24b1fa4 TxHash:0x92a1c4b405e2fb70f5848076c833816791c45577ed3759b22fd0839cae149ba3 ReceiptHash:0x682c2903e97a4c374f35b3eb6367c0568e00905f413570f38e1c9d37146b7bde Bloom:[0 0 0 4 0 0 16 0 8 16 0 2 0 0 128 8 72 0 0 0 0 0 0 0 0 128 0 0 0 8 0 64 2 1 8 4 0 0 2 0 0 0 0 16 0 1 0 0 0 0 0 0 0 0 0 0 2 0 0 0 16 0 0 0 0 2 16 0 0 8 16 0 0 0 0 0 0 8 2 0 128 129 0 32 32 32 34 0 16 0 0 0 0 32 0 40 0 0 4 4 3 0 0 68 0 0 0 0 0 0 8 128 128 0 0 128 0 0 68 74 0 0 0 16 0 0 0 65 0 0 4 128 0 0 0 0 1 0 4 0 0 0 0 64 0 0 0 0 0 0 128 0 0 0 0 0 0 128 0 0 16 0 0 0 64 0 0 0 0 0 0 0 0 4 4 0 0 0 1 0 0 0 0 0 0 16 0 0 1 2 0 128 16 0 4 32 0 0 0 0 0 0 0 64 0 6 0 0 64 0 0 64 4 0 0 1 8 0 0 0 0 0 40 0 0 0 0 32 0 2 0 0 0 0 0 32 0 0 1 0 0 128 32 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+12 GasLimit:1125899906842624 GasUsed:31090582 Time:1791892128 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5400000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 12] BaseFee:+10000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+DEBUG[10-13|11:48:56.904] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=13
+DEBUG[10-13|11:48:56.905] Persisted trie from memory database      nodes=51  flushnodes=0 size=9.72KiB  flushsize=0.00B time="129.742µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:48:56.905] ExecutionEngine: Added DelayedMessages   msgIdx=13 delayedMsgIdx=12 block-header="&{ParentHash:0xcebc14d3ec69b1f366316e5adf3fbe8817a391ff6cdba17697ddc795953f16b5 UncleHash:0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347 Coinbase:0x066ABB4A4181d67F84bc82Dc7bd629dD9e8E83ae Root:0x634943d317c21ea8885408413da17eef561c4eb68853ca51ad3bf08b4202fa7e TxHash:0x2cea6a34cc7f9c9a79b4f42fd70ceb1dd3ae4015f3ca1b8476557f7f1f6b9283 ReceiptHash:0xf08cf5553e1dae52e3df19b356b8320e17c39fb055f635739c31052db5c3e45e Bloom:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] Difficulty:+1 Number:+13 GasLimit:1125899906842624 GasUsed:0 Time:1791892129 Extra:[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] MixDigest:0x00000000000000000000000000b5ab5400000000000000330000000000000000 Nonce:[0 0 0 0 0 0 0 13] BaseFee:+10000000 WithdrawalsHash:<nil> BlobGasUsed:<nil> ExcessBlobGas:<nil> ParentBeaconRoot:<nil> RequestsHash:<nil>}"
+INFO [10-13|11:48:56.905] DelayedSequencer: Sequenced              msgnum=3 startpos=10
+DEBUG[10-13|11:48:56.969] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:57.123] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:57+0000 hasProgressMap=false
+DEBUG[10-13|11:48:57.269] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:57.424] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:57+0000 hasProgressMap=false
+DEBUG[10-13|11:48:57.570] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:57.724] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:57+0000 hasProgressMap=false
+DEBUG[10-13|11:48:57.871] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:58.025] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:58+0000 hasProgressMap=false
+DEBUG[10-13|11:48:58.172] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:58.325] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:58+0000 hasProgressMap=false
+DEBUG[10-13|11:48:58.473] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:58.625] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:58+0000 hasProgressMap=false
+DEBUG[10-13|11:48:58.774] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:58.783] Served eth_chainId                       conn=172.17.0.1:59560 reqid=44 duration="34.665µs"
+DEBUG[10-13|11:48:58.784] Served eth_getBlockByNumber              conn=172.17.0.1:59560 reqid=45 duration="172.672µs"
+DEBUG[10-13|11:48:58.797] Executing EVM call finished              runtime="451.483µs"
+DEBUG[10-13|11:48:58.797] Served eth_call                          conn=172.17.0.1:59560 reqid=46 duration="559.786µs"
+DEBUG[10-13|11:48:58.797] Served eth_chainId                       conn=172.17.0.1:59560 reqid=47 duration="10.37µs"
+DEBUG[10-13|11:48:58.808] Served eth_gasPrice                      conn=172.17.0.1:59560 reqid=48 duration="31.679µs"
+DEBUG[10-13|11:48:58.926] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:58+0000 hasProgressMap=false
+DEBUG[10-13|11:48:59.075] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:59.227] Pushed sync data from consensus to execution synced=true  maxMessageCount=14 updatedAt=2026-10-13T11:48:59+0000 hasProgressMap=false
+DEBUG[10-13|11:48:59.371] Served eth_chainId                       conn=172.17.0.1:45526 reqid=1 duration="32.881µs"
+DEBUG[10-13|11:48:59.376] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:59.387] Served eth_chainId                       conn=172.17.0.1:45526 reqid=2 duration="29.245µs"
+DEBUG[10-13|11:48:59.387] Served eth_getBalance                    conn=172.17.0.1:45526 reqid=3 duration="78.977µs"
+DEBUG[10-13|11:48:59.399] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=4 duration="78.717µs"
+DEBUG[10-13|11:48:59.399] Served eth_chainId                       conn=172.17.0.1:45526 reqid=5 duration="13.305µs"
+DEBUG[10-13|11:48:59.420] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=2,840,999,632
+DEBUG[10-13|11:48:59.421] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=6 duration=1.813087ms
+DEBUG[10-13|11:48:59.433] Served eth_chainId                       conn=172.17.0.1:45526 reqid=7 duration="30.668µs"
+DEBUG[10-13|11:48:59.445] Served eth_chainId                       conn=172.17.0.1:45526 reqid=8 duration="28.313µs"
+DEBUG[10-13|11:48:59.456] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=9 duration="86.842µs"
+DEBUG[10-13|11:48:59.456] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=10 duration="14.667µs"
+DEBUG[10-13|11:48:59.456] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=11 duration="7.123µs"
+DEBUG[10-13|11:48:59.498] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=12 duration="35.546µs"
+DEBUG[10-13|11:48:59.500] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=14
+DEBUG[10-13|11:48:59.500] Persisted trie from memory database      nodes=30  flushnodes=0 size=6.30KiB  flushsize=0.00B time="72.906µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:48:59.500] Submitted contract creation              hash=0xb2c1273cbf0e3eaf4fa995c89576ba070aec10cf04d7a2360f8d2b4486a4eee8 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=1 contract=0x67451b65BD9F0d1486A736927f8ef29d6BE72062 value=0
+DEBUG[10-13|11:48:59.500] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=13 duration=2.530428ms
+DEBUG[10-13|11:48:59.500] Served eth_chainId                       conn=172.17.0.1:45526 reqid=14 duration="12.073µs"
+DEBUG[10-13|11:48:59.527] Pushed sync data from consensus to execution synced=true  maxMessageCount=15 updatedAt=2026-10-13T11:48:59+0000 hasProgressMap=false
+DEBUG[10-13|11:48:59.542] Served eth_chainId                       conn=172.17.0.1:45526 reqid=15 duration="38.351µs"
+DEBUG[10-13|11:48:59.542] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=16 duration="497.7µs"
+DEBUG[10-13|11:48:59.556] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=17 duration="403.604µs"
+DEBUG[10-13|11:48:59.582] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=18 duration="101.831µs"
+DEBUG[10-13|11:48:59.582] Served eth_chainId                       conn=172.17.0.1:45526 reqid=19 duration="23.373µs"
+DEBUG[10-13|11:48:59.594] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=628,415,883
+DEBUG[10-13|11:48:59.595] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=20 duration=1.184052ms
+DEBUG[10-13|11:48:59.606] Served eth_chainId                       conn=172.17.0.1:45526 reqid=21 duration="48.681µs"
+DEBUG[10-13|11:48:59.618] Served eth_chainId                       conn=172.17.0.1:45526 reqid=22 duration="35.427µs"
+DEBUG[10-13|11:48:59.629] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=23 duration="263.873µs"
+DEBUG[10-13|11:48:59.629] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=24 duration="42.269µs"
+DEBUG[10-13|11:48:59.629] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=25 duration="10.259µs"
+DEBUG[10-13|11:48:59.644] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=26 duration="66.524µs"
+DEBUG[10-13|11:48:59.645] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=15
+DEBUG[10-13|11:48:59.646] Persisted trie from memory database      nodes=26  flushnodes=0 size=5.28KiB  flushsize=0.00B time="174.446µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:48:59.646] Submitted contract creation              hash=0x8b9f833b0cb8e459cb8d7aea08122f63675fceaabf293f280571d7ea438c43c4 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=2 contract=0xB86360CBDE78664bb1674c367391E9d79c37F294 value=0
+DEBUG[10-13|11:48:59.646] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=27 duration=1.840769ms
+DEBUG[10-13|11:48:59.646] Served eth_chainId                       conn=172.17.0.1:45526 reqid=28 duration="11.08µs"
+DEBUG[10-13|11:48:59.665] Served eth_chainId                       conn=172.17.0.1:45526 reqid=29 duration="37.05µs"
+DEBUG[10-13|11:48:59.665] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=30 duration="265.806µs"
+DEBUG[10-13|11:48:59.676] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:48:59.677] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=31 duration="251.861µs"
+DEBUG[10-13|11:48:59.691] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=32 duration="72.496µs"
+DEBUG[10-13|11:48:59.691] Served eth_chainId                       conn=172.17.0.1:45526 reqid=33 duration="11.161µs"
+DEBUG[10-13|11:48:59.703] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=810,757,200
+DEBUG[10-13|11:48:59.704] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=34 duration=1.196285ms
+DEBUG[10-13|11:48:59.715] Served eth_chainId                       conn=172.17.0.1:45526 reqid=35 duration="30.447µs"
+DEBUG[10-13|11:48:59.726] Served eth_chainId                       conn=172.17.0.1:45526 reqid=36 duration="29.064µs"
+DEBUG[10-13|11:48:59.738] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=37 duration="215.232µs"
+DEBUG[10-13|11:48:59.738] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=38 duration="13.816µs"
+DEBUG[10-13|11:48:59.738] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=39 duration="11.792µs"
+DEBUG[10-13|11:48:59.754] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=40 duration="37.971µs"
+DEBUG[10-13|11:48:59.755] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=16
+DEBUG[10-13|11:48:59.756] Persisted trie from memory database      nodes=33  flushnodes=0 size=5.97KiB  flushsize=0.00B time="72.495µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:48:59.756] Submitted contract creation              hash=0xc462d7760bc7974f8d9a7581a71942a313ad6ae1742af62054694f21f41810e4 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=3 contract=0xf10AF1771450c528fee0c5435D3E4f4214073aFe value=0
+DEBUG[10-13|11:48:59.756] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=41 duration=2.265343ms
+DEBUG[10-13|11:48:59.756] Served eth_chainId                       conn=172.17.0.1:45526 reqid=42 duration="9.868µs"
+DEBUG[10-13|11:48:59.777] Served eth_chainId                       conn=172.17.0.1:45526 reqid=43 duration="60.693µs"
+DEBUG[10-13|11:48:59.777] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=44 duration="304.279µs"
+DEBUG[10-13|11:48:59.790] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=45 duration="487.872µs"
+DEBUG[10-13|11:48:59.805] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=46 duration="68.317µs"
+DEBUG[10-13|11:48:59.805] Served eth_chainId                       conn=172.17.0.1:45526 reqid=47 duration="12.413µs"
+DEBUG[10-13|11:48:59.819] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=990,551,414
+DEBUG[10-13|11:48:59.827] Pushed sync data from consensus to execution synced=true  maxMessageCount=17 updatedAt=2026-10-13T11:48:59+0000 hasProgressMap=false
+DEBUG[10-13|11:48:59.829] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=48 duration=10.613831ms
+DEBUG[10-13|11:48:59.840] Served eth_chainId                       conn=172.17.0.1:45526 reqid=49 duration="25.137µs"
+DEBUG[10-13|11:48:59.851] Served eth_chainId                       conn=172.17.0.1:45526 reqid=50 duration="28.854µs"
+DEBUG[10-13|11:48:59.863] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=51 duration="210.733µs"
+DEBUG[10-13|11:48:59.863] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=52 duration="14.728µs"
+DEBUG[10-13|11:48:59.863] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=53 duration="8.736µs"
+DEBUG[10-13|11:48:59.882] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=54 duration="67.937µs"
+DEBUG[10-13|11:48:59.977] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:00.006] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=17
+DEBUG[10-13|11:49:00.006] Persisted trie from memory database      nodes=48  flushnodes=0 size=7.79KiB  flushsize=0.00B time="96.3µs"    flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:49:00.007] Submitted contract creation              hash=0x83e86aa2568dee88944c64dfa5495c0344e360883d24358248c969dd2efe3af3 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=4 contract=0x4D9b9624418e2E91a38122D53e2A12eE028194b3 value=0
+DEBUG[10-13|11:49:00.007] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=55 duration=124.543823ms
+DEBUG[10-13|11:49:00.007] Served eth_chainId                       conn=172.17.0.1:45526 reqid=56 duration="9.839µs"
+DEBUG[10-13|11:49:00.029] Served eth_chainId                       conn=172.17.0.1:45526 reqid=57 duration="36.698µs"
+DEBUG[10-13|11:49:00.029] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=58 duration="311.883µs"
+DEBUG[10-13|11:49:00.041] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=59 duration="303.998µs"
+DEBUG[10-13|11:49:00.055] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=60 duration="90.429µs"
+DEBUG[10-13|11:49:00.055] Served eth_chainId                       conn=172.17.0.1:45526 reqid=61 duration="18.074µs"
+DEBUG[10-13|11:49:00.069] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=989,478,950
+DEBUG[10-13|11:49:00.079] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=62 duration=10.933819ms
+DEBUG[10-13|11:49:00.091] Served eth_chainId                       conn=172.17.0.1:45526 reqid=63 duration="100.618µs"
+DEBUG[10-13|11:49:00.102] Served eth_chainId                       conn=172.17.0.1:45526 reqid=64 duration="36.057µs"
+DEBUG[10-13|11:49:00.113] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=65 duration="222.005µs"
+DEBUG[10-13|11:49:00.114] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=66 duration="11.432µs"
+DEBUG[10-13|11:49:00.114] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=67 duration="7.695µs"
+DEBUG[10-13|11:49:00.128] Pushed sync data from consensus to execution synced=true  maxMessageCount=18 updatedAt=2026-10-13T11:49:00+0000 hasProgressMap=false
+DEBUG[10-13|11:49:00.131] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=68 duration="32.02µs"
+DEBUG[10-13|11:49:00.257] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=18
+DEBUG[10-13|11:49:00.258] Persisted trie from memory database      nodes=47  flushnodes=0 size=7.71KiB  flushsize=0.00B time="97.632µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:49:00.258] Submitted contract creation              hash=0x6e8e55a95b0a670b17d0ac6dce61e5bbc0bed95a466b848577f53744c6e96d45 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=5 contract=0xc27DfC8A1CfD74D0D5645198Fb0d8B6b50292618 value=0
+DEBUG[10-13|11:49:00.258] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=69 duration=127.361686ms
+DEBUG[10-13|11:49:00.258] Served eth_chainId                       conn=172.17.0.1:45526 reqid=70 duration="15.439µs"
+DEBUG[10-13|11:49:00.277] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:00.277] Served eth_chainId                       conn=172.17.0.1:45526 reqid=71 duration="33.732µs"
+DEBUG[10-13|11:49:00.278] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=72 duration="300.963µs"
+DEBUG[10-13|11:49:00.289] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=73 duration="274.653µs"
+DEBUG[10-13|11:49:00.303] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=74 duration="102.18µs"
+DEBUG[10-13|11:49:00.303] Served eth_chainId                       conn=172.17.0.1:45526 reqid=75 duration="11.422µs"
+DEBUG[10-13|11:49:00.316] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=989,478,950
+DEBUG[10-13|11:49:00.326] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=76 duration=10.366508ms
+DEBUG[10-13|11:49:00.337] Served eth_chainId                       conn=172.17.0.1:45526 reqid=77 duration="39.223µs"
+DEBUG[10-13|11:49:00.349] Served eth_chainId                       conn=172.17.0.1:45526 reqid=78 duration="29.195µs"
+DEBUG[10-13|11:49:00.360] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=79 duration="175.778µs"
+DEBUG[10-13|11:49:00.360] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=80 duration="14.688µs"
+DEBUG[10-13|11:49:00.360] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=81 duration="8.195µs"
+DEBUG[10-13|11:49:00.376] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=82 duration="25.568µs"
+DEBUG[10-13|11:49:00.429] Pushed sync data from consensus to execution synced=true  maxMessageCount=19 updatedAt=2026-10-13T11:49:00+0000 hasProgressMap=false
+DEBUG[10-13|11:49:00.507] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=19
+DEBUG[10-13|11:49:00.508] Persisted trie from memory database      nodes=50  flushnodes=0 size=8.06KiB  flushsize=0.00B time="115.716µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s    livenodes=0 livesize=0.00B
+INFO [10-13|11:49:00.508] Submitted contract creation              hash=0x5f35009cf02345aaea4e2675753d9123b9b3a39a5d4ae29e488158133f24f766 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=6 contract=0xD01D19B9D296299619f681b842b3b61C79736F3a value=0
+DEBUG[10-13|11:49:00.508] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=83 duration=132.125296ms
+DEBUG[10-13|11:49:00.508] Served eth_chainId                       conn=172.17.0.1:45526 reqid=84 duration="13.295µs"
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=832ns       gcnodes=0 gcsize=0.00B gctime=571ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=170ns       gcnodes=0 gcsize=0.00B gctime=641ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime=701ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime=751ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=151ns       gcnodes=0 gcsize=0.00B gctime=801ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime=861ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime=911ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=141ns       gcnodes=0 gcsize=0.00B gctime=962ns livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="1.022µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="1.062µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.112µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.162µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.212µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.517] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.272µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.518] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="1.322µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.518] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="1.372µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:00.529] Served eth_chainId                       conn=172.17.0.1:45526 reqid=85 duration="32.591µs"
+DEBUG[10-13|11:49:00.530] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=86 duration="296.354µs"
+DEBUG[10-13|11:49:00.541] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=87 duration="221.805µs"
+DEBUG[10-13|11:49:00.555] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=88 duration="80.821µs"
+DEBUG[10-13|11:49:00.555] Served eth_chainId                       conn=172.17.0.1:45526 reqid=89 duration="12.534µs"
+DEBUG[10-13|11:49:00.568] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=989,478,950
+DEBUG[10-13|11:49:00.578] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=90 duration=10.093068ms
+DEBUG[10-13|11:49:00.578] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:00.589] Served eth_chainId                       conn=172.17.0.1:45526 reqid=91 duration="38.231µs"
+DEBUG[10-13|11:49:00.600] Served eth_chainId                       conn=172.17.0.1:45526 reqid=92 duration="35.397µs"
+DEBUG[10-13|11:49:00.611] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=93 duration="208.37µs"
+DEBUG[10-13|11:49:00.611] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=94 duration="14.007µs"
+DEBUG[10-13|11:49:00.611] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=95 duration="9.157µs"
+DEBUG[10-13|11:49:00.626] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=96 duration="23.504µs"
+DEBUG[10-13|11:49:00.729] Pushed sync data from consensus to execution synced=true  maxMessageCount=20 updatedAt=2026-10-13T11:49:00+0000 hasProgressMap=false
+DEBUG[10-13|11:49:00.759] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=20
+DEBUG[10-13|11:49:00.759] Persisted trie from memory database      nodes=49  flushnodes=0 size=7.95KiB  flushsize=0.00B time="110.176µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime="1.372µs" livenodes=0 livesize=0.00B
+INFO [10-13|11:49:00.759] Submitted contract creation              hash=0x62a4393e79445ecd4f5c448d7b61b12f3cee3621e47601a443f756446b3c1e99 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=7 contract=0x0C3475657D4Bd198efe068dDB064725B6514FB04 value=0
+DEBUG[10-13|11:49:00.759] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=97 duration=133.308526ms
+DEBUG[10-13|11:49:00.759] Served eth_chainId                       conn=172.17.0.1:45526 reqid=98 duration="13.245µs"
+DEBUG[10-13|11:49:00.779] Served eth_chainId                       conn=172.17.0.1:45526 reqid=99 duration="22.101µs"
+DEBUG[10-13|11:49:00.779] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=100 duration="292.637µs"
+DEBUG[10-13|11:49:00.791] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=101 duration="266.628µs"
+DEBUG[10-13|11:49:00.805] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=102 duration="105.006µs"
+DEBUG[10-13|11:49:00.805] Served eth_chainId                       conn=172.17.0.1:45526 reqid=103 duration="14.828µs"
+DEBUG[10-13|11:49:00.819] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=1,067,456,060
+DEBUG[10-13|11:49:00.820] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=104 duration=1.777591ms
+DEBUG[10-13|11:49:00.831] Served eth_chainId                       conn=172.17.0.1:45526 reqid=105 duration="35.135µs"
+DEBUG[10-13|11:49:00.843] Served eth_chainId                       conn=172.17.0.1:45526 reqid=106 duration="34.124µs"
+DEBUG[10-13|11:49:00.854] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=107 duration="251.83µs"
+DEBUG[10-13|11:49:00.854] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=108 duration="13.906µs"
+DEBUG[10-13|11:49:00.854] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=109 duration="7.434µs"
+DEBUG[10-13|11:49:00.871] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=110 duration="36.618µs"
+DEBUG[10-13|11:49:00.878] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:01.007] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=21
+DEBUG[10-13|11:49:01.008] Persisted trie from memory database      nodes=36  flushnodes=0 size=6.50KiB  flushsize=0.00B time="206.396µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:01.008] Submitted contract creation              hash=0x2f2ab6f16cc8902aa2fcbcdb5a35d282f55a58b8ffc10b910766d468fb7561d1 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=8 contract=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:01.008] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=111 duration=137.307331ms
+DEBUG[10-13|11:49:01.008] Served eth_chainId                       conn=172.17.0.1:45526 reqid=112 duration="12.774µs"
+DEBUG[10-13|11:49:01.028] Served eth_chainId                       conn=172.17.0.1:45526 reqid=113 duration="34.344µs"
+DEBUG[10-13|11:49:01.028] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=114 duration="314.027µs"
+DEBUG[10-13|11:49:01.030] Pushed sync data from consensus to execution synced=true  maxMessageCount=22 updatedAt=2026-10-13T11:49:01+0000 hasProgressMap=false
+DEBUG[10-13|11:49:01.039] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=115 duration="238.856µs"
+DEBUG[10-13|11:49:01.055] Executing EVM call finished              runtime="502.639µs"
+DEBUG[10-13|11:49:01.055] Served eth_call                          conn=172.17.0.1:45526 reqid=116 duration="599.08µs"
+DEBUG[10-13|11:49:01.055] Served eth_chainId                       conn=172.17.0.1:45526 reqid=117 duration="11.681µs"
+DEBUG[10-13|11:49:01.068] Executing EVM call finished              runtime="445.032µs"
+DEBUG[10-13|11:49:01.068] Served eth_call                          conn=172.17.0.1:45526 reqid=118 duration="531.423µs"
+DEBUG[10-13|11:49:01.068] Served eth_chainId                       conn=172.17.0.1:45526 reqid=119 duration="12.283µs"
+DEBUG[10-13|11:49:01.080] Executing EVM call finished              runtime="409.925µs"
+DEBUG[10-13|11:49:01.080] Served eth_call                          conn=172.17.0.1:45526 reqid=120 duration="476.581µs"
+DEBUG[10-13|11:49:01.080] Served eth_chainId                       conn=172.17.0.1:45526 reqid=121 duration="9.969µs"
+DEBUG[10-13|11:49:01.092] Executing EVM call finished              runtime="396.13µs"
+DEBUG[10-13|11:49:01.092] Served eth_call                          conn=172.17.0.1:45526 reqid=122 duration="498.642µs"
+DEBUG[10-13|11:49:01.092] Served eth_chainId                       conn=172.17.0.1:45526 reqid=123 duration="14.106µs"
+DEBUG[10-13|11:49:01.104] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=124 duration="74.549µs"
+DEBUG[10-13|11:49:01.104] Served eth_chainId                       conn=172.17.0.1:45526 reqid=125 duration="11.832µs"
+DEBUG[10-13|11:49:01.116] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=123,285,077
+DEBUG[10-13|11:49:01.117] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=126 duration="959.734µs"
+DEBUG[10-13|11:49:01.128] Served eth_chainId                       conn=172.17.0.1:45526 reqid=127 duration="34.965µs"
+DEBUG[10-13|11:49:01.139] Served eth_chainId                       conn=172.17.0.1:45526 reqid=128 duration="33.142µs"
+DEBUG[10-13|11:49:01.150] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=129 duration="256.559µs"
+DEBUG[10-13|11:49:01.150] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=130 duration="13.285µs"
+DEBUG[10-13|11:49:01.150] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=131 duration="7.684µs"
+DEBUG[10-13|11:49:01.163] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=132 duration="23.915µs"
+DEBUG[10-13|11:49:01.179] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:01.257] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=22
+DEBUG[10-13|11:49:01.257] Persisted trie from memory database      nodes=27  flushnodes=0 size=5.53KiB  flushsize=0.00B time="79.468µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:01.257] Submitted transaction                    hash=0xf111becb4268ee13376bcd616dfdffdbdb1f4a1c6a71fd5ab72efd118af2c8d4 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=9 recipient=0xf10AF1771450c528fee0c5435D3E4f4214073aFe value=0
+DEBUG[10-13|11:49:01.258] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=133 duration=94.30109ms
+DEBUG[10-13|11:49:01.258] Served eth_chainId                       conn=172.17.0.1:45526 reqid=134 duration="15.438µs"
+DEBUG[10-13|11:49:01.274] Served eth_chainId                       conn=172.17.0.1:45526 reqid=135 duration="27.963µs"
+DEBUG[10-13|11:49:01.274] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=136 duration="262.451µs"
+DEBUG[10-13|11:49:01.286] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=137 duration="230.952µs"
+DEBUG[10-13|11:49:01.299] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=138 duration="105.367µs"
+DEBUG[10-13|11:49:01.299] Served eth_chainId                       conn=172.17.0.1:45526 reqid=139 duration="13.375µs"
+DEBUG[10-13|11:49:01.311] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=111,376,252
+DEBUG[10-13|11:49:01.320] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=140 duration=8.764875ms
+DEBUG[10-13|11:49:01.331] Pushed sync data from consensus to execution synced=true  maxMessageCount=23 updatedAt=2026-10-13T11:49:01+0000 hasProgressMap=false
+DEBUG[10-13|11:49:01.331] Served eth_chainId                       conn=172.17.0.1:45526 reqid=141 duration="50.886µs"
+DEBUG[10-13|11:49:01.342] Served eth_chainId                       conn=172.17.0.1:45526 reqid=142 duration="48.791µs"
+DEBUG[10-13|11:49:01.354] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=143 duration="226.994µs"
+DEBUG[10-13|11:49:01.354] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=144 duration="14.257µs"
+DEBUG[10-13|11:49:01.354] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=145 duration="6.993µs"
+DEBUG[10-13|11:49:01.367] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=146 duration="32.39µs"
+DEBUG[10-13|11:49:01.479] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:01.510] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=23
+DEBUG[10-13|11:49:01.511] Persisted trie from memory database      nodes=48  flushnodes=0 size=8.10KiB  flushsize=0.00B time="119.173µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:01.511] Submitted transaction                    hash=0x37c49b84a8a1c4e707f7da04e6b64f4c658f8ec5e1261bec0599c9aeec8d9acb from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=10 recipient=0x4D9b9624418e2E91a38122D53e2A12eE028194b3 value=0
+DEBUG[10-13|11:49:01.511] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=147 duration=143.6142ms
+DEBUG[10-13|11:49:01.511] Served eth_chainId                       conn=172.17.0.1:45526 reqid=148 duration="9.728µs"
+DEBUG[10-13|11:49:01.525] Served eth_chainId                       conn=172.17.0.1:45526 reqid=149 duration="31.549µs"
+DEBUG[10-13|11:49:01.526] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=150 duration="261.318µs"
+DEBUG[10-13|11:49:01.537] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=151 duration="249.857µs"
+DEBUG[10-13|11:49:01.552] Executing EVM call finished              runtime="441.224µs"
+DEBUG[10-13|11:49:01.552] Served eth_call                          conn=172.17.0.1:45526 reqid=152 duration="528.627µs"
+DEBUG[10-13|11:49:01.552] Served eth_chainId                       conn=172.17.0.1:45526 reqid=153 duration="9.668µs"
+DEBUG[10-13|11:49:01.565] Executing EVM call finished              runtime="396.211µs"
+DEBUG[10-13|11:49:01.565] Served eth_call                          conn=172.17.0.1:45526 reqid=154 duration="511.306µs"
+DEBUG[10-13|11:49:01.565] Served eth_chainId                       conn=172.17.0.1:45526 reqid=155 duration="11.291µs"
+DEBUG[10-13|11:49:01.577] Executing EVM call finished              runtime="508.741µs"
+DEBUG[10-13|11:49:01.577] Served eth_call                          conn=172.17.0.1:45526 reqid=156 duration="600.542µs"
+DEBUG[10-13|11:49:01.577] Served eth_chainId                       conn=172.17.0.1:45526 reqid=157 duration="9.768µs"
+DEBUG[10-13|11:49:01.589] Executing EVM call finished              runtime="359.652µs"
+DEBUG[10-13|11:49:01.589] Served eth_call                          conn=172.17.0.1:45526 reqid=158 duration="446.324µs"
+DEBUG[10-13|11:49:01.589] Served eth_chainId                       conn=172.17.0.1:45526 reqid=159 duration="7.705µs"
+DEBUG[10-13|11:49:01.601] Executing EVM call finished              runtime="371.524µs"
+DEBUG[10-13|11:49:01.601] Served eth_call                          conn=172.17.0.1:45526 reqid=160 duration="427.889µs"
+DEBUG[10-13|11:49:01.601] Served eth_chainId                       conn=172.17.0.1:45526 reqid=161 duration="8.606µs"
+DEBUG[10-13|11:49:01.613] Executing EVM call finished              runtime="387.424µs"
+DEBUG[10-13|11:49:01.613] Served eth_call                          conn=172.17.0.1:45526 reqid=162 duration="467.854µs"
+DEBUG[10-13|11:49:01.613] Served eth_chainId                       conn=172.17.0.1:45526 reqid=163 duration="8.325µs"
+DEBUG[10-13|11:49:01.625] Executing EVM call finished              runtime="439.14µs"
+DEBUG[10-13|11:49:01.625] Served eth_call                          conn=172.17.0.1:45526 reqid=164 duration="524.139µs"
+DEBUG[10-13|11:49:01.625] Served eth_chainId                       conn=172.17.0.1:45526 reqid=165 duration="8.966µs"
+DEBUG[10-13|11:49:01.632] Pushed sync data from consensus to execution synced=true  maxMessageCount=24 updatedAt=2026-10-13T11:49:01+0000 hasProgressMap=false
+DEBUG[10-13|11:49:01.637] Executing EVM call finished              runtime="388.376µs"
+DEBUG[10-13|11:49:01.637] Served eth_call                          conn=172.17.0.1:45526 reqid=166 duration="472.193µs"
+DEBUG[10-13|11:49:01.637] Served eth_chainId                       conn=172.17.0.1:45526 reqid=167 duration="9.087µs"
+DEBUG[10-13|11:49:01.649] Executing EVM call finished              runtime="423.121µs"
+DEBUG[10-13|11:49:01.649] Served eth_call                          conn=172.17.0.1:45526 reqid=168 duration="513.64µs"
+DEBUG[10-13|11:49:01.649] Served eth_chainId                       conn=172.17.0.1:45526 reqid=169 duration="8.977µs"
+DEBUG[10-13|11:49:01.665] Executing EVM call finished              runtime="445.362µs"
+DEBUG[10-13|11:49:01.665] Served eth_call                          conn=172.17.0.1:45526 reqid=170 duration="523.328µs"
+DEBUG[10-13|11:49:01.665] Served eth_chainId                       conn=172.17.0.1:45526 reqid=171 duration="9.979µs"
+DEBUG[10-13|11:49:01.677] Executing EVM call finished              runtime="306.793µs"
+DEBUG[10-13|11:49:01.677] Served eth_call                          conn=172.17.0.1:45526 reqid=172 duration="381.473µs"
+DEBUG[10-13|11:49:01.677] Served eth_chainId                       conn=172.17.0.1:45526 reqid=173 duration="8.356µs"
+DEBUG[10-13|11:49:01.780] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:01.933] Pushed sync data from consensus to execution synced=true  maxMessageCount=24 updatedAt=2026-10-13T11:49:01+0000 hasProgressMap=false
+DEBUG[10-13|11:49:02.080] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:02.233] Pushed sync data from consensus to execution synced=true  maxMessageCount=24 updatedAt=2026-10-13T11:49:02+0000 hasProgressMap=false
+DEBUG[10-13|11:49:02.381] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:02.533] Pushed sync data from consensus to execution synced=true  maxMessageCount=24 updatedAt=2026-10-13T11:49:02+0000 hasProgressMap=false
+DEBUG[10-13|11:49:02.582] Executing EVM call finished              runtime=1.874122ms
+DEBUG[10-13|11:49:02.582] Served eth_call                          conn=172.17.0.1:45526 reqid=174 duration=1.979168ms
+DEBUG[10-13|11:49:02.582] Served eth_chainId                       conn=172.17.0.1:45526 reqid=175 duration="9.088µs"
+DEBUG[10-13|11:49:02.596] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=176 duration="109.665µs"
+DEBUG[10-13|11:49:02.596] Served eth_chainId                       conn=172.17.0.1:45526 reqid=177 duration="14.958µs"
+DEBUG[10-13|11:49:02.608] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=227,984,430
+DEBUG[10-13|11:49:02.614] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=178 duration=5.942433ms
+DEBUG[10-13|11:49:02.625] Served eth_chainId                       conn=172.17.0.1:45526 reqid=179 duration="60.544µs"
+DEBUG[10-13|11:49:02.637] Served eth_chainId                       conn=172.17.0.1:45526 reqid=180 duration="36.218µs"
+DEBUG[10-13|11:49:02.648] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=181 duration="219.59µs"
+DEBUG[10-13|11:49:02.648] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=182 duration="9.066µs"
+DEBUG[10-13|11:49:02.648] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=183 duration="7.454µs"
+DEBUG[10-13|11:49:02.662] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=184 duration="31.929µs"
+DEBUG[10-13|11:49:02.665] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=24
+DEBUG[10-13|11:49:02.665] Persisted trie from memory database      nodes=34  flushnodes=0 size=6.68KiB  flushsize=0.00B time="79.738µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:02.666] Submitted transaction                    hash=0xc7260593b15a643443022cb0edee20be9c1f66e5746ffe37f4fd0ab340157b73 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=11 recipient=0x4D9b9624418e2E91a38122D53e2A12eE028194b3 value=0
+DEBUG[10-13|11:49:02.666] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=185 duration=3.428846ms
+DEBUG[10-13|11:49:02.666] Served eth_chainId                       conn=172.17.0.1:45526 reqid=186 duration="9.267µs"
+DEBUG[10-13|11:49:02.682] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:02.683] Served eth_chainId                       conn=172.17.0.1:45526 reqid=187 duration="47.268µs"
+DEBUG[10-13|11:49:02.683] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=188 duration="321.821µs"
+DEBUG[10-13|11:49:02.696] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=189 duration="360.103µs"
+DEBUG[10-13|11:49:02.709] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=190 duration="83.336µs"
+DEBUG[10-13|11:49:02.709] Served eth_chainId                       conn=172.17.0.1:45526 reqid=191 duration="13.815µs"
+DEBUG[10-13|11:49:02.721] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=123,285,077
+DEBUG[10-13|11:49:02.722] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=192 duration="953.652µs"
+DEBUG[10-13|11:49:02.733] Served eth_chainId                       conn=172.17.0.1:45526 reqid=193 duration="38.282µs"
+DEBUG[10-13|11:49:02.744] Served eth_chainId                       conn=172.17.0.1:45526 reqid=194 duration="36.508µs"
+DEBUG[10-13|11:49:02.755] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=195 duration="204.883µs"
+DEBUG[10-13|11:49:02.755] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=196 duration="10.78µs"
+DEBUG[10-13|11:49:02.755] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=197 duration="7.665µs"
+DEBUG[10-13|11:49:02.768] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=198 duration="24.346µs"
+DEBUG[10-13|11:49:02.769] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=25
+DEBUG[10-13|11:49:02.770] Persisted trie from memory database      nodes=29  flushnodes=0 size=5.73KiB  flushsize=0.00B time="130.604µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:02.770] Submitted transaction                    hash=0x403fcf49a55205f733c55cdcdc6f82340541b3d7ee3890928aaa0d429cd1da47 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=12 recipient=0xf10AF1771450c528fee0c5435D3E4f4214073aFe value=0
+DEBUG[10-13|11:49:02.770] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=199 duration=1.998624ms
+DEBUG[10-13|11:49:02.770] Served eth_chainId                       conn=172.17.0.1:45526 reqid=200 duration="8.746µs"
+DEBUG[10-13|11:49:02.784] Served eth_chainId                       conn=172.17.0.1:45526 reqid=201 duration="28.724µs"
+DEBUG[10-13|11:49:02.784] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=202 duration="287.978µs"
+DEBUG[10-13|11:49:02.796] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=203 duration="237.784µs"
+DEBUG[10-13|11:49:02.809] Executing EVM call finished              runtime="427.318µs"
+DEBUG[10-13|11:49:02.809] Served eth_call                          conn=172.17.0.1:45526 reqid=204 duration="514.431µs"
+DEBUG[10-13|11:49:02.809] Served eth_chainId                       conn=172.17.0.1:45526 reqid=205 duration="11.862µs"
+DEBUG[10-13|11:49:02.822] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=206 duration="67.977µs"
+DEBUG[10-13|11:49:02.822] Served eth_chainId                       conn=172.17.0.1:45526 reqid=207 duration="7.464µs"
+DEBUG[10-13|11:49:02.833] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=146,387,751
+DEBUG[10-13|11:49:02.834] Pushed sync data from consensus to execution synced=true  maxMessageCount=26 updatedAt=2026-10-13T11:49:02+0000 hasProgressMap=false
+DEBUG[10-13|11:49:02.843] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=208 duration=9.849082ms
+DEBUG[10-13|11:49:02.854] Served eth_chainId                       conn=172.17.0.1:45526 reqid=209 duration="28.213µs"
+DEBUG[10-13|11:49:02.865] Served eth_chainId                       conn=172.17.0.1:45526 reqid=210 duration="35.386µs"
+DEBUG[10-13|11:49:02.877] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=211 duration="170.749µs"
+DEBUG[10-13|11:49:02.877] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=212 duration="9.829µs"
+DEBUG[10-13|11:49:02.877] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=213 duration="7.003µs"
+DEBUG[10-13|11:49:02.889] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=214 duration="33.693µs"
+DEBUG[10-13|11:49:02.920] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=26
+DEBUG[10-13|11:49:02.921] Persisted trie from memory database      nodes=48  flushnodes=0 size=8.09KiB  flushsize=0.00B time="106.178µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:02.921] Submitted transaction                    hash=0x7bf2f426d0ed43864d8547b561213130abc563d7476c6327042baa1b4e66ea00 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=13 recipient=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:02.921] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=215 duration=31.724752ms
+DEBUG[10-13|11:49:02.921] Served eth_chainId                       conn=172.17.0.1:45526 reqid=216 duration="11.451µs"
+DEBUG[10-13|11:49:02.932] Dereferenced trie from memory database   nodes=0   size=0.00B    time=571ns       gcnodes=0 gcsize=0.00B gctime=341ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.932] Dereferenced trie from memory database   nodes=0   size=0.00B    time=311ns       gcnodes=0 gcsize=0.00B gctime=531ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.932] Dereferenced trie from memory database   nodes=0   size=0.00B    time=170ns       gcnodes=0 gcsize=0.00B gctime=591ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.932] Dereferenced trie from memory database   nodes=0   size=0.00B    time=361ns       gcnodes=0 gcsize=0.00B gctime=752ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.932] Dereferenced trie from memory database   nodes=0   size=0.00B    time=260ns       gcnodes=0 gcsize=0.00B gctime=882ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.932] Dereferenced trie from memory database   nodes=0   size=0.00B    time=161ns       gcnodes=0 gcsize=0.00B gctime=932ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=200ns       gcnodes=0 gcsize=0.00B gctime="1.022µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=120ns       gcnodes=0 gcsize=0.00B gctime="1.062µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=191ns       gcnodes=0 gcsize=0.00B gctime="1.132µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.182µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="1.232µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=130ns       gcnodes=0 gcsize=0.00B gctime="1.282µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="1.352µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.402µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=350ns       gcnodes=0 gcsize=0.00B gctime="1.582µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=200ns       gcnodes=0 gcsize=0.00B gctime="1.672µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=151ns       gcnodes=0 gcsize=0.00B gctime="1.722µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=161ns       gcnodes=0 gcsize=0.00B gctime="1.792µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=151ns       gcnodes=0 gcsize=0.00B gctime="1.863µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="1.923µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=161ns       gcnodes=0 gcsize=0.00B gctime="1.994µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=171ns       gcnodes=0 gcsize=0.00B gctime="2.065µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=231ns       gcnodes=0 gcsize=0.00B gctime="2.126µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.933] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="2.186µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:02.937] Served eth_chainId                       conn=172.17.0.1:45526 reqid=217 duration="40.746µs"
+DEBUG[10-13|11:49:02.937] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=218 duration="274.633µs"
+DEBUG[10-13|11:49:02.949] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=219 duration="316.12µs"
+DEBUG[10-13|11:49:02.963] Executing EVM call finished              runtime="454.088µs"
+DEBUG[10-13|11:49:02.963] Served eth_call                          conn=172.17.0.1:45526 reqid=220 duration="538.156µs"
+DEBUG[10-13|11:49:02.963] Served eth_chainId                       conn=172.17.0.1:45526 reqid=221 duration="12.092µs"
+DEBUG[10-13|11:49:02.977] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=222 duration="73.988µs"
+DEBUG[10-13|11:49:02.977] Served eth_chainId                       conn=172.17.0.1:45526 reqid=223 duration="14.637µs"
+DEBUG[10-13|11:49:02.982] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:02.989] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=169,870,257
+DEBUG[10-13|11:49:03.014] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=224 duration=25.465918ms
+DEBUG[10-13|11:49:03.025] Served eth_chainId                       conn=172.17.0.1:45526 reqid=225 duration="28.242µs"
+DEBUG[10-13|11:49:03.037] Served eth_chainId                       conn=172.17.0.1:45526 reqid=226 duration="33.192µs"
+DEBUG[10-13|11:49:03.048] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=227 duration="180.086µs"
+DEBUG[10-13|11:49:03.048] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=228 duration="13.936µs"
+DEBUG[10-13|11:49:03.048] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=229 duration="10.6µs"
+DEBUG[10-13|11:49:03.061] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=230 duration="25.819µs"
+DEBUG[10-13|11:49:03.134] Pushed sync data from consensus to execution synced=true  maxMessageCount=27 updatedAt=2026-10-13T11:49:03+0000 hasProgressMap=false
+DEBUG[10-13|11:49:03.176] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=27
+DEBUG[10-13|11:49:03.177] Persisted trie from memory database      nodes=85  flushnodes=0 size=12.66KiB flushsize=0.00B time="177.692µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime="2.186µs" livenodes=0 livesize=0.00B
+INFO [10-13|11:49:03.177] Submitted transaction                    hash=0xcc3f830eb1909dd6b2aa2bd1a27a8952886b0522ef5c3ed4e2302855b89ee68e from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=14 recipient=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:03.177] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=231 duration=116.221655ms
+DEBUG[10-13|11:49:03.177] Served eth_chainId                       conn=172.17.0.1:45526 reqid=232 duration="11.701µs"
+DEBUG[10-13|11:49:03.194] Served eth_chainId                       conn=172.17.0.1:45526 reqid=233 duration="35.977µs"
+DEBUG[10-13|11:49:03.194] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=234 duration="444.56µs"
+DEBUG[10-13|11:49:03.207] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=235 duration="395.248µs"
+DEBUG[10-13|11:49:03.221] Executing EVM call finished              runtime="454.8µs"
+DEBUG[10-13|11:49:03.221] Served eth_call                          conn=172.17.0.1:45526 reqid=236 duration="551.4µs"
+DEBUG[10-13|11:49:03.221] Served eth_chainId                       conn=172.17.0.1:45526 reqid=237 duration="11.04µs"
+DEBUG[10-13|11:49:03.243] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=238 duration="88.785µs"
+DEBUG[10-13|11:49:03.243] Served eth_chainId                       conn=172.17.0.1:45526 reqid=239 duration="12.513µs"
+DEBUG[10-13|11:49:03.255] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=297,314,794
+DEBUG[10-13|11:49:03.283] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:03.362] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=240 duration=108.030159ms
+DEBUG[10-13|11:49:03.374] Served eth_chainId                       conn=172.17.0.1:45526 reqid=241 duration="33.894µs"
+DEBUG[10-13|11:49:03.385] Served eth_chainId                       conn=172.17.0.1:45526 reqid=242 duration="41.428µs"
+DEBUG[10-13|11:49:03.397] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=243 duration="193.282µs"
+DEBUG[10-13|11:49:03.397] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=244 duration="12.905µs"
+DEBUG[10-13|11:49:03.397] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=245 duration="9.958µs"
+DEBUG[10-13|11:49:03.410] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=246 duration="28.092µs"
+DEBUG[10-13|11:49:03.435] Pushed sync data from consensus to execution synced=true  maxMessageCount=28 updatedAt=2026-10-13T11:49:03+0000 hasProgressMap=false
+DEBUG[10-13|11:49:03.454] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=28
+DEBUG[10-13|11:49:03.454] Persisted trie from memory database      nodes=102 flushnodes=0 size=14.68KiB flushsize=0.00B time="219.23µs"  flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:03.454] Submitted transaction                    hash=0xdd788afca9fef572839a5161992289b30f1f5d63d8a1305736b5c77f6259a2f2 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=15 recipient=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:03.455] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=247 duration=44.163122ms
+DEBUG[10-13|11:49:03.455] Served eth_chainId                       conn=172.17.0.1:45526 reqid=248 duration="17.833µs"
+DEBUG[10-13|11:49:03.471] Served eth_chainId                       conn=172.17.0.1:45526 reqid=249 duration="38.843µs"
+DEBUG[10-13|11:49:03.472] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=250 duration="667.006µs"
+DEBUG[10-13|11:49:03.487] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=251 duration="697.874µs"
+DEBUG[10-13|11:49:03.505] Executing EVM call finished              runtime="434.913µs"
+DEBUG[10-13|11:49:03.505] Served eth_call                          conn=172.17.0.1:45526 reqid=252 duration="520.283µs"
+DEBUG[10-13|11:49:03.505] Served eth_chainId                       conn=172.17.0.1:45526 reqid=253 duration="10.74µs"
+DEBUG[10-13|11:49:03.534] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=254 duration="80.441µs"
+DEBUG[10-13|11:49:03.534] Served eth_chainId                       conn=172.17.0.1:45526 reqid=255 duration="12.924µs"
+DEBUG[10-13|11:49:03.546] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=505,283,546
+DEBUG[10-13|11:49:03.583] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:03.735] Pushed sync data from consensus to execution synced=true  maxMessageCount=29 updatedAt=2026-10-13T11:49:03+0000 hasProgressMap=false
+DEBUG[10-13|11:49:03.788] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=256 duration=242.014059ms
+DEBUG[10-13|11:49:03.799] Served eth_chainId                       conn=172.17.0.1:45526 reqid=257 duration="51.546µs"
+DEBUG[10-13|11:49:03.810] Served eth_chainId                       conn=172.17.0.1:45526 reqid=258 duration="39.314µs"
+DEBUG[10-13|11:49:03.822] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=259 duration="244.537µs"
+DEBUG[10-13|11:49:03.822] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=260 duration="41.367µs"
+DEBUG[10-13|11:49:03.822] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=261 duration="11.371µs"
+DEBUG[10-13|11:49:03.835] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=262 duration="28.063µs"
+DEBUG[10-13|11:49:03.884] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:03.918] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=29
+DEBUG[10-13|11:49:03.918] Persisted trie from memory database      nodes=97  flushnodes=0 size=13.68KiB flushsize=0.00B time="376.564µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:03.918] Submitted transaction                    hash=0x01019c667ecacf6b3cd530bcce5efe26cd14c8b6a6b8682279603c7a704f12b3 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=16 recipient=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:03.919] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=263 duration=83.112376ms
+DEBUG[10-13|11:49:03.919] Served eth_chainId                       conn=172.17.0.1:45526 reqid=264 duration="12.864µs"
+DEBUG[10-13|11:49:03.936] Served eth_chainId                       conn=172.17.0.1:45526 reqid=265 duration="39.323µs"
+DEBUG[10-13|11:49:03.937] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=266 duration=1.093393ms
+DEBUG[10-13|11:49:03.955] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=267 duration=1.058027ms
+DEBUG[10-13|11:49:03.979] Executing EVM call finished              runtime="384.378µs"
+DEBUG[10-13|11:49:03.979] Served eth_call                          conn=172.17.0.1:45526 reqid=268 duration="481.92µs"
+DEBUG[10-13|11:49:03.980] Served eth_chainId                       conn=172.17.0.1:45526 reqid=269 duration="9.057µs"
+DEBUG[10-13|11:49:04.001] Executing EVM call finished              runtime="424.843µs"
+DEBUG[10-13|11:49:04.001] Served eth_call                          conn=172.17.0.1:45526 reqid=270 duration="511.355µs"
+DEBUG[10-13|11:49:04.001] Served eth_chainId                       conn=172.17.0.1:45526 reqid=271 duration="11.862µs"
+DEBUG[10-13|11:49:04.013] Executing EVM call finished              runtime="377.075µs"
+DEBUG[10-13|11:49:04.013] Served eth_call                          conn=172.17.0.1:45526 reqid=272 duration="454.549µs"
+DEBUG[10-13|11:49:04.013] Served eth_chainId                       conn=172.17.0.1:45526 reqid=273 duration="9.577µs"
+DEBUG[10-13|11:49:04.036] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:04+0000 hasProgressMap=false
+DEBUG[10-13|11:49:04.185] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:04.337] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:04+0000 hasProgressMap=false
+DEBUG[10-13|11:49:04.486] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:04.612] Executing EVM call finished              runtime=1.935032ms
+DEBUG[10-13|11:49:04.613] Served eth_call                          conn=172.17.0.1:45526 reqid=274 duration=2.045198ms
+DEBUG[10-13|11:49:04.613] Served eth_chainId                       conn=172.17.0.1:45526 reqid=275 duration="8.376µs"
+DEBUG[10-13|11:49:04.625] Executing EVM call finished              runtime="455.531µs"
+DEBUG[10-13|11:49:04.625] Served eth_call                          conn=172.17.0.1:45526 reqid=276 duration="544.147µs"
+DEBUG[10-13|11:49:04.625] Served eth_chainId                       conn=172.17.0.1:45526 reqid=277 duration="10.821µs"
+DEBUG[10-13|11:49:04.637] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:04+0000 hasProgressMap=false
+DEBUG[10-13|11:49:04.637] Executing EVM call finished              runtime="455.602µs"
+DEBUG[10-13|11:49:04.637] Served eth_call                          conn=172.17.0.1:45526 reqid=278 duration="527.055µs"
+DEBUG[10-13|11:49:04.638] Served eth_chainId                       conn=172.17.0.1:45526 reqid=279 duration="10.589µs"
+DEBUG[10-13|11:49:04.650] Executing EVM call finished              runtime="403.213µs"
+DEBUG[10-13|11:49:04.650] Served eth_call                          conn=172.17.0.1:45526 reqid=280 duration="489.294µs"
+DEBUG[10-13|11:49:04.650] Served eth_chainId                       conn=172.17.0.1:45526 reqid=281 duration="9.888µs"
+DEBUG[10-13|11:49:04.661] Executing EVM call finished              runtime="360.143µs"
+DEBUG[10-13|11:49:04.662] Served eth_call                          conn=172.17.0.1:45526 reqid=282 duration="448.638µs"
+DEBUG[10-13|11:49:04.662] Served eth_chainId                       conn=172.17.0.1:45526 reqid=283 duration="12.804µs"
+DEBUG[10-13|11:49:04.674] Executing EVM call finished              runtime="364.882µs"
+DEBUG[10-13|11:49:04.674] Served eth_call                          conn=172.17.0.1:45526 reqid=284 duration="430.645µs"
+DEBUG[10-13|11:49:04.674] Served eth_chainId                       conn=172.17.0.1:45526 reqid=285 duration="12.884µs"
+DEBUG[10-13|11:49:04.686] Executing EVM call finished              runtime="418.782µs"
+DEBUG[10-13|11:49:04.686] Served eth_call                          conn=172.17.0.1:45526 reqid=286 duration="513.469µs"
+DEBUG[10-13|11:49:04.686] Served eth_chainId                       conn=172.17.0.1:45526 reqid=287 duration="9.237µs"
+DEBUG[10-13|11:49:04.698] Executing EVM call finished              runtime="354.242µs"
+DEBUG[10-13|11:49:04.698] Served eth_call                          conn=172.17.0.1:45526 reqid=288 duration="430.124µs"
+DEBUG[10-13|11:49:04.698] Served eth_chainId                       conn=172.17.0.1:45526 reqid=289 duration="9.829µs"
+DEBUG[10-13|11:49:04.710] Executing EVM call finished              runtime="359.812µs"
+DEBUG[10-13|11:49:04.710] Served eth_call                          conn=172.17.0.1:45526 reqid=290 duration="453.648µs"
+DEBUG[10-13|11:49:04.710] Served eth_chainId                       conn=172.17.0.1:45526 reqid=291 duration="10.82µs"
+DEBUG[10-13|11:49:04.721] Executing EVM call finished              runtime="359.121µs"
+DEBUG[10-13|11:49:04.721] Served eth_call                          conn=172.17.0.1:45526 reqid=292 duration="427.909µs"
+DEBUG[10-13|11:49:04.721] Served eth_chainId                       conn=172.17.0.1:45526 reqid=293 duration="8.656µs"
+DEBUG[10-13|11:49:04.735] Executing EVM call finished              runtime="355.985µs"
+DEBUG[10-13|11:49:04.735] Served eth_call                          conn=172.17.0.1:45526 reqid=294 duration="425.825µs"
+DEBUG[10-13|11:49:04.735] Served eth_chainId                       conn=172.17.0.1:45526 reqid=295 duration="9.448µs"
+DEBUG[10-13|11:49:04.747] Executing EVM call finished              runtime="343.011µs"
+DEBUG[10-13|11:49:04.747] Served eth_call                          conn=172.17.0.1:45526 reqid=296 duration="448.748µs"
+DEBUG[10-13|11:49:04.747] Served eth_chainId                       conn=172.17.0.1:45526 reqid=297 duration="9.638µs"
+DEBUG[10-13|11:49:04.787] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:04.938] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:04+0000 hasProgressMap=false
+DEBUG[10-13|11:49:05.087] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:05.238] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:05+0000 hasProgressMap=false
+DEBUG[10-13|11:49:05.348] Executing EVM call finished              runtime=1.93785ms
+DEBUG[10-13|11:49:05.348] Served eth_call                          conn=172.17.0.1:45526 reqid=298 duration=2.053316ms
+DEBUG[10-13|11:49:05.348] Served eth_chainId                       conn=172.17.0.1:45526 reqid=299 duration="12.003µs"
+DEBUG[10-13|11:49:05.360] Executing EVM call finished              runtime="416.869µs"
+DEBUG[10-13|11:49:05.360] Served eth_call                          conn=172.17.0.1:45526 reqid=300 duration="492.21µs"
+DEBUG[10-13|11:49:05.360] Served eth_chainId                       conn=172.17.0.1:45526 reqid=301 duration="12.914µs"
+DEBUG[10-13|11:49:05.372] Executing EVM call finished              runtime="476.3µs"
+DEBUG[10-13|11:49:05.372] Served eth_call                          conn=172.17.0.1:45526 reqid=302 duration="564.104µs"
+DEBUG[10-13|11:49:05.372] Served eth_chainId                       conn=172.17.0.1:45526 reqid=303 duration="11.512µs"
+DEBUG[10-13|11:49:05.384] Executing EVM call finished              runtime="481.038µs"
+DEBUG[10-13|11:49:05.384] Served eth_call                          conn=172.17.0.1:45526 reqid=304 duration="569.124µs"
+DEBUG[10-13|11:49:05.384] Served eth_chainId                       conn=172.17.0.1:45526 reqid=305 duration="10.991µs"
+DEBUG[10-13|11:49:05.388] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:05.397] Executing EVM call finished              runtime="355.234µs"
+DEBUG[10-13|11:49:05.397] Served eth_call                          conn=172.17.0.1:45526 reqid=306 duration="443.589µs"
+DEBUG[10-13|11:49:05.397] Served eth_chainId                       conn=172.17.0.1:45526 reqid=307 duration="9.277µs"
+DEBUG[10-13|11:49:05.409] Executing EVM call finished              runtime="396.29µs"
+DEBUG[10-13|11:49:05.409] Served eth_call                          conn=172.17.0.1:45526 reqid=308 duration="530.841µs"
+DEBUG[10-13|11:49:05.409] Served eth_chainId                       conn=172.17.0.1:45526 reqid=309 duration="9.117µs"
+DEBUG[10-13|11:49:05.421] Executing EVM call finished              runtime="438.479µs"
+DEBUG[10-13|11:49:05.421] Served eth_call                          conn=172.17.0.1:45526 reqid=310 duration="513.62µs"
+DEBUG[10-13|11:49:05.421] Served eth_chainId                       conn=172.17.0.1:45526 reqid=311 duration="10.51µs"
+DEBUG[10-13|11:49:05.433] Executing EVM call finished              runtime="411.82µs"
+DEBUG[10-13|11:49:05.433] Served eth_call                          conn=172.17.0.1:45526 reqid=312 duration="498.331µs"
+DEBUG[10-13|11:49:05.433] Served eth_chainId                       conn=172.17.0.1:45526 reqid=313 duration="9.548µs"
+DEBUG[10-13|11:49:05.445] Executing EVM call finished              runtime="457.425µs"
+DEBUG[10-13|11:49:05.445] Served eth_call                          conn=172.17.0.1:45526 reqid=314 duration="534.669µs"
+DEBUG[10-13|11:49:05.445] Served eth_chainId                       conn=172.17.0.1:45526 reqid=315 duration="8.596µs"
+DEBUG[10-13|11:49:05.457] Executing EVM call finished              runtime="383.827µs"
+DEBUG[10-13|11:49:05.457] Served eth_call                          conn=172.17.0.1:45526 reqid=316 duration="465.93µs"
+DEBUG[10-13|11:49:05.458] Served eth_chainId                       conn=172.17.0.1:45526 reqid=317 duration="9.187µs"
+DEBUG[10-13|11:49:05.472] Executing EVM call finished              runtime="489.274µs"
+DEBUG[10-13|11:49:05.472] Served eth_call                          conn=172.17.0.1:45526 reqid=318 duration="627.913µs"
+DEBUG[10-13|11:49:05.473] Served eth_chainId                       conn=172.17.0.1:45526 reqid=319 duration="10.8µs"
+DEBUG[10-13|11:49:05.485] Executing EVM call finished              runtime="340.877µs"
+DEBUG[10-13|11:49:05.485] Served eth_call                          conn=172.17.0.1:45526 reqid=320 duration="421.648µs"
+DEBUG[10-13|11:49:05.485] Served eth_chainId                       conn=172.17.0.1:45526 reqid=321 duration="8.997µs"
+DEBUG[10-13|11:49:05.539] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:05+0000 hasProgressMap=false
+DEBUG[10-13|11:49:05.690] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:05.840] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:05+0000 hasProgressMap=false
+DEBUG[10-13|11:49:05.991] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:06.091] Executing EVM call finished              runtime=2.164564ms
+DEBUG[10-13|11:49:06.091] Served eth_call                          conn=172.17.0.1:45526 reqid=322 duration=2.271614ms
+DEBUG[10-13|11:49:06.091] Served eth_chainId                       conn=172.17.0.1:45526 reqid=323 duration="31.008µs"
+DEBUG[10-13|11:49:06.106] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=324 duration="104.334µs"
+DEBUG[10-13|11:49:06.106] Served eth_chainId                       conn=172.17.0.1:45526 reqid=325 duration="13.996µs"
+DEBUG[10-13|11:49:06.119] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=506,020,865
+DEBUG[10-13|11:49:06.133] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=326 duration=14.159045ms
+DEBUG[10-13|11:49:06.141] Pushed sync data from consensus to execution synced=true  maxMessageCount=30 updatedAt=2026-10-13T11:49:06+0000 hasProgressMap=false
+DEBUG[10-13|11:49:06.144] Served eth_chainId                       conn=172.17.0.1:45526 reqid=327 duration="45.345µs"
+DEBUG[10-13|11:49:06.156] Served eth_chainId                       conn=172.17.0.1:45526 reqid=328 duration="42.94µs"
+DEBUG[10-13|11:49:06.167] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=329 duration="240.199µs"
+DEBUG[10-13|11:49:06.167] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=330 duration="44.984µs"
+DEBUG[10-13|11:49:06.167] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=331 duration="14.908µs"
+DEBUG[10-13|11:49:06.184] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=332 duration="39.424µs"
+DEBUG[10-13|11:49:06.190] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=30
+DEBUG[10-13|11:49:06.191] Persisted trie from memory database      nodes=45  flushnodes=0 size=8.74KiB  flushsize=0.00B time="121.517µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime=0s        livenodes=0 livesize=0.00B
+INFO [10-13|11:49:06.191] Submitted transaction                    hash=0x39466f15a5c267c4467b59f469283a2b0d8e81a3a7a3a7033b23c1c85265ba69 from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=17 recipient=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:06.191] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=333 duration=7.195885ms
+DEBUG[10-13|11:49:06.191] Served eth_chainId                       conn=172.17.0.1:45526 reqid=334 duration="9.779µs"
+DEBUG[10-13|11:49:06.209] Served eth_chainId                       conn=172.17.0.1:45526 reqid=335 duration="38.792µs"
+DEBUG[10-13|11:49:06.210] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=336 duration="407.812µs"
+DEBUG[10-13|11:49:06.223] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=337 duration="369.1µs"
+DEBUG[10-13|11:49:06.236] Executing EVM call finished              runtime="428.781µs"
+DEBUG[10-13|11:49:06.237] Served eth_call                          conn=172.17.0.1:45526 reqid=338 duration="546.462µs"
+DEBUG[10-13|11:49:06.237] Served eth_chainId                       conn=172.17.0.1:45526 reqid=339 duration="11.191µs"
+DEBUG[10-13|11:49:06.259] Executing EVM call finished              runtime="421.267µs"
+DEBUG[10-13|11:49:06.259] Served eth_call                          conn=172.17.0.1:45526 reqid=340 duration="531.002µs"
+DEBUG[10-13|11:49:06.259] Served eth_chainId                       conn=172.17.0.1:45526 reqid=341 duration="13.164µs"
+DEBUG[10-13|11:49:06.271] Executing EVM call finished              runtime="468.565µs"
+DEBUG[10-13|11:49:06.271] Served eth_call                          conn=172.17.0.1:45526 reqid=342 duration="553.514µs"
+DEBUG[10-13|11:49:06.271] Served eth_chainId                       conn=172.17.0.1:45526 reqid=343 duration="15.358µs"
+DEBUG[10-13|11:49:06.292] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:06.442] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:06+0000 hasProgressMap=false
+DEBUG[10-13|11:49:06.593] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:06.743] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:06+0000 hasProgressMap=false
+DEBUG[10-13|11:49:06.870] Executing EVM call finished              runtime=1.846971ms
+DEBUG[10-13|11:49:06.870] Served eth_call                          conn=172.17.0.1:45526 reqid=344 duration=1.963258ms
+DEBUG[10-13|11:49:06.870] Served eth_chainId                       conn=172.17.0.1:45526 reqid=345 duration="8.305µs"
+DEBUG[10-13|11:49:06.882] Executing EVM call finished              runtime="432.588µs"
+DEBUG[10-13|11:49:06.882] Served eth_call                          conn=172.17.0.1:45526 reqid=346 duration="511.897µs"
+DEBUG[10-13|11:49:06.882] Served eth_chainId                       conn=172.17.0.1:45526 reqid=347 duration="8.155µs"
+DEBUG[10-13|11:49:06.894] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:06.905] Executing EVM call finished              runtime="440.984µs"
+DEBUG[10-13|11:49:06.905] Served eth_call                          conn=172.17.0.1:45526 reqid=348 duration="550.739µs"
+DEBUG[10-13|11:49:06.905] Served eth_chainId                       conn=172.17.0.1:45526 reqid=349 duration="11.311µs"
+WARN [10-13|11:49:06.907] error getting max time variation on L1 bound block; falling back on latest block err="no contract code at given address"
+DEBUG[10-13|11:49:06.917] Executing EVM call finished              runtime="481.61µs"
+DEBUG[10-13|11:49:06.917] Served eth_call                          conn=172.17.0.1:45526 reqid=350 duration="585.604µs"
+DEBUG[10-13|11:49:06.917] Served eth_chainId                       conn=172.17.0.1:45526 reqid=351 duration="9.478µs"
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time="1.002µs"   gcnodes=0 gcsize=0.00B gctime=581ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=370ns       gcnodes=0 gcsize=0.00B gctime=781ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=230ns       gcnodes=0 gcsize=0.00B gctime=891ns     livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=280ns       gcnodes=0 gcsize=0.00B gctime="1.021µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=181ns       gcnodes=0 gcsize=0.00B gctime="1.102µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="1.152µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="1.222µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=200ns       gcnodes=0 gcsize=0.00B gctime="1.312µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=161ns       gcnodes=0 gcsize=0.00B gctime="1.363µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.003] Dereferenced trie from memory database   nodes=0   size=0.00B    time=371ns       gcnodes=0 gcsize=0.00B gctime="1.593µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=271ns       gcnodes=0 gcsize=0.00B gctime="1.744µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=241ns       gcnodes=0 gcsize=0.00B gctime="1.854µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=161ns       gcnodes=0 gcsize=0.00B gctime="1.904µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=180ns       gcnodes=0 gcsize=0.00B gctime="1.994µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=250ns       gcnodes=0 gcsize=0.00B gctime="2.144µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=140ns       gcnodes=0 gcsize=0.00B gctime="2.204µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=301ns       gcnodes=0 gcsize=0.00B gctime="2.384µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=191ns       gcnodes=0 gcsize=0.00B gctime="2.475µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=210ns       gcnodes=0 gcsize=0.00B gctime="2.565µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=230ns       gcnodes=0 gcsize=0.00B gctime="2.695µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="2.755µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=261ns       gcnodes=0 gcsize=0.00B gctime="2.905µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=190ns       gcnodes=0 gcsize=0.00B gctime="2.985µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=171ns       gcnodes=0 gcsize=0.00B gctime="3.045µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=250ns       gcnodes=0 gcsize=0.00B gctime="3.185µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=220ns       gcnodes=0 gcsize=0.00B gctime="3.305µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=170ns       gcnodes=0 gcsize=0.00B gctime="3.375µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="3.435µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=200ns       gcnodes=0 gcsize=0.00B gctime="3.525µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=150ns       gcnodes=0 gcsize=0.00B gctime="3.585µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="3.665µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=221ns       gcnodes=0 gcsize=0.00B gctime="3.725µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=181ns       gcnodes=0 gcsize=0.00B gctime="3.796µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=160ns       gcnodes=0 gcsize=0.00B gctime="3.846µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=180ns       gcnodes=0 gcsize=0.00B gctime="3.916µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=171ns       gcnodes=0 gcsize=0.00B gctime="3.996µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=171ns       gcnodes=0 gcsize=0.00B gctime="4.047µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=170ns       gcnodes=0 gcsize=0.00B gctime="4.107µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=201ns       gcnodes=0 gcsize=0.00B gctime="4.198µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=190ns       gcnodes=0 gcsize=0.00B gctime="4.268µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=190ns       gcnodes=0 gcsize=0.00B gctime="4.358µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.004] Dereferenced trie from memory database   nodes=0   size=0.00B    time=190ns       gcnodes=0 gcsize=0.00B gctime="4.428µs" livenodes=0 livesize=0.00B
+DEBUG[10-13|11:49:07.043] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:07+0000 hasProgressMap=false
+DEBUG[10-13|11:49:07.194] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:07.344] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:07+0000 hasProgressMap=false
+DEBUG[10-13|11:49:07.495] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:07.517] Executing EVM call finished              runtime=2.070469ms
+DEBUG[10-13|11:49:07.517] Served eth_call                          conn=172.17.0.1:45526 reqid=352 duration=2.218305ms
+DEBUG[10-13|11:49:07.517] Served eth_chainId                       conn=172.17.0.1:45526 reqid=353 duration="11.331µs"
+DEBUG[10-13|11:49:07.529] Executing EVM call finished              runtime="479.286µs"
+DEBUG[10-13|11:49:07.529] Served eth_call                          conn=172.17.0.1:45526 reqid=354 duration="557.251µs"
+DEBUG[10-13|11:49:07.529] Served eth_chainId                       conn=172.17.0.1:45526 reqid=355 duration="10.159µs"
+DEBUG[10-13|11:49:07.551] Executing EVM call finished              runtime="350.104µs"
+DEBUG[10-13|11:49:07.551] Served eth_call                          conn=172.17.0.1:45526 reqid=356 duration="431.036µs"
+DEBUG[10-13|11:49:07.551] Served eth_chainId                       conn=172.17.0.1:45526 reqid=357 duration="6.983µs"
+DEBUG[10-13|11:49:07.563] Executing EVM call finished              runtime="391.872µs"
+DEBUG[10-13|11:49:07.563] Served eth_call                          conn=172.17.0.1:45526 reqid=358 duration="473.144µs"
+DEBUG[10-13|11:49:07.563] Served eth_chainId                       conn=172.17.0.1:45526 reqid=359 duration="9.678µs"
+DEBUG[10-13|11:49:07.645] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:07+0000 hasProgressMap=false
+DEBUG[10-13|11:49:07.797] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:07.946] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:07+0000 hasProgressMap=false
+DEBUG[10-13|11:49:08.098] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:08.154] Executing EVM call finished              runtime=2.232111ms
+DEBUG[10-13|11:49:08.154] Served eth_call                          conn=172.17.0.1:45526 reqid=360 duration=2.353658ms
+DEBUG[10-13|11:49:08.154] Served eth_chainId                       conn=172.17.0.1:45526 reqid=361 duration="12.524µs"
+DEBUG[10-13|11:49:08.167] Executing EVM call finished              runtime="422.028µs"
+DEBUG[10-13|11:49:08.167] Served eth_call                          conn=172.17.0.1:45526 reqid=362 duration="525.191µs"
+DEBUG[10-13|11:49:08.167] Served eth_chainId                       conn=172.17.0.1:45526 reqid=363 duration="11.752µs"
+DEBUG[10-13|11:49:08.189] Executing EVM call finished              runtime="465.219µs"
+DEBUG[10-13|11:49:08.189] Served eth_call                          conn=172.17.0.1:45526 reqid=364 duration="582.238µs"
+DEBUG[10-13|11:49:08.189] Served eth_chainId                       conn=172.17.0.1:45526 reqid=365 duration="12.954µs"
+DEBUG[10-13|11:49:08.201] Executing EVM call finished              runtime="451.554µs"
+DEBUG[10-13|11:49:08.201] Served eth_call                          conn=172.17.0.1:45526 reqid=366 duration="562.09µs"
+DEBUG[10-13|11:49:08.201] Served eth_chainId                       conn=172.17.0.1:45526 reqid=367 duration="11.803µs"
+DEBUG[10-13|11:49:08.247] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:08+0000 hasProgressMap=false
+DEBUG[10-13|11:49:08.398] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:08.548] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:08+0000 hasProgressMap=false
+DEBUG[10-13|11:49:08.699] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:08.785] Executing EVM call finished              runtime=1.956667ms
+DEBUG[10-13|11:49:08.785] Served eth_call                          conn=172.17.0.1:45526 reqid=368 duration=2.104032ms
+DEBUG[10-13|11:49:08.785] Served eth_chainId                       conn=172.17.0.1:45526 reqid=369 duration="11.692µs"
+DEBUG[10-13|11:49:08.798] Executing EVM call finished              runtime="478.845µs"
+DEBUG[10-13|11:49:08.798] Served eth_call                          conn=172.17.0.1:45526 reqid=370 duration="591.235µs"
+DEBUG[10-13|11:49:08.798] Served eth_chainId                       conn=172.17.0.1:45526 reqid=371 duration="9.598µs"
+DEBUG[10-13|11:49:08.820] Executing EVM call finished              runtime="486.92µs"
+DEBUG[10-13|11:49:08.820] Served eth_call                          conn=172.17.0.1:45526 reqid=372 duration="591.215µs"
+DEBUG[10-13|11:49:08.820] Served eth_chainId                       conn=172.17.0.1:45526 reqid=373 duration="11.381µs"
+DEBUG[10-13|11:49:08.832] Executing EVM call finished              runtime="456.864µs"
+DEBUG[10-13|11:49:08.832] Served eth_call                          conn=172.17.0.1:45526 reqid=374 duration="580.164µs"
+DEBUG[10-13|11:49:08.833] Served eth_chainId                       conn=172.17.0.1:45526 reqid=375 duration="21.64µs"
+DEBUG[10-13|11:49:08.848] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:08+0000 hasProgressMap=false
+DEBUG[10-13|11:49:09.000] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:09.149] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:09+0000 hasProgressMap=false
+DEBUG[10-13|11:49:09.301] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:09.423] Executing EVM call finished              runtime=1.868682ms
+DEBUG[10-13|11:49:09.423] Served eth_call                          conn=172.17.0.1:45526 reqid=376 duration=1.988145ms
+DEBUG[10-13|11:49:09.423] Served eth_chainId                       conn=172.17.0.1:45526 reqid=377 duration="10.65µs"
+DEBUG[10-13|11:49:09.436] Executing EVM call finished              runtime="394.878µs"
+DEBUG[10-13|11:49:09.436] Served eth_call                          conn=172.17.0.1:45526 reqid=378 duration="488.383µs"
+DEBUG[10-13|11:49:09.436] Served eth_chainId                       conn=172.17.0.1:45526 reqid=379 duration="8.907µs"
+DEBUG[10-13|11:49:09.449] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:09+0000 hasProgressMap=false
+DEBUG[10-13|11:49:09.458] Executing EVM call finished              runtime="487.882µs"
+DEBUG[10-13|11:49:09.458] Served eth_call                          conn=172.17.0.1:45526 reqid=380 duration="595.212µs"
+DEBUG[10-13|11:49:09.458] Served eth_chainId                       conn=172.17.0.1:45526 reqid=381 duration="11.411µs"
+DEBUG[10-13|11:49:09.470] Executing EVM call finished              runtime="417.63µs"
+DEBUG[10-13|11:49:09.470] Served eth_call                          conn=172.17.0.1:45526 reqid=382 duration="497.619µs"
+DEBUG[10-13|11:49:09.470] Served eth_chainId                       conn=172.17.0.1:45526 reqid=383 duration="51.777µs"
+DEBUG[10-13|11:49:09.602] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:09.750] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:09+0000 hasProgressMap=false
+DEBUG[10-13|11:49:09.903] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:10.051] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:10+0000 hasProgressMap=false
+DEBUG[10-13|11:49:10.055] Executing EVM call finished              runtime=1.815111ms
+DEBUG[10-13|11:49:10.055] Served eth_call                          conn=172.17.0.1:45526 reqid=384 duration=1.901864ms
+DEBUG[10-13|11:49:10.055] Served eth_chainId                       conn=172.17.0.1:45526 reqid=385 duration="8.345µs"
+DEBUG[10-13|11:49:10.068] Executing EVM call finished              runtime="448.929µs"
+DEBUG[10-13|11:49:10.068] Served eth_call                          conn=172.17.0.1:45526 reqid=386 duration="580.024µs"
+DEBUG[10-13|11:49:10.068] Served eth_chainId                       conn=172.17.0.1:45526 reqid=387 duration="11.05µs"
+DEBUG[10-13|11:49:10.090] Executing EVM call finished              runtime="476.741µs"
+DEBUG[10-13|11:49:10.090] Served eth_call                          conn=172.17.0.1:45526 reqid=388 duration="563.984µs"
+DEBUG[10-13|11:49:10.090] Served eth_chainId                       conn=172.17.0.1:45526 reqid=389 duration="15.419µs"
+DEBUG[10-13|11:49:10.102] Executing EVM call finished              runtime="461.833µs"
+DEBUG[10-13|11:49:10.102] Served eth_call                          conn=172.17.0.1:45526 reqid=390 duration="568.132µs"
+DEBUG[10-13|11:49:10.102] Served eth_chainId                       conn=172.17.0.1:45526 reqid=391 duration="11.161µs"
+DEBUG[10-13|11:49:10.204] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:10.352] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:10+0000 hasProgressMap=false
+DEBUG[10-13|11:49:10.504] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:10.653] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:10+0000 hasProgressMap=false
+DEBUG[10-13|11:49:10.695] Executing EVM call finished              runtime=2.060681ms
+DEBUG[10-13|11:49:10.695] Served eth_call                          conn=172.17.0.1:45526 reqid=392 duration=2.197666ms
+DEBUG[10-13|11:49:10.695] Served eth_chainId                       conn=172.17.0.1:45526 reqid=393 duration="11.462µs"
+DEBUG[10-13|11:49:10.707] Executing EVM call finished              runtime="384.708µs"
+DEBUG[10-13|11:49:10.708] Served eth_call                          conn=172.17.0.1:45526 reqid=394 duration="483.032µs"
+DEBUG[10-13|11:49:10.708] Served eth_chainId                       conn=172.17.0.1:45526 reqid=395 duration="7.744µs"
+DEBUG[10-13|11:49:10.729] Executing EVM call finished              runtime="405.939µs"
+DEBUG[10-13|11:49:10.729] Served eth_call                          conn=172.17.0.1:45526 reqid=396 duration="548.324µs"
+DEBUG[10-13|11:49:10.729] Served eth_chainId                       conn=172.17.0.1:45526 reqid=397 duration="8.596µs"
+DEBUG[10-13|11:49:10.741] Executing EVM call finished              runtime="413.393µs"
+DEBUG[10-13|11:49:10.741] Served eth_call                          conn=172.17.0.1:45526 reqid=398 duration="494.103µs"
+DEBUG[10-13|11:49:10.741] Served eth_chainId                       conn=172.17.0.1:45526 reqid=399 duration="8.275µs"
+DEBUG[10-13|11:49:10.805] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:10.954] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:10+0000 hasProgressMap=false
+DEBUG[10-13|11:49:11.255] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:11+0000 hasProgressMap=false
+DEBUG[10-13|11:49:11.281] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:11.327] Executing EVM call finished              runtime=1.839898ms
+DEBUG[10-13|11:49:11.327] Served eth_call                          conn=172.17.0.1:45526 reqid=400 duration=1.967016ms
+DEBUG[10-13|11:49:11.328] Served eth_chainId                       conn=172.17.0.1:45526 reqid=401 duration="10.46µs"
+DEBUG[10-13|11:49:11.340] Executing EVM call finished              runtime="515.664µs"
+DEBUG[10-13|11:49:11.340] Served eth_call                          conn=172.17.0.1:45526 reqid=402 duration="624.977µs"
+DEBUG[10-13|11:49:11.340] Served eth_chainId                       conn=172.17.0.1:45526 reqid=403 duration="9.708µs"
+DEBUG[10-13|11:49:11.363] Executing EVM call finished              runtime="420.115µs"
+DEBUG[10-13|11:49:11.363] Served eth_call                          conn=172.17.0.1:45526 reqid=404 duration="531.393µs"
+DEBUG[10-13|11:49:11.363] Served eth_chainId                       conn=172.17.0.1:45526 reqid=405 duration="9.808µs"
+DEBUG[10-13|11:49:11.374] Executing EVM call finished              runtime="383.627µs"
+DEBUG[10-13|11:49:11.374] Served eth_call                          conn=172.17.0.1:45526 reqid=406 duration="464.328µs"
+DEBUG[10-13|11:49:11.374] Served eth_chainId                       conn=172.17.0.1:45526 reqid=407 duration="8.606µs"
+DEBUG[10-13|11:49:11.555] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:11+0000 hasProgressMap=false
+DEBUG[10-13|11:49:11.583] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:11.855] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:11+0000 hasProgressMap=false
+DEBUG[10-13|11:49:11.884] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:11.982] Executing EVM call finished              runtime=2.217814ms
+DEBUG[10-13|11:49:11.982] Served eth_call                          conn=172.17.0.1:45526 reqid=408 duration=2.336987ms
+DEBUG[10-13|11:49:11.982] Served eth_chainId                       conn=172.17.0.1:45526 reqid=409 duration="8.055µs"
+DEBUG[10-13|11:49:11.995] Executing EVM call finished              runtime="415.356µs"
+DEBUG[10-13|11:49:11.995] Served eth_call                          conn=172.17.0.1:45526 reqid=410 duration="525.542µs"
+DEBUG[10-13|11:49:11.995] Served eth_chainId                       conn=172.17.0.1:45526 reqid=411 duration="11.151µs"
+DEBUG[10-13|11:49:12.016] Executing EVM call finished              runtime="437.868µs"
+DEBUG[10-13|11:49:12.016] Served eth_call                          conn=172.17.0.1:45526 reqid=412 duration="552.853µs"
+DEBUG[10-13|11:49:12.017] Served eth_chainId                       conn=172.17.0.1:45526 reqid=413 duration="16.341µs"
+DEBUG[10-13|11:49:12.029] Executing EVM call finished              runtime="412.932µs"
+DEBUG[10-13|11:49:12.029] Served eth_call                          conn=172.17.0.1:45526 reqid=414 duration="505.655µs"
+DEBUG[10-13|11:49:12.029] Served eth_chainId                       conn=172.17.0.1:45526 reqid=415 duration="11.08µs"
+DEBUG[10-13|11:49:12.157] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:12+0000 hasProgressMap=false
+DEBUG[10-13|11:49:12.184] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:12.457] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:12+0000 hasProgressMap=false
+DEBUG[10-13|11:49:12.485] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:12.625] Executing EVM call finished              runtime=2.027629ms
+DEBUG[10-13|11:49:12.625] Served eth_call                          conn=172.17.0.1:45526 reqid=416 duration=2.152011ms
+DEBUG[10-13|11:49:12.625] Served eth_chainId                       conn=172.17.0.1:45526 reqid=417 duration="8.105µs"
+DEBUG[10-13|11:49:12.637] Executing EVM call finished              runtime="356.315µs"
+DEBUG[10-13|11:49:12.637] Served eth_call                          conn=172.17.0.1:45526 reqid=418 duration="431.317µs"
+DEBUG[10-13|11:49:12.637] Served eth_chainId                       conn=172.17.0.1:45526 reqid=419 duration="33.343µs"
+DEBUG[10-13|11:49:12.659] Executing EVM call finished              runtime="449.861µs"
+DEBUG[10-13|11:49:12.659] Served eth_call                          conn=172.17.0.1:45526 reqid=420 duration="543.906µs"
+DEBUG[10-13|11:49:12.659] Served eth_chainId                       conn=172.17.0.1:45526 reqid=421 duration="11.09µs"
+DEBUG[10-13|11:49:12.671] Executing EVM call finished              runtime="408.464µs"
+DEBUG[10-13|11:49:12.671] Served eth_call                          conn=172.17.0.1:45526 reqid=422 duration="562.832µs"
+DEBUG[10-13|11:49:12.671] Served eth_chainId                       conn=172.17.0.1:45526 reqid=423 duration="11.481µs"
+DEBUG[10-13|11:49:12.758] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:12+0000 hasProgressMap=false
+DEBUG[10-13|11:49:12.786] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:13.059] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:13+0000 hasProgressMap=false
+DEBUG[10-13|11:49:13.087] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:13.259] Executing EVM call finished              runtime=2.730262ms
+DEBUG[10-13|11:49:13.259] Served eth_call                          conn=172.17.0.1:45526 reqid=424 duration=2.877206ms
+DEBUG[10-13|11:49:13.259] Served eth_chainId                       conn=172.17.0.1:45526 reqid=425 duration="9.829µs"
+DEBUG[10-13|11:49:13.272] Executing EVM call finished              runtime="500.646µs"
+DEBUG[10-13|11:49:13.272] Served eth_call                          conn=172.17.0.1:45526 reqid=426 duration="602.075µs"
+DEBUG[10-13|11:49:13.272] Served eth_chainId                       conn=172.17.0.1:45526 reqid=427 duration="39.635µs"
+DEBUG[10-13|11:49:13.294] Executing EVM call finished              runtime="458.147µs"
+DEBUG[10-13|11:49:13.294] Served eth_call                          conn=172.17.0.1:45526 reqid=428 duration="597.266µs"
+DEBUG[10-13|11:49:13.294] Served eth_chainId                       conn=172.17.0.1:45526 reqid=429 duration="10.901µs"
+DEBUG[10-13|11:49:13.306] Executing EVM call finished              runtime="467.223µs"
+DEBUG[10-13|11:49:13.306] Served eth_call                          conn=172.17.0.1:45526 reqid=430 duration="584.321µs"
+DEBUG[10-13|11:49:13.306] Served eth_chainId                       conn=172.17.0.1:45526 reqid=431 duration="9.888µs"
+DEBUG[10-13|11:49:13.360] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:13+0000 hasProgressMap=false
+DEBUG[10-13|11:49:13.387] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:13.661] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:13+0000 hasProgressMap=false
+DEBUG[10-13|11:49:13.688] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:13.894] Executing EVM call finished              runtime=2.035283ms
+DEBUG[10-13|11:49:13.894] Served eth_call                          conn=172.17.0.1:45526 reqid=432 duration=2.147322ms
+DEBUG[10-13|11:49:13.894] Served eth_chainId                       conn=172.17.0.1:45526 reqid=433 duration="12.434µs"
+DEBUG[10-13|11:49:13.907] Executing EVM call finished              runtime="340.005µs"
+DEBUG[10-13|11:49:13.907] Served eth_call                          conn=172.17.0.1:45526 reqid=434 duration="416.168µs"
+DEBUG[10-13|11:49:13.907] Served eth_chainId                       conn=172.17.0.1:45526 reqid=435 duration="11.711µs"
+DEBUG[10-13|11:49:13.929] Executing EVM call finished              runtime="519.29µs"
+DEBUG[10-13|11:49:13.929] Served eth_call                          conn=172.17.0.1:45526 reqid=436 duration="629.126µs"
+DEBUG[10-13|11:49:13.929] Served eth_chainId                       conn=172.17.0.1:45526 reqid=437 duration="10.34µs"
+DEBUG[10-13|11:49:13.941] Executing EVM call finished              runtime="449.54µs"
+DEBUG[10-13|11:49:13.941] Served eth_call                          conn=172.17.0.1:45526 reqid=438 duration="527.255µs"
+DEBUG[10-13|11:49:13.941] Served eth_chainId                       conn=172.17.0.1:45526 reqid=439 duration="11.652µs"
+DEBUG[10-13|11:49:13.962] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:13+0000 hasProgressMap=false
+DEBUG[10-13|11:49:13.988] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:14.263] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:14+0000 hasProgressMap=false
+DEBUG[10-13|11:49:14.288] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:14.536] Executing EVM call finished              runtime=1.950236ms
+DEBUG[10-13|11:49:14.536] Served eth_call                          conn=172.17.0.1:45526 reqid=440 duration=2.055122ms
+DEBUG[10-13|11:49:14.536] Served eth_chainId                       conn=172.17.0.1:45526 reqid=441 duration="7.855µs"
+DEBUG[10-13|11:49:14.548] Executing EVM call finished              runtime="460.691µs"
+DEBUG[10-13|11:49:14.548] Served eth_call                          conn=172.17.0.1:45526 reqid=442 duration="547.804µs"
+DEBUG[10-13|11:49:14.548] Served eth_chainId                       conn=172.17.0.1:45526 reqid=443 duration="13.566µs"
+DEBUG[10-13|11:49:14.564] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:14+0000 hasProgressMap=false
+DEBUG[10-13|11:49:14.570] Executing EVM call finished              runtime="493.473µs"
+DEBUG[10-13|11:49:14.570] Served eth_call                          conn=172.17.0.1:45526 reqid=444 duration="589.021µs"
+DEBUG[10-13|11:49:14.570] Served eth_chainId                       conn=172.17.0.1:45526 reqid=445 duration="13.686µs"
+DEBUG[10-13|11:49:14.582] Executing EVM call finished              runtime="363.5µs"
+DEBUG[10-13|11:49:14.582] Served eth_call                          conn=172.17.0.1:45526 reqid=446 duration="443.398µs"
+DEBUG[10-13|11:49:14.583] Served eth_chainId                       conn=172.17.0.1:45526 reqid=447 duration="8.997µs"
+DEBUG[10-13|11:49:14.590] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:14.865] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:14+0000 hasProgressMap=false
+DEBUG[10-13|11:49:14.890] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:15.166] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:15+0000 hasProgressMap=false
+DEBUG[10-13|11:49:15.167] Executing EVM call finished              runtime=1.901455ms
+DEBUG[10-13|11:49:15.168] Served eth_call                          conn=172.17.0.1:45526 reqid=448 duration=2.022311ms
+DEBUG[10-13|11:49:15.168] Served eth_chainId                       conn=172.17.0.1:45526 reqid=449 duration="11.772µs"
+DEBUG[10-13|11:49:15.180] Executing EVM call finished              runtime="349.072µs"
+DEBUG[10-13|11:49:15.180] Served eth_call                          conn=172.17.0.1:45526 reqid=450 duration="435.324µs"
+DEBUG[10-13|11:49:15.180] Served eth_chainId                       conn=172.17.0.1:45526 reqid=451 duration="9.788µs"
+DEBUG[10-13|11:49:15.191] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:15.202] Executing EVM call finished              runtime="533.277µs"
+DEBUG[10-13|11:49:15.202] Served eth_call                          conn=172.17.0.1:45526 reqid=452 duration="653.872µs"
+DEBUG[10-13|11:49:15.203] Served eth_chainId                       conn=172.17.0.1:45526 reqid=453 duration="11.442µs"
+DEBUG[10-13|11:49:15.215] Executing EVM call finished              runtime="429.823µs"
+DEBUG[10-13|11:49:15.215] Served eth_call                          conn=172.17.0.1:45526 reqid=454 duration="538.096µs"
+DEBUG[10-13|11:49:15.215] Served eth_chainId                       conn=172.17.0.1:45526 reqid=455 duration="9.918µs"
+DEBUG[10-13|11:49:15.466] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:15+0000 hasProgressMap=false
+DEBUG[10-13|11:49:15.491] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:15.767] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:15+0000 hasProgressMap=false
+DEBUG[10-13|11:49:15.792] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:15.803] Executing EVM call finished              runtime=2.193281ms
+DEBUG[10-13|11:49:15.803] Served eth_call                          conn=172.17.0.1:45526 reqid=456 duration=2.304729ms
+DEBUG[10-13|11:49:15.803] Served eth_chainId                       conn=172.17.0.1:45526 reqid=457 duration="9.999µs"
+DEBUG[10-13|11:49:15.816] Executing EVM call finished              runtime="432.098µs"
+DEBUG[10-13|11:49:15.816] Served eth_call                          conn=172.17.0.1:45526 reqid=458 duration="525.973µs"
+DEBUG[10-13|11:49:15.816] Served eth_chainId                       conn=172.17.0.1:45526 reqid=459 duration="12.463µs"
+DEBUG[10-13|11:49:15.838] Executing EVM call finished              runtime="501.688µs"
+DEBUG[10-13|11:49:15.838] Served eth_call                          conn=172.17.0.1:45526 reqid=460 duration="602.065µs"
+DEBUG[10-13|11:49:15.838] Served eth_chainId                       conn=172.17.0.1:45526 reqid=461 duration="33.803µs"
+DEBUG[10-13|11:49:15.850] Executing EVM call finished              runtime="330.598µs"
+DEBUG[10-13|11:49:15.850] Served eth_call                          conn=172.17.0.1:45526 reqid=462 duration="439.632µs"
+DEBUG[10-13|11:49:15.850] Served eth_chainId                       conn=172.17.0.1:45526 reqid=463 duration="10.99µs"
+DEBUG[10-13|11:49:16.068] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:16+0000 hasProgressMap=false
+DEBUG[10-13|11:49:16.093] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:16.369] Pushed sync data from consensus to execution synced=true  maxMessageCount=31 updatedAt=2026-10-13T11:49:16+0000 hasProgressMap=false
+DEBUG[10-13|11:49:16.395] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:16.431] Executing EVM call finished              runtime=1.867ms
+DEBUG[10-13|11:49:16.432] Served eth_call                          conn=172.17.0.1:45526 reqid=464 duration=1.983708ms
+DEBUG[10-13|11:49:16.432] Served eth_chainId                       conn=172.17.0.1:45526 reqid=465 duration="15.86µs"
+DEBUG[10-13|11:49:16.449] Served eth_getTransactionCount           conn=172.17.0.1:45526 reqid=466 duration="130.363µs"
+DEBUG[10-13|11:49:16.449] Served eth_chainId                       conn=172.17.0.1:45526 reqid=467 duration="13.054µs"
+DEBUG[10-13|11:49:16.463] Caller gas above allowance, capping      requested=1,125,899,906,842,624 cap=1,847,361,222
+DEBUG[10-13|11:49:16.534] Served eth_estimateGas                   conn=172.17.0.1:45526 reqid=468 duration=71.13624ms
+DEBUG[10-13|11:49:16.545] Served eth_chainId                       conn=172.17.0.1:45526 reqid=469 duration="40.867µs"
+DEBUG[10-13|11:49:16.557] Served eth_chainId                       conn=172.17.0.1:45526 reqid=470 duration="47.399µs"
+DEBUG[10-13|11:49:16.568] Served eth_getBlockByNumber              conn=172.17.0.1:45526 reqid=471 duration="241.592µs"
+DEBUG[10-13|11:49:16.568] Served eth_gasPrice                      conn=172.17.0.1:45526 reqid=472 duration="16.251µs"
+DEBUG[10-13|11:49:16.568] Served eth_maxPriorityFeePerGas          conn=172.17.0.1:45526 reqid=473 duration="9.488µs"
+DEBUG[10-13|11:49:16.588] Served eth_blockNumber                   conn=172.17.0.1:45526 reqid=474 duration="32.561µs"
+DEBUG[10-13|11:49:16.612] ExecuteNextMsg failed to send message to execEngine err="createBlock mutex held"              msgIdxToExecute=31
+DEBUG[10-13|11:49:16.612] Persisted trie from memory database      nodes=74  flushnodes=0 size=11.45KiB flushsize=0.00B time="158.196µs" flushtime=0s gcnodes=0 gcsize=0.00B gctime="4.428µs" livenodes=0 livesize=0.00B
+INFO [10-13|11:49:16.613] Submitted transaction                    hash=0xc117bbb3e04c1c9e975253d4b2ab88ab00c918165c994acf54c407845680f0fd from=0x453fAbBEdf86cc7CC701a077F040c71d7a045b38 nonce=18 recipient=0x20A9a16B3ABF7f0Ea59b64731f13cc8eB7f3eAE5 value=0
+DEBUG[10-13|11:49:16.613] Served eth_sendRawTransaction            conn=172.17.0.1:45526 reqid=475 duration=24.780879ms
+DEBUG[10-13|11:49:16.613] Served eth_chainId                       conn=172.17.0.1:45526 reqid=476 duration="12.543µs"
+DEBUG[10-13|11:49:16.639] Served eth_chainId                       conn=172.17.0.1:45526 reqid=477 duration="38.071µs"
+DEBUG[10-13|11:49:16.640] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=478 duration="706.922µs"
+DEBUG[10-13|11:49:16.654] Served eth_getTransactionReceipt         conn=172.17.0.1:45526 reqid=479 duration="703.095µs"
+DEBUG[10-13|11:49:16.670] Pushed sync data from consensus to execution synced=true  maxMessageCount=32 updatedAt=2026-10-13T11:49:16+0000 hasProgressMap=false
+DEBUG[10-13|11:49:16.695] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:16.970] Pushed sync data from consensus to execution synced=true  maxMessageCount=32 updatedAt=2026-10-13T11:49:16+0000 hasProgressMap=false
+DEBUG[10-13|11:49:16.996] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:17.270] Pushed sync data from consensus to execution synced=true  maxMessageCount=32 updatedAt=2026-10-13T11:49:17+0000 hasProgressMap=false
+DEBUG[10-13|11:49:17.297] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+DEBUG[10-13|11:49:17.571] Pushed sync data from consensus to execution synced=true  maxMessageCount=32 updatedAt=2026-10-13T11:49:17+0000 hasProgressMap=false
+DEBUG[10-13|11:49:17.598] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
+WARN [10-13|11:49:17.748] error getting max time variation on L1 bound block; falling back on latest block err="no contract code at given address"
+DEBUG[10-13|11:49:17.872] Pushed sync data from consensus to execution synced=true  maxMessageCount=32 updatedAt=2026-10-13T11:49:17+0000 hasProgressMap=false
+DEBUG[10-13|11:49:17.898] Pushed finality data from consensus to execution safeMsgCount=0 finalizedMsgCount=0 validatedMsgCount=0
