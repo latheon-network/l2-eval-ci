@@ -19,7 +19,7 @@ import { privateKeyToAccount, generatePrivateKey } from 'viem/accounts';
 import { arbitrumSepolia } from 'viem/chains';
 import {
   prepareChainConfig, createRollupPrepareDeploymentParamsConfig, createRollup,
-  prepareNodeConfig, createTokenBridge,
+  prepareNodeConfig, createTokenBridge, createTokenBridgeFetchTokenBridgeContracts,
 } from '@arbitrum/chain-sdk';
 import { generateChainId, sanitizePrivateKey } from '@arbitrum/chain-sdk/utils';
 
@@ -184,19 +184,40 @@ async function bridge() {
   const st = load(statePath, {}); const pub = load(pubPath, {});
   const l3 = l3Client(st.chainId);
   await waitL3(l3);
-  const res = await createTokenBridge({
-    rollupOwner: deployer.address, rollupAddress: st.core.rollup,
-    rollupDeploymentBlockNumber: BigInt(st.core.deployedAtBlockNumber),
-    account: deployer, nativeTokenAddress: st.token,
-    parentChainPublicClient: parent, orbitChainPublicClient: l3,
-  });
-  pub.txs.createTokenBridge = res.transactionReceipt.transactionHash;
-  pub.tokenBridge = res.tokenBridgeContracts;
-  const router = res.tokenBridgeContracts.orbitChainContracts.router;
-  const code = await l3.getBytecode({ address: router });
+  let contracts;
+  try {
+    const res = await createTokenBridge({
+      rollupOwner: deployer.address, rollupAddress: st.core.rollup,
+      rollupDeploymentBlockNumber: BigInt(st.core.deployedAtBlockNumber),
+      account: deployer, nativeTokenAddress: st.token,
+      parentChainPublicClient: parent, orbitChainPublicClient: l3,
+    });
+    pub.txs.createTokenBridge = res.transactionReceipt.transactionHash;
+    contracts = res.tokenBridgeContracts;
+  } catch (e) {
+    // public RPCs sometimes do not see a just-sent tx yet; the deployment may still have gone through
+    log(`createTokenBridge reported: ${e?.shortMessage || e?.message}; looking up the deployment instead`);
+    for (let i = 0; i < 30 && !contracts; i++) {
+      await sleep(10_000);
+      try {
+        const c = await createTokenBridgeFetchTokenBridgeContracts({ inbox: st.core.inbox, parentChainPublicClient: parent });
+        if (c?.orbitChainContracts?.router && !/^0x0+$/.test(c.orbitChainContracts.router)) contracts = c;
+      } catch { /* not deployed yet */ }
+    }
+    if (!contracts) throw new Error('token bridge deployment not found on the parent chain');
+  }
+  pub.tokenBridge = contracts;
+  const router = contracts.orbitChainContracts.router;
+  let code;
+  for (let i = 0; i < 60; i++) { // retryables create the child-side contracts
+    code = await l3.getBytecode({ address: router });
+    if (code && code !== '0x') break;
+    await sleep(10_000);
+  }
   pub.tokenBridgeChildRouterHasCode = !!code && code !== '0x';
   log(`token bridge: L3 router ${router}, code present: ${pub.tokenBridgeChildRouterHasCode}`);
   save(pubPath, pub);
+  if (!pub.tokenBridgeChildRouterHasCode) process.exitCode = 1;
 }
 
 async function batches() {
