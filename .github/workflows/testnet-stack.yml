@@ -49,8 +49,8 @@ jobs:
           [ -n "$PARENT_RPC_SECRET" ] && sed -i "s|^PARENT_RPC=.*|PARENT_RPC=$PARENT_RPC_SECRET|" .env
           # pick the newest published image tags (Blockscout publishes public images manually, sometimes later than the git tag)
           pick() { for t in "${@:2}"; do if docker manifest inspect "$1:$t" > /dev/null 2>&1; then echo "$t"; return; fi; done; echo "none"; }
-          BT=$(pick ghcr.io/blockscout/blockscout 12.0.1 v12.0.1 12.0.0 v12.0.0 11.3.3 v11.3.3 11.3.2 v11.3.2)
-          FT=$(pick ghcr.io/blockscout/frontend v2.12.0 v2.11.5 v2.11.4 v2.11.3 v2.11.2 v2.11.1 v2.11.0)
+          BT=$(pick ghcr.io/blockscout/blockscout 9.0.2)
+          FT=$(pick ghcr.io/blockscout/frontend v2.3.1)
           CT=$(pick caddy 2.11.7 2.11.6 2.11.5 2.11 2.10.2)
           echo "blockscout=$BT frontend=$FT caddy=$CT" | tee $GITHUB_WORKSPACE/image-tags.txt
           if [ "$BT" = none ] || [ "$FT" = none ] || [ "$CT" = none ]; then echo "::error::no published image tag found"; exit 1; fi
