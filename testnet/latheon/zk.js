@@ -15,12 +15,18 @@ async function circuitFile(rel) {
   if (!want) die('no hash recorded for ' + rel);
   const local = process.env.LATHEON_REPO ? path.join(process.env.LATHEON_REPO, 'circuits', 'build', rel) : path.join(CACHE, rel);
   if (!fs.existsSync(local)) {
-    const url = `https://cdn.jsdelivr.net/gh/latheon-network/latheon@${ART.source.commit}/circuits/build/${rel}`;
+    // Pinned by commit and checked by sha256 below, so either mirror is fine.
+    const urls = [`https://raw.githubusercontent.com/latheon-network/Latheon/${ART.source.commit}/circuits/build/${rel}`,
+      `https://cdn.jsdelivr.net/gh/latheon-network/Latheon@${ART.source.commit}/circuits/build/${rel}`];
     log('   downloading ' + rel);
-    const r = await fetch(url);
-    if (!r.ok) die('download failed (' + r.status + '): ' + url);
+    let buf = null; const errs = [];
+    for (const url of urls) {
+      try { const r = await fetch(url); if (r.ok) { buf = Buffer.from(await r.arrayBuffer()); break; } errs.push(r.status + ' ' + url); }
+      catch (e) { errs.push((e.cause && e.cause.code || e.message) + ' ' + url); }
+    }
+    if (!buf) die('download failed: ' + errs.join('; ') + ' (or set LATHEON_REPO to a Latheon checkout)');
     fs.mkdirSync(path.dirname(local), { recursive: true });
-    fs.writeFileSync(local, Buffer.from(await r.arrayBuffer()));
+    fs.writeFileSync(local, buf);
   }
   const got = crypto.createHash('sha256').update(fs.readFileSync(local)).digest('hex');
   if (got !== want) die(rel + ': sha256 ' + got + ' does not match the build (' + want + ')');
