@@ -287,7 +287,7 @@ async function validator() {
     parent.readContract({ address: st.core.rollup, abi: rollupAbi, functionName: 'latestConfirmed' }),
     parent.readContract({ address: st.core.rollup, abi: rollupAbi, functionName: 'confirmPeriodBlocks' }),
   ]);
-  log(`validator ${v}: ${formatEther(eth)} ETH, ${formatEther(weth)} WETH (not yet bonded), allowed by the rollup: ${allowed}`);
+  log(`validator ${v}: ${formatEther(eth)} ETH, ${formatEther(weth)} WETH in the wallet (the bond, once posted, sits in the rollup), allowed by the rollup: ${allowed}`);
   log(`rollup ${st.core.rollup}: confirm period ${period} parent-chain blocks, latest confirmed assertion ${confirmed}`);
   pub.validatorAllowed = allowed; pub.confirmPeriodBlocks = period.toString(); save(pubPath, pub);
   if (!allowed) process.exitCode = 1;
