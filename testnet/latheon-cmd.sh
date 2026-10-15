@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Latheon contracts on the test chain, run in a Node container on the server: ./latheon-cmd.sh deploy|smoke
-#   deploy  WLTH, Poseidon, verifiers, four V5 pools, router; every link checked, real proofs against both verifiers
-#   smoke   wrap 11 LTH, router deposit, withdrawMany of 2 notes with real proofs, unwrap, invariants, disclosure
+#   deploy  Poseidon, verifiers, four native-coin V5 pools, native router; every link checked, real proofs against both verifiers
+#   smoke   router deposit of 11 LTH, withdrawMany of 2 notes with real proofs to an empty address, invariants, disclosure
 # Asks for the deployer key without echo unless DEPLOYER_KEY is set. Uses the node's local RPC (127.0.0.1:8449).
 # Public result: latheon/out/latheon-deployments.json (goes into demo/deployments.json); latheon/secret/ stays private.
 set -euo pipefail

@@ -5,6 +5,7 @@ name: latheon contracts for the test chain
 # from jsDelivr and checked against the hashes recorded at build time.
 on:
   push:
+    branches: [main]
     paths:
       - 'testnet/latheon/**'
       - 'testnet/latheon-cmd.sh'

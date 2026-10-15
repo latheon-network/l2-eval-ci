@@ -2,7 +2,8 @@
 /*
  * Compiles the Latheon contracts for the test chain into artifacts/latheon-testnet.json (committed, so the server
  * does not compile anything). Protocol contracts come unchanged from latheon-network/Latheon at the commit in
- * LATHEON_COMMIT; WrappedLTH is local (contracts/WrappedLTH.sol).
+ * LATHEON_COMMIT. The test chain uses the native-coin pools and router (PoolNative, RouterNative); the ERC-20 V5
+ * pool, router and the local WrappedLTH are built too, for the gas comparison in bench/ only.
  *
  *   LATHEON_REPO=/path/to/Latheon node build.js
  *
@@ -20,7 +21,7 @@ const NM = path.join(HERE, 'node_modules');
 const rd = (p) => fs.readFileSync(p, 'utf8');
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
 
-if (!fs.existsSync(path.join(REPO, 'contracts', 'LatheonShieldedPoolV5.sol'))) {
+if (!fs.existsSync(path.join(REPO, 'contracts', 'LatheonShieldedPoolV5Native.sol'))) {
   console.error('Latheon repo not found at ' + REPO + ' (set LATHEON_REPO)'); process.exit(1);
 }
 let commit = 'unknown';
@@ -33,6 +34,8 @@ const files = {
   'contracts/PoseidonT3.sol': path.join(REPO, 'contracts', 'PoseidonT3.sol'),
   'contracts/LatheonShieldedPoolV5.sol': path.join(REPO, 'contracts', 'LatheonShieldedPoolV5.sol'),
   'contracts/LatheonDistributionPool.sol': path.join(REPO, 'contracts', 'LatheonDistributionPool.sol'),
+  'contracts/LatheonShieldedPoolV5Native.sol': path.join(REPO, 'contracts', 'LatheonShieldedPoolV5Native.sol'),
+  'contracts/LatheonDistributionPoolNative.sol': path.join(REPO, 'contracts', 'LatheonDistributionPoolNative.sol'),
   'contracts/WithdrawVerifierV3.sol': path.join(REPO, 'contracts', 'WithdrawVerifierV3.sol'),
   'contracts/DiscloseVerifier.sol': path.join(REPO, 'contracts', 'DiscloseVerifier.sol'),
   'contracts/WrappedLTH.sol': path.join(HERE, 'contracts', 'WrappedLTH.sol'),
@@ -67,6 +70,8 @@ const art = {
     DiscloseVerifier: pick('contracts/DiscloseVerifier.sol', 'Groth16Verifier'),
     Pool5: pick('contracts/LatheonShieldedPoolV5.sol', 'LatheonShieldedPoolV5'),
     Router: pick('contracts/LatheonDistributionPool.sol', 'LatheonDistributionPool'),
+    PoolNative: pick('contracts/LatheonShieldedPoolV5Native.sol', 'LatheonShieldedPoolV5Native'),
+    RouterNative: pick('contracts/LatheonDistributionPoolNative.sol', 'LatheonDistributionPoolNative'),
   },
 };
 fs.mkdirSync(path.join(HERE, 'artifacts'), { recursive: true });

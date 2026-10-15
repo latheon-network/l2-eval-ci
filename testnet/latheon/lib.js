@@ -79,9 +79,9 @@ async function connect() {
 function loadJson(p, d) { return fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : d; }
 function saveJson(p, o) { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, JSON.stringify(o, null, 1) + '\n'); }
 
-// Links the PoseidonT3 library address into the pool bytecode.
-function linkPool(poseidon) {
-  const c = ART.contracts.Pool5;
+// Links the PoseidonT3 library address into a pool's bytecode (PoolNative by default, Pool5 for the bench).
+function linkPool(poseidon, name = 'PoolNative') {
+  const c = ART.contracts[name];
   let code = c.bytecode;
   for (const f in c.linkReferences) for (const l in c.linkReferences[f]) for (const { start, length } of c.linkReferences[f][l])
     code = code.slice(0, 2 + start * 2) + poseidon.slice(2).toLowerCase() + code.slice(2 + start * 2 + length * 2);

@@ -1,7 +1,7 @@
 'use strict';
 /*
  * Gas comparison on a local chain (ganache, in-process) of three ways to use the pools on a chain whose gas
- * token is the coin users hold. PROTOTYPES, testnet only, not audited. All proofs are real (withdraw_v3).
+ * token is the coin users hold. Testnet only, not audited. All proofs are real (withdraw_v3).
  *
  *   A  current:  WLTH wrapper + unchanged V5 pools + unchanged router   (wrap, approve, deposit / withdrawMany, unwrap)
  *   B  wrapping: unchanged V5 pools + a router that takes the coin and wraps it itself (deposit / withdrawMany, unwrap)
@@ -10,7 +10,8 @@
  * Each scenario uses a new depositor and a new recipient address, so storage costs are those of a first use.
  * Then security checks of C: exact amounts, router holds nothing, refusing recipient, re-entry, double spend.
  *
- *   LATHEON_REPO=/path/to/Latheon node bench/bench.js       (LATHEON_REPO also supplies PoseidonT3.sol)
+ *   LATHEON_REPO=/path/to/Latheon node bench/bench.js       (LATHEON_REPO supplies PoseidonT3.sol and the circuit files)
+ * The native pool and router are the ones from the Latheon repo (artifacts); the wrapping router is a bench-only prototype.
  */
 const fs = require('fs');
 const path = require('path');
@@ -38,8 +39,8 @@ function compile() {
   if (errs.length) { console.error(errs.map((e) => e.formattedMessage).join('\n')); process.exit(1); }
   const pick = (f, n) => { const c = out.contracts['bench/contracts/' + f][n]; return { abi: c.abi, bytecode: '0x' + c.evm.bytecode.object, linkReferences: c.evm.bytecode.linkReferences }; };
   return {
-    PoolNative: pick('LatheonShieldedPoolV5Native.sol', 'LatheonShieldedPoolV5Native'),
-    RouterNative: pick('LatheonDistributionPoolNative.sol', 'LatheonDistributionPoolNative'),
+    PoolNative: ART.contracts.PoolNative,     // from the Latheon repo, via artifacts/latheon-testnet.json
+    RouterNative: ART.contracts.RouterNative,
     RouterWrapping: pick('LatheonDistributionPoolWrapping.sol', 'LatheonDistributionPoolWrapping'),
     Refusing: pick('TestRecipients.sol', 'RefusingRecipient'),
     Reentering: pick('TestRecipients.sol', 'ReenteringRecipient'),

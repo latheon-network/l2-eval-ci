@@ -1,10 +1,10 @@
 'use strict';
 /*
  * Deploys the Latheon contracts on the Latheon test chain and checks every link before anything is published:
- *   WrappedLTH (WLTH), PoseidonT3, withdraw verifier (withdraw_v3), disclosure verifier, four V5 pools on WLTH
- *   (100 / 50 / 10 / 1), the distribution router.
- * Checks: chain id, WLTH metadata, each pool's token / verifier / denomination / zeros(8) (wrong Poseidon link),
- * router token / pools / denominations / limits, and one real proof against each verifier (read-only calls).
+ *   PoseidonT3, withdraw verifier (withdraw_v3), disclosure verifier, four native-coin V5 pools (100 / 50 / 10 / 1 LTH)
+ *   and the native-coin distribution router. LTH is the chain's gas coin: no wrapper, no approve.
+ * Checks: each pool's native marker / verifier / denomination / zeros(8) (wrong Poseidon link), router native marker /
+ * pools / denominations / limits, and one real proof against each verifier (read-only calls).
  *
  *   L3_RPC=http://127.0.0.1:8449 node deploy.js        (asks for the deployer key without echo, or DEPLOYER_KEY)
  *   options: --fresh (start again), env PUBLIC_RPC, EXPLORER_URL, NETWORK_ID, NETWORK_NAME
@@ -45,32 +45,29 @@ async function main() {
 
   log('1. Deploy');
   const C = ART.contracts;
-  const wlth = await deploy('WrappedLTH', C.WrappedLTH, []);
   const poseidon = await deploy('PoseidonT3', C.PoseidonT3, []);
   const verifier = await deploy('WithdrawVerifier', C.WithdrawVerifier, []);
   const disclose = await deploy('DiscloseVerifier', C.DiscloseVerifier, []);
   const poolCode = linkPool(poseidon);
   const pools = [];
-  for (const d of DENOMS) pools.push(await deploy('Pool' + d / E18, C.Pool5, [wlth, verifier, d], poolCode));
-  const router = await deploy('Router', C.Router, [wlth, pools]);
+  for (const d of DENOMS) pools.push(await deploy('Pool' + d / E18, C.PoolNative, [verifier, d], poolCode));
+  const router = await deploy('Router', C.RouterNative, [pools]);
 
   log('2. Checks');
   const ok = (cond, what) => { if (!cond) die('check failed: ' + what); log('   ✔ ' + what); };
-  const W = new ethers.Contract(wlth, C.WrappedLTH.abi, provider);
-  ok((await W.symbol()) === 'WLTH' && (await W.decimals()) === 18n, 'WLTH: symbol WLTH, 18 decimals');
   for (let i = 0; i < 4; i++) {
-    const P = new ethers.Contract(pools[i], C.Pool5.abi, provider);
+    const P = new ethers.Contract(pools[i], C.PoolNative.abi, provider);
     const [tok, ver, den, z8] = await Promise.all([P.token(), P.verifier(), P.DENOMINATION(), P.zeros(8)]);
-    ok(tok === wlth && ver === verifier && den === DENOMS[i] && z8 === ZERO_TOP, `pool ${DENOMS[i] / E18}: token WLTH, verifier, denomination, zeros(8) (Poseidon linked correctly)`);
+    ok(tok === ethers.ZeroAddress && ver === verifier && den === DENOMS[i] && z8 === ZERO_TOP, `pool ${DENOMS[i] / E18}: native coin, verifier, denomination, zeros(8) (Poseidon linked correctly)`);
   }
-  const R = new ethers.Contract(router, C.Router.abi, provider);
-  ok((await R.token()) === wlth, 'router: token WLTH');
+  const R = new ethers.Contract(router, C.RouterNative.abi, provider);
+  ok((await R.token()) === ethers.ZeroAddress, 'router: native coin');
   for (let i = 0; i < 4; i++) ok((await R.pools(i)) === pools[i] && (await R.denominations(i)) === DENOMS[i], `router: pool ${i} and denomination ${DENOMS[i] / E18}`);
   ok((await R.MAX_NOTES()) === 32n && (await R.MAX_WITHDRAWALS()) === 16n, 'router: limits 32 notes per deposit, 16 per withdrawMany');
 
   // Real proofs against the deployed verifiers (read-only): a note alone in an empty tree, and a disclosure.
   const sk = rnd(), vk = rnd();
-  const zeros = []; const P0 = new ethers.Contract(pools[0], C.Pool5.abi, provider);
+  const zeros = []; const P0 = new ethers.Contract(pools[0], C.PoolNative.abi, provider);
   for (let l = 0; l < 8; l++) zeros.push(await P0.zeros(l));
   const wp = await withdrawProof({ sk, vk, leaf: 0, leaves: [commitmentOf(sk, vk)], zeros, recipient: me });
   const V = new ethers.Contract(verifier, C.WithdrawVerifier.abi, provider);
@@ -93,10 +90,10 @@ async function main() {
       blockscoutApi: env('EXPLORER_URL', 'https://explorer.testnet.latheon.xyz') + '/api/v2',
       nativeCurrency: { name: 'LTH (test)', symbol: 'LTH', decimals: 18 },
       v5Verifier: verifier, discloseVerifier: disclose, poseidonDeployedThisRelease: [poseidon],
-      tokens: { LTH: { address: wlth, decimals: 18, wrapsNative: true, note: 'Pools hold WLTH; 1 WLTH = 1 native LTH (deposit/withdraw on the WLTH contract).' } },
+      tokens: { LTH: { address: ethers.ZeroAddress, decimals: 18, native: true, note: 'The chain\'s gas coin. Pools and router take it as msg.value and pay it out directly: no wrapping, no approve.' } },
     },
-    pools: DENOMS.map((d, i) => ({ id: `${NETWORK_ID}:LTH-${d / E18}`, network: NETWORK_ID, version: 'v5', token: 'LTH', amount: Number(d / E18), address: pools[i], deployBlock: blocks['Pool' + d / E18] })),
-    routers: [{ id: `${NETWORK_ID}:LTH`, network: NETWORK_ID, token: 'LTH', address: router, deployBlock: blocks.Router }],
+    pools: DENOMS.map((d, i) => ({ id: `${NETWORK_ID}:LTH-${d / E18}`, network: NETWORK_ID, version: 'v5-native', token: 'LTH', amount: Number(d / E18), address: pools[i], deployBlock: blocks['Pool' + d / E18] })),
+    routers: [{ id: `${NETWORK_ID}:LTH`, network: NETWORK_ID, token: 'LTH', native: true, address: router, deployBlock: blocks.Router }],
     build: { compiler: ART.compiler, settings: ART.settings, latheonCommit: ART.source.commit },
     deployTx: st.tx,
   };
