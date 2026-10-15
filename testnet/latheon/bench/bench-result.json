@@ -4,17 +4,17 @@
    "wrap": 69162,
    "approve": 46371,
    "deposit": 461341,
-   "withdrawMany": 297845,
+   "withdrawMany": 297869,
    "unwrap": 33769
   },
   "B": {
    "deposit": 489974,
-   "withdrawMany": 297869,
+   "withdrawMany": 297845,
    "unwrap": 33769
   },
   "C": {
    "deposit": 427228,
-   "withdrawMany": 304120
+   "withdrawMany": 304096
   }
  },
  "11 LTH, 2 notes": {
@@ -22,17 +22,17 @@
    "wrap": 69162,
    "approve": 46371,
    "deposit": 836256,
-   "withdrawMany": 545024,
+   "withdrawMany": 545012,
    "unwrap": 33769
   },
   "B": {
-   "deposit": 864877,
-   "withdrawMany": 544964,
+   "deposit": 864889,
+   "withdrawMany": 545012,
    "unwrap": 33769
   },
   "C": {
-   "deposit": 776529,
-   "withdrawMany": 554474
+   "deposit": 776517,
+   "withdrawMany": 554462
   }
  }
 }

@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: latheon-network/Latheon
-          ref: 0cb805276d47b03ae22e9fd0ec3fb4458fbfbce5
+          ref: 180b4b8448939e3b3f3a61eabb003b84d2b9277c
           path: latheon
           fetch-depth: 1
 
