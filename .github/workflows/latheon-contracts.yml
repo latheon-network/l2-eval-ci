@@ -1,0 +1,51 @@
+name: latheon contracts for the test chain
+
+# Free, no keys: rebuilds testnet/latheon/artifacts from Latheon at the pinned commit (the committed artifacts must be
+# identical), then runs deploy.js twice and smoke.js on a local chain, with the circuit files downloaded by commit
+# from jsDelivr and checked against the hashes recorded at build time.
+on:
+  push:
+    paths:
+      - 'testnet/latheon/**'
+      - 'testnet/latheon-cmd.sh'
+      - '.github/workflows/latheon-contracts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Latheon sources at the pinned commit
+        uses: actions/checkout@v4
+        with:
+          repository: latheon-network/Latheon
+          ref: 0cb805276d47b03ae22e9fd0ec3fb4458fbfbce5
+          path: Latheon
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install
+        working-directory: testnet/latheon
+        run: npm ci --no-audit --no-fund
+
+      - name: Rebuild artifacts (must match the committed ones)
+        working-directory: testnet/latheon
+        env:
+          LATHEON_REPO: ${{ github.workspace }}/Latheon
+          LATHEON_COMMIT: 0cb805276d47b03ae22e9fd0ec3fb4458fbfbce5
+        run: |
+          node build.js
+          git diff --exit-code -- artifacts/latheon-testnet.json
+
+      - name: Deploy twice and smoke test on a local chain (circuits from jsDelivr, hash-checked)
+        working-directory: testnet/latheon
+        run: node local-test.js

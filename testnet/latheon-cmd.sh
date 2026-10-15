@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Latheon contracts on the test chain, run in a Node container on the server: ./latheon-cmd.sh deploy|smoke
+#   deploy  WLTH, Poseidon, verifiers, four V5 pools, router; every link checked, real proofs against both verifiers
+#   smoke   wrap 11 LTH, router deposit, withdrawMany of 2 notes with real proofs, unwrap, invariants, disclosure
+# Asks for the deployer key without echo unless DEPLOYER_KEY is set. Uses the node's local RPC (127.0.0.1:8449).
+# Public result: latheon/out/latheon-deployments.json (goes into demo/deployments.json); latheon/secret/ stays private.
+set -euo pipefail
+cd "$(dirname "$0")"
+case "${1:-}" in deploy|smoke) ;; *) echo "usage: $0 deploy|smoke"; exit 2 ;; esac
+set -a; . ./.env; set +a
+if [ -z "${DEPLOYER_KEY:-}" ]; then
+  read -r -s -p "Deployer private key (input hidden): " DEPLOYER_KEY; echo
+  export DEPLOYER_KEY
+fi
+mkdir -p latheon/secret latheon/out && chmod 700 latheon/secret
+docker run --rm --network host -u 0 \
+  -e DEPLOYER_KEY -e L3_RPC=http://127.0.0.1:8449 \
+  -e PUBLIC_RPC="https://${RPC_HOST}" -e EXPLORER_URL="https://${EXPLORER_HOST}" \
+  -e STATE_DIR=/latheon/secret -e OUT_DIR=/latheon/out -e CIRCUIT_CACHE=/latheon/secret/circuits \
+  -v "$PWD/latheon:/latheon" -w /latheon node:22-bookworm-slim \
+  sh -c 'npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && node "$0.js"' "$1"

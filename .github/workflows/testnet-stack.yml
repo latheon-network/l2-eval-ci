@@ -88,6 +88,15 @@ jobs:
           npm install --no-audit --no-fund > /dev/null
           node eval.js rehearsal-l3 --fresh 2>&1 | tee $GITHUB_WORKSPACE/eval-stack.txt
 
+      - name: Latheon contracts on the chain (latheon-cmd.sh deploy and smoke, as on the server)
+        working-directory: testnet
+        env:
+          DEPLOYER_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+        run: |
+          set -o pipefail
+          { sudo -E ./latheon-cmd.sh deploy && sudo -E ./latheon-cmd.sh smoke; } 2>&1 | tee $GITHUB_WORKSPACE/latheon-contracts.txt
+          sudo cp -f latheon/out/latheon-deployments.json latheon/out/latheon-smoke.json $GITHUB_WORKSPACE/ 2>/dev/null || true
+
       - name: Explorer over HTTPS (API indexes the chain, web page loads)
         run: |
           E() { curl -sk --resolve explorer.localhost:443:127.0.0.1 "https://explorer.localhost$1"; }
@@ -115,7 +124,7 @@ jobs:
           sudo test -f chain/secret/state.json && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
           mkdir -p /tmp/out
           cd $GITHUB_WORKSPACE
-          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt /tmp/out/ 2>/dev/null || true
+          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt latheon-contracts.txt latheon-deployments.json latheon-smoke.json /tmp/out/ 2>/dev/null || true
           cp -f /tmp/nitro-log.txt /tmp/services-log.txt /tmp/out/ 2>/dev/null || true
           sudo cp -f testnet/chain/out/chain.json /tmp/out/ 2>/dev/null || true
           sudo chown -R "$(id -u)" /tmp/out
