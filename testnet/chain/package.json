@@ -4,6 +4,8 @@
   "type": "module",
   "dependencies": {
     "@arbitrum/chain-sdk": "0.28.0",
+    "@arbitrum/sdk": "4.1.0",
+    "ethers": "5.8.0",
     "viem": "1.21.4"
   }
 }

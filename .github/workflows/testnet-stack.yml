@@ -21,7 +21,7 @@ defaults:
 jobs:
   stack:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
 
@@ -46,6 +46,8 @@ jobs:
           cp .env.example .env
           sed -i 's|^RPC_HOST=.*|RPC_HOST=rpc.localhost|; s|^EXPLORER_HOST=.*|EXPLORER_HOST=explorer.localhost|' .env
           sed -i 's|^TLS_LINE=.*|TLS_LINE="tls internal"|; s|^NITRO_EXTRA_ARGS=.*|NITRO_EXTRA_ARGS=--ensure-rollup-deployment=false|; s|^BATCH_MAX_DELAY=.*|BATCH_MAX_DELAY=30s|' .env
+          # validator: short confirm period (10 L1 blocks ~ 2 min) and latest instead of finalized parent blocks, CI only
+          sed -i 's|^BOLD_FAST=.*|BOLD_FAST=1|; s|^CONFIRM_PERIOD_BLOCKS=.*|CONFIRM_PERIOD_BLOCKS=10|; s|^MIN_ASSERTION_PERIOD_BLOCKS=.*|MIN_ASSERTION_PERIOD_BLOCKS=5|' .env
           [ -n "$PARENT_RPC_SECRET" ] && sed -i "s|^PARENT_RPC=.*|PARENT_RPC=$PARENT_RPC_SECRET|" .env
           # pick the newest published image tags (Blockscout publishes public images manually, sometimes later than the git tag)
           pick() { for t in "${@:2}"; do if docker manifest inspect "$1:$t" > /dev/null 2>&1; then echo "$t"; return; fi; done; echo "none"; }
@@ -120,6 +122,15 @@ jobs:
           grep -q '"result":"0x56bc75e2d63100000"' $GITHUB_WORKSPACE/faucet.txt   # exactly 100 LTH
           grep -q 'second claim HTTP status: 429' $GITHUB_WORKSPACE/faucet.txt     # same connection within 24 h
 
+      - name: Validator and a withdrawal back to Arbitrum Sepolia (assertion posted and confirmed, outbox executed)
+        working-directory: testnet
+        env:
+          DEPLOYER_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+          WITHDRAW_TIMEOUT_MIN: "50"
+        run: |
+          set -o pipefail
+          { sudo -E ./chain-cmd.sh validator && sudo -E ./chain-cmd.sh withdraw && sudo -E ./chain-cmd.sh validator; } 2>&1 | tee $GITHUB_WORKSPACE/withdraw.txt
+
       - name: Explorer over HTTPS (API indexes the chain, web page loads)
         run: |
           E() { curl -sk --resolve explorer.localhost:443:127.0.0.1 "https://explorer.localhost$1"; }
@@ -142,13 +153,14 @@ jobs:
         working-directory: testnet
         run: |
           sudo docker compose logs --no-color nitro 2>&1 | grep -v '^.*DEBUG' | tail -200 > /tmp/nitro-log.txt || true
+          sudo docker compose logs --no-color nitro 2>&1 | grep -iE 'assertion|staker|bold|validat|confirm' | tail -150 > /tmp/validator-log.txt || true
           sudo docker compose logs --no-color blockscout frontend caddy faucet 2>&1 | tail -300 > /tmp/services-log.txt || true
           sudo docker compose down || true
           sudo test -f chain/secret/state.json && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
           mkdir -p /tmp/out
           cd $GITHUB_WORKSPACE
-          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt latheon-contracts.txt latheon-deployments.json latheon-smoke.json faucet.txt /tmp/out/ 2>/dev/null || true
-          cp -f /tmp/nitro-log.txt /tmp/services-log.txt /tmp/out/ 2>/dev/null || true
+          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt latheon-contracts.txt latheon-deployments.json latheon-smoke.json faucet.txt withdraw.txt /tmp/out/ 2>/dev/null || true
+          cp -f /tmp/nitro-log.txt /tmp/validator-log.txt /tmp/services-log.txt /tmp/out/ 2>/dev/null || true
           sudo cp -f testnet/chain/out/chain.json /tmp/out/ 2>/dev/null || true
           sudo chown -R "$(id -u)" /tmp/out
           # scrub keys and secrets in case any tool printed them

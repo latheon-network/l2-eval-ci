@@ -29,8 +29,14 @@ async function main() {
     const tx = await retry(send, name);
     const rc = await retry(() => tx.wait(), 'receipt');
     if (rc.status !== 1) die(name + ': reverted');
-    result.steps[name] = { tx: rc.hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString() };
-    log(`   ✔ ${name}: gas ${rc.gasUsed}  ${dep.network.explorerUrl}/tx/${rc.hash}`);
+    // On an Arbitrum chain gasUsed includes the parent-chain data fee converted into gas (gasUsedForL1 in the raw receipt)
+    const raw = await retry(() => provider.send('eth_getTransactionReceipt', [rc.hash]), 'raw receipt').catch(() => null);
+    const l1 = raw && raw.gasUsedForL1 !== undefined ? BigInt(raw.gasUsedForL1) : null;
+    const price = raw && raw.effectiveGasPrice ? BigInt(raw.effectiveGasPrice) : rc.gasPrice;
+    result.steps[name] = { tx: rc.hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString(),
+      ...(l1 !== null && { gasUsedForL1: l1.toString(), gasUsedExecution: (rc.gasUsed - l1).toString() }),
+      ...(price && { effectiveGasPrice: price.toString(), feeLTH: ethers.formatEther(rc.gasUsed * price) }) };
+    log(`   ✔ ${name}: gas ${rc.gasUsed}${l1 !== null ? ` (execution ${rc.gasUsed - l1}, parent-chain data ${l1})` : ''}${price ? `, fee ${ethers.formatEther(rc.gasUsed * price)} LTH` : ''}  ${dep.network.explorerUrl}/tx/${rc.hash}`);
     return rc;
   };
   const ok = (cond, what) => { if (!cond) die('check failed: ' + what); log('   ✔ ' + what); result.steps[what] = true; };
