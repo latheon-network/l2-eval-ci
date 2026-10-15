@@ -1,0 +1,9 @@
+Faucet key created in /faucet/secret/faucet.key (keep it private). Address: 0x2ef6bb04837c8d598D3fAf58C32e56eBB09fB29A
+Sent 1000 LTH to the faucet 0x2ef6bb04837c8d598D3fAf58C32e56eBB09fB29A, tx 0x480616ef4dc29ec6319010b8084c3ddf848c8dc90416e92e3c346df67bef9c6b. Faucet balance: 1000.0 LTH
+Faucet address: 0x2ef6bb04837c8d598D3fAf58C32e56eBB09fB29A
+Balance: 1000.0 LTH
+status: {"configured":true,"amount":"100.0","cooldownHours":24,"dailyCap":"5000.0","explorer":"https://explorer.localhost","rpc":"https://rpc.localhost","chainId":58508401861,"address":"0x2ef6bb04837c8d598D3fAf58C32e56eBB09fB29A","balance":"1000.0","sentLast24h":"0.0"}
+page HTTP status: 200
+claim for 0xe0dc2423cf97aa0af5a01957b8d9b301ebee8504: {"to":"0xE0Dc2423cf97AA0aF5a01957b8D9b301ebee8504","amount":"100.0","txHash":"0x705a0d152ad494d4dd4e9e4c85f73dfa93a1ab9d34c1077cebbda271d4fc0918","status":"confirmed","explorer":"https://explorer.localhost/tx/0x705a0d152ad494d4dd4e9e4c85f73dfa93a1ab9d34c1077cebbda271d4fc0918"}
+balance of 0xe0dc2423cf97aa0af5a01957b8d9b301ebee8504: {"jsonrpc":"2.0","id":1,"result":"0x56bc75e2d63100000"}
+second claim HTTP status: 429

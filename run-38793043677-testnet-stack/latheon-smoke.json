@@ -1,0 +1,27 @@
+{
+ "chainId": 58508401861,
+ "started": "2026-10-15T19:23:29.287Z",
+ "steps": {
+  "router deposit 11 LTH (2 notes)": {
+   "tx": "0x72dceb1b7bbf9415659762441cc28ceee7485019327884ec7a94d6680dba93b2",
+   "block": 41,
+   "gasUsed": "10265608"
+  },
+  "notes landed in the 10 and 1 pools": true,
+  "router holds no LTH after the deposit": true,
+  "recipient 0x453f01fd05FdE63A81277bEE316E088A44809471 starts with 0 LTH": true,
+  "withdrawMany 2 notes": {
+   "tx": "0x2527dc8681c106f1af476f1b20df692919eccf1bd6f7ea711f831275e66182e7",
+   "block": 42,
+   "gasUsed": "30702366"
+  },
+  "the empty address received exactly 11 LTH, usable as gas": true,
+  "router holds no LTH": true,
+  "pool 100: holds at least denomination × (deposits − withdrawals)": true,
+  "pool 50: holds at least denomination × (deposits − withdrawals)": true,
+  "pool 10: holds at least denomination × (deposits − withdrawals)": true,
+  "pool 1: holds at least denomination × (deposits − withdrawals)": true,
+  "disclosure proof for a deposited note verifies on chain": true
+ },
+ "finished": "2026-10-15T19:23:31.946Z"
+}

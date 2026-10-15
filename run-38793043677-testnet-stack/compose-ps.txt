@@ -1,0 +1,7 @@
+NAME                           IMAGE                                     COMMAND                  SERVICE      CREATED              STATUS                        PORTS
+latheon-testnet-blockscout-1   ghcr.io/blockscout/blockscout:9.0.2       "sh -c 'bin/blocksco…"   blockscout   About a minute ago   Up About a minute             
+latheon-testnet-caddy-1        caddy:2.11.7                              "caddy run --config …"   caddy        About a minute ago   Up About a minute             0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp, 443/udp, 2019/tcp
+latheon-testnet-db-1           postgres:17                               "docker-entrypoint.s…"   db           About a minute ago   Up About a minute (healthy)   5432/tcp
+latheon-testnet-faucet-1       node:22-bookworm-slim                     "docker-entrypoint.s…"   faucet       About a minute ago   Up About a minute             
+latheon-testnet-frontend-1     ghcr.io/blockscout/frontend:v2.3.1        "./entrypoint.sh nod…"   frontend     About a minute ago   Up About a minute             3000/tcp
+latheon-testnet-nitro-1        offchainlabs/nitro-node:v3.11.2-3599aca   "/usr/local/bin/nitr…"   nitro        About a minute ago   Up About a minute             127.0.0.1:8449->8449/tcp

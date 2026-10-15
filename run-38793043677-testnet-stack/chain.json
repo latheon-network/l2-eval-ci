@@ -1,0 +1,59 @@
+{
+  "parentChain": "Arbitrum Sepolia (421614)",
+  "txs": {
+    "token": "0x275d987fb72782a0f7ef9d944c4e9e2029097f98bec39912f2ed3178f0eabb63",
+    "pricer": "0x780f5c7c02acb327820f8117fc4a5e933d5644a93232d428a3e572b3e4ef0df3",
+    "createRollup": "0x137aee9159b2ddecb55058e1d89e0e05a8050404811988466f879b14b49904ed",
+    "fundBatchPoster": "0xe965b5bc7c366457a9f99158712802d267206200c1c1e93de8c2584480997b83",
+    "depositERC20": "0xcdbf85a4451018d532aa6ebbf35f03ced9d2a27efc6779559476f489a71c77b9",
+    "sweep": "0x1157b03bb26aa12b5a7202453dc889e01129f4b8cdb02259d95dccf7295d3623"
+  },
+  "deployer": "0x453fAbBEdf86cc7CC701a077F040c71d7a045b38",
+  "deployerBalanceStart": "0.1370867705452468",
+  "feeToken": "0x9918b6d719236e64583ccd9a6822e3a9c8fe805a",
+  "feeTokenPricer": "0x626f6b2564c8553f6a13bc0868d31bad2e99a4fd",
+  "feeTokenPricerRate": "10000 LTH per ETH (test value)",
+  "batchPoster": "0xE00Ac2713816B2d09090519FD7D95748b915859d",
+  "validator": "0xEef2dc31Eba1D625F61E6079F8aF637a9EEbcaa7",
+  "chainId": 58508401861,
+  "coreContracts": {
+    "rollup": "0x2fA088016f420D8870E90d0381aE66A841cc585c",
+    "inbox": "0xBffdEDeFAAe2195F3E54FD020C2667a5C894f244",
+    "nativeToken": "0x9918b6D719236e64583cCD9A6822e3a9c8Fe805a",
+    "outbox": "0x301873c1E5853B92f2aBEbd89D57115AB11aD178",
+    "rollupEventInbox": "0x32BDAC7EDBB52b3e3D4382B797e7717d9728c61e",
+    "challengeManager": "0xA31A96aA3542faE09cba7744D9A1AB1B2C2F4C0D",
+    "adminProxy": "0xd93150097b7cd1fb5914ac55Cf4C8d54267D9409",
+    "sequencerInbox": "0xD3C936Ec3c4d8cDcfd8f9697244a789Ac53BA9D2",
+    "bridge": "0xc60828D999DD653441f4fA6C38B4c98dc4A37311",
+    "upgradeExecutor": "0xa0742E07e1FA905397f28C63f84ad1f978e74088",
+    "validatorWalletCreator": "0xB7FE37712e46F28C8f22Ec4bAA33A09fb8B52BD0",
+    "deployedAtBlockNumber": 319514935
+  },
+  "depositArrivalSeconds": 10,
+  "tokenBridge": {
+    "parentChainContracts": {
+      "router": "0x3114d8cfDE88fD70Cc09b90Ba5dBBE50B81d91B7",
+      "standardGateway": "0x471DCd840c636A71eeC679cF62f8C2637364fEfC",
+      "customGateway": "0xb892B352C8998EA6Ad20dcbA8b1049B80d7349dC",
+      "wethGateway": "0x0000000000000000000000000000000000000000",
+      "weth": "0x0000000000000000000000000000000000000000",
+      "multicall": "0xce1CAd780c529e66e3aa6D952a1ED9A6447791c1"
+    },
+    "orbitChainContracts": {
+      "router": "0xa12f1c9A834C386C87aA0E1ED332bd17570bF9c6",
+      "standardGateway": "0x6aA3B3b9A918c388F8AC19CD9C9bdeE71E2f3AD6",
+      "customGateway": "0xa5d4B748273B49ff9B344Cb7edB3F4bcB71d051D",
+      "wethGateway": "0x0000000000000000000000000000000000000000",
+      "weth": "0x0000000000000000000000000000000000000000",
+      "proxyAdmin": "0x1655ae5D2ea21F71b0ea9a8664c32De9dc670386",
+      "beaconProxyFactory": "0x0fc0d12549B17891A740c9045a737c6B0Fb4Bf06",
+      "upgradeExecutor": "0x64aD6422fE25529ec9Ef4C2b0e4D712E4965C45E",
+      "multicall": "0xF149E3Bac50e248Cb99F83FB4eCc6a38731Bb01D"
+    }
+  },
+  "tokenBridgeChildRouterHasCode": true,
+  "batchCount": "3",
+  "batchesPosted": true,
+  "deployerBalanceEnd": "0.1367557950088348"
+}
