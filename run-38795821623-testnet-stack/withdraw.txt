@@ -1,0 +1,11 @@
+19:44:24 validator 0x5E1E098a0D4C2A6c88921f86714b103d949ffD74: 0.009851761890076 ETH, 0 WETH (not yet bonded), allowed by the rollup: true
+19:44:24 rollup 0xA0074080ab49DCa14Db1B905a105253E929AdEDE: confirm period 10 parent-chain blocks, latest confirmed assertion 0x75c2df1d9a6f98d1de62c8fc955f91b87f16fefa2fafe4d6b52118fc30e1c278
+19:44:35 L3 withdrawal of 10 LTH sent: 0xd83cb8b80b02abb6d9792cd55d91aef5d487ce6787bf6f7c88d12f443a684fcb
+19:44:36 waiting for the assertion to be posted and confirmed (0 min since the withdrawal)
+19:45:36 waiting for the assertion to be posted and confirmed (1 min since the withdrawal)
+19:46:37 waiting for the assertion to be posted and confirmed (2 min since the withdrawal)
+19:47:37 waiting for the assertion to be posted and confirmed (3 min since the withdrawal)
+19:48:38 waiting for the assertion to be posted and confirmed (4 min since the withdrawal)
+19:49:42 executed on Arbitrum Sepolia: 0xf8877772e3977eaa14244b435ee2feb70214d36a5151f2b55c1505cb56a834e2; the deployer received 10 test LTH
+19:49:55 validator 0x5E1E098a0D4C2A6c88921f86714b103d949ffD74: 0.009800277481532 ETH, 0 WETH (not yet bonded), allowed by the rollup: true
+19:49:55 rollup 0xA0074080ab49DCa14Db1B905a105253E929AdEDE: confirm period 10 parent-chain blocks, latest confirmed assertion 0x4c127ac202f7eb6105852ab4d80a85f7e21b57f69150d510e68ebd373505f6e3

@@ -1,0 +1,46 @@
+19:43:53 Chain 58232291521, deployer 0x453fAbBEdf86cc7CC701a077F040c71d7a045b38, balance 9999.89459941 LTH
+19:43:53 1. Deploy
+19:43:53    PoseidonT3: 0x061E43b736AdaC343Dbb833881F1cAA7793ceCbB  (block 32, gas 253759855)
+19:43:53    WithdrawVerifier: 0xBa04023Dc8d97e145dD7CcBfF467f59BFc1906a2  (block 34, gas 52836375)
+19:43:54    DiscloseVerifier: 0x634906F5e52efF8Ace23f73aB7BB18c174F543Ba  (block 35, gas 52971749)
+19:43:54    Pool100: 0xFAf7f076F06f21c84Eace085056662f9A949c285  (block 36, gas 85644996)
+19:43:54    Pool50: 0xbf60eEc21E1D943BB1a2e0fF6E006F3197Bdc9Db  (block 37, gas 85744451)
+19:43:54    Pool10: 0x4fB6c70AcD4e339BeA2C387773D8f5fC0122aA0D  (block 38, gas 85512378)
+19:43:55    Pool1: 0x6Ff1708098c6759b6374F63Bb01Dd270386Fb5c2  (block 39, gas 85611833)
+19:43:55    Router: 0x49694EF1977b4A201b378740557f2aa41BDC3857  (block 40, gas 86342924)
+19:43:55 2. Checks
+19:43:55    ✔ pool 100: native coin, verifier, denomination, zeros(8) (Poseidon linked correctly)
+19:43:55    ✔ pool 50: native coin, verifier, denomination, zeros(8) (Poseidon linked correctly)
+19:43:55    ✔ pool 10: native coin, verifier, denomination, zeros(8) (Poseidon linked correctly)
+19:43:55    ✔ pool 1: native coin, verifier, denomination, zeros(8) (Poseidon linked correctly)
+19:43:55    ✔ router: native coin
+19:43:55    ✔ router: pool 0 and denomination 100
+19:43:55    ✔ router: pool 1 and denomination 50
+19:43:55    ✔ router: pool 2 and denomination 10
+19:43:55    ✔ router: pool 3 and denomination 1
+19:43:55    ✔ router: limits 32 notes per deposit, 16 per withdrawMany
+19:43:55    downloading withdraw_v3/withdraw_v3.wasm
+19:43:56    downloading withdraw_v3/withdraw_v3_final.zkey
+19:43:58    ✔ withdraw verifier accepts a real withdraw_v3 proof
+19:43:58    ✔ withdraw verifier rejects the same proof for another recipient
+19:43:58    downloading disclose/disclose.wasm
+19:43:58    downloading disclose/disclose_final.zkey
+19:43:59    ✔ disclosure verifier accepts a real disclose proof
+19:43:59 3. Public deployment entry
+19:43:59 Written /latheon/out/latheon-deployments.json
+19:44:04 1. Deposit 11 LTH through the router (one transaction, no wrapping, no approve)
+19:44:05    ✔ router deposit 11 LTH (2 notes): gas 10396599 (execution 815774, parent-chain data 9580825), fee 0.0010396599 LTH  https://explorer.localhost/tx/0xc24ce080a4ebcbc0b812c7ad637ed2778fac9ded48704c689724ac0da8c19ed2
+19:44:05    ✔ notes landed in the 10 and 1 pools
+19:44:05    ✔ router holds no LTH after the deposit
+19:44:05 2. withdrawMany with real proofs to a new, empty address
+19:44:05    ✔ recipient 0xE19afE08FA0901C55396e517f45Fa42F5DaeFe11 starts with 0 LTH
+19:44:07    ✔ withdrawMany 2 notes: gas 31153394 (execution 554426, parent-chain data 30598968), fee 0.0031153394 LTH  https://explorer.localhost/tx/0xbd1efa6dfa68e0c404472dac0f498bdb4a41c45fb9e128c42a7a7d0505f8f5a6
+19:44:07    ✔ the empty address received exactly 11 LTH, usable as gas
+19:44:07 3. Invariants and disclosure
+19:44:07    ✔ router holds no LTH
+19:44:07    ✔ pool 100: holds at least denomination × (deposits − withdrawals)
+19:44:07    ✔ pool 50: holds at least denomination × (deposits − withdrawals)
+19:44:07    ✔ pool 10: holds at least denomination × (deposits − withdrawals)
+19:44:07    ✔ pool 1: holds at least denomination × (deposits − withdrawals)
+19:44:07    ✔ disclosure proof for a deposited note verifies on chain
+19:44:07 All checks passed. Written /latheon/out/latheon-smoke.json

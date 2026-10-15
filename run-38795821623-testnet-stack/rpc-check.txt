@@ -1,0 +1,9 @@
+eth_chainId:
+{"jsonrpc":"2.0","id":1,"result":"0xd8eea40c1"}
+
+eth_blockNumber:
+{"jsonrpc":"2.0","id":1,"result":"0xd"}
+
+debug_* must be unavailable:
+{"jsonrpc":"2.0","id":1,"error":{"code":-32601,"message":"the method debug_traceBlockByNumber does not exist/is not available"}}
+

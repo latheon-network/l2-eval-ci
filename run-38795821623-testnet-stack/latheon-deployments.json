@@ -1,0 +1,130 @@
+{
+ "network": {
+  "id": "latheon-testnet",
+  "name": "Latheon Testnet",
+  "chainId": 58232291521,
+  "chainIdHex": "0xd8eea40c1",
+  "rpcUrl": "https://rpc.localhost",
+  "explorerUrl": "https://explorer.localhost",
+  "blockscoutApi": "https://explorer.localhost/api/v2",
+  "nativeCurrency": {
+   "name": "LTH (test)",
+   "symbol": "LTH",
+   "decimals": 18
+  },
+  "v5Verifier": "0xBa04023Dc8d97e145dD7CcBfF467f59BFc1906a2",
+  "discloseVerifier": "0x634906F5e52efF8Ace23f73aB7BB18c174F543Ba",
+  "poseidonDeployedThisRelease": [
+   "0x061E43b736AdaC343Dbb833881F1cAA7793ceCbB"
+  ],
+  "tokens": {
+   "LTH": {
+    "address": "0x0000000000000000000000000000000000000000",
+    "decimals": 18,
+    "native": true,
+    "note": "The chain's gas coin. Pools and router take it as msg.value and pay it out directly: no wrapping, no approve."
+   }
+  }
+ },
+ "pools": [
+  {
+   "id": "latheon-testnet:LTH-100",
+   "network": "latheon-testnet",
+   "version": "v5-native",
+   "token": "LTH",
+   "amount": 100,
+   "address": "0xFAf7f076F06f21c84Eace085056662f9A949c285",
+   "deployBlock": 36
+  },
+  {
+   "id": "latheon-testnet:LTH-50",
+   "network": "latheon-testnet",
+   "version": "v5-native",
+   "token": "LTH",
+   "amount": 50,
+   "address": "0xbf60eEc21E1D943BB1a2e0fF6E006F3197Bdc9Db",
+   "deployBlock": 37
+  },
+  {
+   "id": "latheon-testnet:LTH-10",
+   "network": "latheon-testnet",
+   "version": "v5-native",
+   "token": "LTH",
+   "amount": 10,
+   "address": "0x4fB6c70AcD4e339BeA2C387773D8f5fC0122aA0D",
+   "deployBlock": 38
+  },
+  {
+   "id": "latheon-testnet:LTH-1",
+   "network": "latheon-testnet",
+   "version": "v5-native",
+   "token": "LTH",
+   "amount": 1,
+   "address": "0x6Ff1708098c6759b6374F63Bb01Dd270386Fb5c2",
+   "deployBlock": 39
+  }
+ ],
+ "routers": [
+  {
+   "id": "latheon-testnet:LTH",
+   "network": "latheon-testnet",
+   "token": "LTH",
+   "native": true,
+   "address": "0x49694EF1977b4A201b378740557f2aa41BDC3857",
+   "deployBlock": 40
+  }
+ ],
+ "build": {
+  "compiler": "solc 0.8.37+commit.f401782d.Emscripten.clang",
+  "settings": {
+   "optimizer": {
+    "enabled": true,
+    "runs": 200
+   },
+   "evmVersion": "paris"
+  },
+  "latheonCommit": "180b4b8448939e3b3f3a61eabb003b84d2b9277c"
+ },
+ "deployTx": {
+  "PoseidonT3": {
+   "hash": "0xb6c4ec2b10951cc4ea29d05d8d279b235bdc6223b656f39bafab20ffbde68c6e",
+   "block": 32,
+   "gasUsed": "253759855"
+  },
+  "WithdrawVerifier": {
+   "hash": "0x2eca264efb429dd2fba8e348c72640d4649690b98155bc6307abf9e4edbd9906",
+   "block": 34,
+   "gasUsed": "52836375"
+  },
+  "DiscloseVerifier": {
+   "hash": "0x86023e5fff1871e358d8bd28b9dfeadd2ec3ace42136e39ea732ab28359c2cf1",
+   "block": 35,
+   "gasUsed": "52971749"
+  },
+  "Pool100": {
+   "hash": "0x5ce8f51f7ddc43f7efdfc8798502d451fa2525f6200190c5500ba20965f9c4d8",
+   "block": 36,
+   "gasUsed": "85644996"
+  },
+  "Pool50": {
+   "hash": "0x345bc47e7b9f8ab92fde0ecda239f6782ed3cb5ddab6267189b2fc987e8cd587",
+   "block": 37,
+   "gasUsed": "85744451"
+  },
+  "Pool10": {
+   "hash": "0xbf0f66599230c5493f7f0fe659bcc7512d8fbfd3fbf1fb5af1841d8adce7d3d3",
+   "block": 38,
+   "gasUsed": "85512378"
+  },
+  "Pool1": {
+   "hash": "0xcbc842b09c33c92535f75bf3fce2564511ae70d1498699efb8019855f60c502e",
+   "block": 39,
+   "gasUsed": "85611833"
+  },
+  "Router": {
+   "hash": "0xb1a5d53c98397841ba43b3a8a92a6a1f7358673d71021af76e02ce78d4ebdedf",
+   "block": 40,
+   "gasUsed": "86342924"
+  }
+ }
+}
