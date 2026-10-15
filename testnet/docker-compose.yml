@@ -88,12 +88,33 @@ services:
       NEXT_PUBLIC_IS_TESTNET: "true"
       NEXT_PUBLIC_HOMEPAGE_CHARTS: "[]"
 
+  faucet:
+    # Test LTH for new addresses: https://EXPLORER_HOST/faucet. Its key is created by ./faucet-cmd.sh init and funded by
+    # ./faucet-cmd.sh fund AMOUNT; until then the page says "not configured". Not published: Caddy is the only way in.
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /faucet
+    command: sh -c 'npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node server.js'
+    depends_on:
+      - nitro
+    environment:
+      L3_RPC: http://nitro:8449
+      PUBLIC_RPC: https://${RPC_HOST}
+      EXPLORER_URL: https://${EXPLORER_HOST}
+      FAUCET_AMOUNT: ${FAUCET_AMOUNT:-100}
+      FAUCET_COOLDOWN_HOURS: ${FAUCET_COOLDOWN_HOURS:-24}
+      FAUCET_DAILY_CAP: ${FAUCET_DAILY_CAP:-5000}
+    volumes:
+      - ./faucet:/faucet
+
   caddy:
     image: caddy:${CADDY_TAG}
     restart: unless-stopped
     depends_on:
       - nitro
       - frontend
+      - faucet
     ports:
       - "80:80"
       - "443:443"

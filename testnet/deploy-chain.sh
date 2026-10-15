@@ -15,6 +15,7 @@ CID=$(sed -n 's/^CHAIN_ID=//p' chain/out/chain.env)
 if grep -q '^CHAIN_ID=' .env; then sed -i "s/^CHAIN_ID=.*/CHAIN_ID=$CID/" .env; else echo "CHAIN_ID=$CID" >> .env; fi
 chown 1000:1000 chain/secret/node-config.json && chmod 600 chain/secret/node-config.json
 
+mkdir -p faucet/secret && chown -R 1000:1000 faucet && chmod 700 faucet/secret   # the faucet service runs as uid 1000
 docker compose up -d
 echo "== waiting for the L3 RPC (the node first waits for parent-chain finality of the deployment: up to ~1 hour, once)"
 for i in $(seq 1 240); do

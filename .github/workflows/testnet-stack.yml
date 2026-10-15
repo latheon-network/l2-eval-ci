@@ -97,6 +97,29 @@ jobs:
           { sudo -E ./latheon-cmd.sh deploy && sudo -E ./latheon-cmd.sh smoke; } 2>&1 | tee $GITHUB_WORKSPACE/latheon-contracts.txt
           sudo cp -f latheon/out/latheon-deployments.json latheon/out/latheon-smoke.json $GITHUB_WORKSPACE/ 2>/dev/null || true
 
+      - name: Faucet (faucet-cmd.sh init and fund as on the server, then a claim over HTTPS like a user)
+        working-directory: testnet
+        env:
+          DEPLOYER_KEY: ${{ secrets.REHEARSAL_DEPLOYER_KEY }}
+        run: |
+          set -o pipefail
+          { sudo -E ./faucet-cmd.sh init && sudo -E ./faucet-cmd.sh fund 1000 && sudo -E ./faucet-cmd.sh address; } 2>&1 | tee $GITHUB_WORKSPACE/faucet.txt
+          F() { curl -sk --resolve explorer.localhost:443:127.0.0.1 "https://explorer.localhost$1" "${@:2}"; }
+          R() { curl -sk --resolve rpc.localhost:443:127.0.0.1 https://rpc.localhost -H 'content-type: application/json' --data "$1"; }
+          for i in $(seq 1 30); do F /faucet/api/status | grep -q '"configured":true' && break; sleep 5; done
+          A=0x$(openssl rand -hex 20)
+          {
+            echo "status: $(F /faucet/api/status)"
+            echo "page HTTP status: $(F /faucet -o /dev/null -w '%{http_code}')"
+            echo "claim for $A: $(F /faucet/api/claim -X POST -H 'content-type: application/json' --data "{\"address\":\"$A\"}")"
+            echo "balance of $A: $(R "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"eth_getBalance\",\"params\":[\"$A\",\"latest\"]}")"
+            echo "second claim HTTP status: $(F /faucet/api/claim -o /dev/null -w '%{http_code}' -X POST -H 'content-type: application/json' --data "{\"address\":\"0x$(openssl rand -hex 20)\"}")"
+          } | tee -a $GITHUB_WORKSPACE/faucet.txt
+          grep -q 'page HTTP status: 200' $GITHUB_WORKSPACE/faucet.txt
+          grep -q '"status":"confirmed"' $GITHUB_WORKSPACE/faucet.txt
+          grep -q '"result":"0x56bc75e2d63100000"' $GITHUB_WORKSPACE/faucet.txt   # exactly 100 LTH
+          grep -q 'second claim HTTP status: 429' $GITHUB_WORKSPACE/faucet.txt     # same connection within 24 h
+
       - name: Explorer over HTTPS (API indexes the chain, web page loads)
         run: |
           E() { curl -sk --resolve explorer.localhost:443:127.0.0.1 "https://explorer.localhost$1"; }
@@ -119,17 +142,17 @@ jobs:
         working-directory: testnet
         run: |
           sudo docker compose logs --no-color nitro 2>&1 | grep -v '^.*DEBUG' | tail -200 > /tmp/nitro-log.txt || true
-          sudo docker compose logs --no-color blockscout frontend caddy 2>&1 | tail -300 > /tmp/services-log.txt || true
+          sudo docker compose logs --no-color blockscout frontend caddy faucet 2>&1 | tail -300 > /tmp/services-log.txt || true
           sudo docker compose down || true
           sudo test -f chain/secret/state.json && sudo -E ./chain-cmd.sh sweep 2>&1 | tee -a $GITHUB_WORKSPACE/deploy-log.txt || true
           mkdir -p /tmp/out
           cd $GITHUB_WORKSPACE
-          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt latheon-contracts.txt latheon-deployments.json latheon-smoke.json /tmp/out/ 2>/dev/null || true
+          cp -f image-tags.txt deploy-log.txt compose-ps.txt rpc-check.txt eval-stack.txt explorer-check.txt latheon-contracts.txt latheon-deployments.json latheon-smoke.json faucet.txt /tmp/out/ 2>/dev/null || true
           cp -f /tmp/nitro-log.txt /tmp/services-log.txt /tmp/out/ 2>/dev/null || true
           sudo cp -f testnet/chain/out/chain.json /tmp/out/ 2>/dev/null || true
           sudo chown -R "$(id -u)" /tmp/out
           # scrub keys and secrets in case any tool printed them
-          for k in $(sudo python3 -c "import json;d=json.load(open('testnet/chain/secret/state.json'));print(d.get('batchPosterKey',''),d.get('validatorKey',''))" 2>/dev/null) "$DEPLOYER_KEY"; do
+          for k in $(sudo python3 -c "import json;d=json.load(open('testnet/chain/secret/state.json'));print(d.get('batchPosterKey',''),d.get('validatorKey',''))" 2>/dev/null) $(sudo cat testnet/faucet/secret/faucet.key 2>/dev/null) "$DEPLOYER_KEY"; do
             [ -n "$k" ] && sed -i "s/${k#0x}/<redacted>/gI" /tmp/out/* || true
           done
           for v in BS_DB_PASSWORD BS_SECRET_KEY_BASE; do

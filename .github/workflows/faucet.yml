@@ -1,0 +1,30 @@
+name: testnet faucet
+
+# Free, no keys: runs the faucet tests (testnet/faucet/test.js) against a local chain.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'testnet/faucet/**'
+      - 'testnet/faucet-cmd.sh'
+      - '.github/workflows/faucet.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  faucet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        working-directory: testnet/faucet
+        run: npm ci --no-audit --no-fund
+      - name: Faucet tests on a local chain
+        working-directory: testnet/faucet
+        run: node test.js

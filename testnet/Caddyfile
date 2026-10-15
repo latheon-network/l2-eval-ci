@@ -11,6 +11,12 @@
 
 {$EXPLORER_HOST} {
 	{$TLS_LINE}
+	handle /faucet* {
+		request_body {
+			max_size 4KB
+		}
+		reverse_proxy faucet:8080
+	}
 	@api path /api /api/* /socket /socket/* /sitemap.xml
 	handle @api {
 		reverse_proxy blockscout:4000

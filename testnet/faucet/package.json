@@ -1,0 +1,15 @@
+{
+  "name": "latheon-testnet-faucet",
+  "private": true,
+  "description": "Faucet of test LTH (native gas coin) for the Latheon test chain (testnet only)",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "ethers": "6.17.0"
+  },
+  "devDependencies": {
+    "ganache": "7.9.2"
+  }
+}
