@@ -194,22 +194,33 @@ async function fund() {
   const st = load(statePath, {}); const pub = load(pubPath, {});
   const l3 = l3Client(st.chainId);
   log(`L3 block ${await waitL3(l3)}`);
-  const allowance = await parent.readContract({ address: st.token, abi: erc20Abi, functionName: 'allowance', args: [deployer.address, st.core.inbox] });
-  if (allowance < L3_DEPOSIT) {
-    await send('approve inbox for test LTH', parentWallet.writeContract({ address: st.token, abi: erc20Abi, functionName: 'approve', args: [st.core.inbox, L3_DEPOSIT] })); // ERC20Inbox pulls the fee token
+  // The node takes a deposit from the parent inbox only once that parent block is final (tens of minutes on
+  // Arbitrum Sepolia), so a re-run must not deposit again: skip when already funded, keep waiting on a pending one.
+  const now = await l3.getBalance({ address: deployer.address });
+  if (!st.deposit && now >= L3_DEPOSIT) { log(`already funded on L3: ${formatEther(now)} LTH`); return; }
+  if (!st.deposit) {
+    const allowance = await parent.readContract({ address: st.token, abi: erc20Abi, functionName: 'allowance', args: [deployer.address, st.core.inbox] });
+    if (allowance < L3_DEPOSIT) {
+      await send('approve inbox for test LTH', parentWallet.writeContract({ address: st.token, abi: erc20Abi, functionName: 'approve', args: [st.core.inbox, L3_DEPOSIT] })); // ERC20Inbox pulls the fee token
+    }
+    const rc = await send('depositERC20 into L3', parentWallet.writeContract({ address: st.core.inbox, abi: inboxAbi, functionName: 'depositERC20', args: [L3_DEPOSIT] }));
+    st.deposit = { tx: rc.transactionHash, before: now.toString(), sentAt: Date.now() }; save(statePath, st);
+  } else {
+    log(`waiting for the earlier deposit ${st.deposit.tx}`);
   }
-  const before = await l3.getBalance({ address: deployer.address });
-  const rc = await send('depositERC20 into L3', parentWallet.writeContract({ address: st.core.inbox, abi: inboxAbi, functionName: 'depositERC20', args: [L3_DEPOSIT] }));
-  pub.txs = pub.txs || {}; pub.txs.depositERC20 = rc.transactionHash;
-  const t0 = Date.now();
+  pub.txs = pub.txs || {}; pub.txs.depositERC20 = st.deposit.tx; save(pubPath, pub);
+  const before = BigInt(st.deposit.before);
+  const t0 = st.deposit.sentAt || Date.now();
+  const timeoutMin = Number(process.env.FUND_TIMEOUT_MIN || 90);
   for (;;) {
     const b = await l3.getBalance({ address: deployer.address });
     if (b >= before + L3_DEPOSIT) {
       pub.depositArrivalSeconds = Math.round((Date.now() - t0) / 1000);
       log(`deposit arrived on L3 after ${pub.depositArrivalSeconds}s: balance ${formatEther(b)} LTH`);
+      delete st.deposit; save(statePath, st);
       break;
     }
-    if (Date.now() - t0 > 20 * 60_000) throw new Error('deposit did not arrive on the L3 within 20 minutes');
+    if (Date.now() - t0 > timeoutMin * 60_000) throw new Error(`deposit did not arrive on the L3 within ${timeoutMin} minutes; run the same command again to keep waiting (it will not deposit twice)`);
     await sleep(10_000);
   }
   save(pubPath, pub);
