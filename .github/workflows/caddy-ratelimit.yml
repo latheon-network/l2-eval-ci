@@ -1,0 +1,45 @@
+name: caddy with rate limits
+
+# Builds testnet/caddy (Caddy + rate_limit module) and checks the testnet Caddyfile: it loads, the public RPC and the
+# explorer API answer 429 above the per-IP limit, the explorer pages are not limited. No chain is needed: the upstreams
+# are absent, so requests under the limit get 502 from the proxy.
+on:
+  workflow_dispatch:
+  push:
+    paths: ['testnet/caddy/**', 'testnet/Caddyfile', '.github/workflows/caddy-ratelimit.yml']
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  caddy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker build -q --build-arg CADDY_TAG=2.11.7 -t latheon-caddy:test testnet/caddy
+      - name: Module present and Caddyfile valid
+        run: |
+          docker run --rm latheon-caddy:test caddy list-modules | grep -x 'http.handlers.rate_limit'
+          docker run --rm -e RPC_HOST=rpc.localhost -e EXPLORER_HOST=explorer.localhost -e TLS_LINE='tls internal' \
+            -v "$PWD/testnet/Caddyfile:/etc/caddy/Caddyfile:ro" latheon-caddy:test caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+      - name: Limits apply
+        run: |
+          docker run -d --name c -p 8443:443 -e RPC_HOST=rpc.localhost -e EXPLORER_HOST=explorer.localhost -e TLS_LINE='tls internal' \
+            -e RPC_RATE_PER_SECOND=5 -e RPC_RATE_PER_MINUTE=1000 -e API_RATE_PER_SECOND=5 -e API_RATE_PER_MINUTE=1000 \
+            -v "$PWD/testnet/Caddyfile:/etc/caddy/Caddyfile:ro" latheon-caddy:test
+          sleep 5
+          hit() { curl -sk -o /dev/null -w '%{http_code}\n' --resolve "$1:8443:127.0.0.1" -X "$2" -H 'content-type: application/json' --data '{}' "https://$1:8443$3"; }
+          burst() { for i in $(seq 1 15); do hit "$@"; done | sort | uniq -c | tr '\n' ' '; }
+          R=$(burst rpc.localhost POST /); echo "rpc burst: $R"
+          A=$(burst explorer.localhost GET /api/v2/stats); echo "api burst: $A"
+          P=$(burst explorer.localhost GET /); echo "pages burst: $P"
+          sleep 2; S=$(hit rpc.localhost POST /); echo "rpc after the window: $S"
+          docker logs c 2>&1 | tail -5
+          grep -q ' 429' <<<" $R" && grep -q ' 502' <<<" $R" || { echo "::error::RPC limit not applied"; exit 1; }
+          grep -q ' 429' <<<" $A" || { echo "::error::API limit not applied"; exit 1; }
+          ! grep -q ' 429' <<<" $P" || { echo "::error::explorer pages must not be limited"; exit 1; }
+          [ "$S" = 502 ] || { echo "::error::RPC still limited after the window"; exit 1; }
+          echo "rate limits OK"

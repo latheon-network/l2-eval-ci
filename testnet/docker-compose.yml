@@ -109,7 +109,12 @@ services:
       - ./faucet:/faucet
 
   caddy:
-    image: caddy:${CADDY_TAG}
+    # Caddy plus the rate_limit module (caddy/Dockerfile); limits per IP are set in Caddyfile and .env
+    build:
+      context: ./caddy
+      args:
+        CADDY_TAG: ${CADDY_TAG}
+    image: latheon-caddy:${CADDY_TAG}-ratelimit
     restart: unless-stopped
     depends_on:
       - nitro
@@ -122,6 +127,10 @@ services:
       RPC_HOST: ${RPC_HOST}
       EXPLORER_HOST: ${EXPLORER_HOST}
       TLS_LINE: ${TLS_LINE:-}
+      RPC_RATE_PER_SECOND: ${RPC_RATE_PER_SECOND:-25}
+      RPC_RATE_PER_MINUTE: ${RPC_RATE_PER_MINUTE:-600}
+      API_RATE_PER_SECOND: ${API_RATE_PER_SECOND:-40}
+      API_RATE_PER_MINUTE: ${API_RATE_PER_MINUTE:-1200}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data

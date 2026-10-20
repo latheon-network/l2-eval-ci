@@ -1,10 +1,28 @@
 # Public endpoints. Certificates come from Let's Encrypt automatically once DNS points here.
 # TLS_LINE is empty on the server; CI sets it to "tls internal" (self-signed, localhost names).
+# Rate limits per client IP (429 with Retry-After when exceeded); defaults below, overridable in .env.
+# A JSON-RPC batch counts as one request; its size is capped by the 1 MB body limit.
+
+{
+	order rate_limit before reverse_proxy
+}
 
 {$RPC_HOST} {
 	{$TLS_LINE}
 	request_body {
 		max_size 1MB
+	}
+	rate_limit {
+		zone rpc_second {
+			key {remote_host}
+			events {$RPC_RATE_PER_SECOND:25}
+			window 1s
+		}
+		zone rpc_minute {
+			key {remote_host}
+			events {$RPC_RATE_PER_MINUTE:600}
+			window 1m
+		}
 	}
 	reverse_proxy nitro:8449
 }
@@ -19,6 +37,18 @@
 	}
 	@api path /api /api/* /socket /socket/* /sitemap.xml
 	handle @api {
+		rate_limit {
+			zone api_second {
+				key {remote_host}
+				events {$API_RATE_PER_SECOND:40}
+				window 1s
+			}
+			zone api_minute {
+				key {remote_host}
+				events {$API_RATE_PER_MINUTE:1200}
+				window 1m
+			}
+		}
 		reverse_proxy blockscout:4000
 	}
 	handle {
