@@ -27,17 +27,22 @@ jobs:
             -v "$PWD/testnet/Caddyfile:/etc/caddy/Caddyfile:ro" latheon-caddy:test caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
       - name: Limits apply
         run: |
-          docker run -d --name c -p 8443:443 -e RPC_HOST=rpc.localhost -e EXPLORER_HOST=explorer.localhost -e TLS_LINE='tls internal' \
+          if ! docker run -d --name caddytest -p 127.0.0.1:8443:443 -e RPC_HOST=rpc.localhost -e EXPLORER_HOST=explorer.localhost -e TLS_LINE='tls internal' \
             -e RPC_RATE_PER_SECOND=5 -e RPC_RATE_PER_MINUTE=1000 -e API_RATE_PER_SECOND=5 -e API_RATE_PER_MINUTE=1000 \
-            -v "$PWD/testnet/Caddyfile:/etc/caddy/Caddyfile:ro" latheon-caddy:test
+            -v "$PWD/testnet/Caddyfile:/etc/caddy/Caddyfile:ro" latheon-caddy:test > /tmp/run.txt 2>&1; then
+            echo "::error::docker run failed: $(tr '\n' ' ' < /tmp/run.txt)"; exit 1
+          fi
           sleep 5
+          docker ps -a --filter name=caddytest --format '{{.Status}}' | tee /tmp/st.txt
+          grep -q '^Up' /tmp/st.txt || { echo "::error::caddy exited: $(docker logs caddytest 2>&1 | tail -5 | tr '\n' ' ')"; exit 1; }
           hit() { curl -sk -o /dev/null -w '%{http_code}\n' --resolve "$1:8443:127.0.0.1" -X "$2" -H 'content-type: application/json' --data '{}' "https://$1:8443$3"; }
           burst() { for i in $(seq 1 15); do hit "$@"; done | sort | uniq -c | tr '\n' ' '; }
           R=$(burst rpc.localhost POST /); echo "rpc burst: $R"
           A=$(burst explorer.localhost GET /api/v2/stats); echo "api burst: $A"
           P=$(burst explorer.localhost GET /); echo "pages burst: $P"
           sleep 2; S=$(hit rpc.localhost POST /); echo "rpc after the window: $S"
-          docker logs c 2>&1 | tail -5
+          docker logs caddytest 2>&1 | tail -5
+          echo "::notice::rpc $R | api $A | pages $P | rpc after window $S"
           grep -q ' 429' <<<" $R" && grep -q ' 502' <<<" $R" || { echo "::error::RPC limit not applied"; exit 1; }
           grep -q ' 429' <<<" $A" || { echo "::error::API limit not applied"; exit 1; }
           ! grep -q ' 429' <<<" $P" || { echo "::error::explorer pages must not be limited"; exit 1; }
