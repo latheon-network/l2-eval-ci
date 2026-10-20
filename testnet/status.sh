@@ -12,7 +12,9 @@ docker compose ps --format '  {{.Service}}: {{.Status}}'
 echo
 echo "[node log, last ${H}h]"
 LOG=$(docker compose logs --since "${H}h" nitro 2>&1)
-printf '  ERROR lines: %s\n' "$(grep -c 'ERROR' <<<"$LOG")"
+# "eth_config has returned nil BlobSchedule": the parent chain (Arbitrum Sepolia) has no blobs; harmless, counted apart
+printf '  ERROR lines: %s\n' "$(grep 'ERROR' <<<"$LOG" | grep -vc 'nil BlobSchedule')"
+printf '  harmless "nil BlobSchedule" notices: %s\n' "$(grep -c 'nil BlobSchedule' <<<"$LOG")"
 printf '  429 (parent RPC rate limit): %s\n' "$(grep -c '429' <<<"$LOG")"
 printf '  error reading inbox: %s\n' "$(grep -c 'error reading inbox' <<<"$LOG")"
 printf '  error posting batch: %s\n' "$(grep -c 'error posting batch' <<<"$LOG")"
