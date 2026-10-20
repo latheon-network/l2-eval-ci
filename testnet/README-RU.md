@@ -13,7 +13,11 @@
 
 1. Сервер: Ubuntu 24.04, 8 ядер, 16 ГБ памяти, от 150 ГБ диска, SSH-ключ.
 2. Отдельный кошелёк деплоя примерно с 0,1 ETH в Arbitrum Sepolia (0,02 уйдёт адресу, который публикует пакеты, 0,01 — валидатору).
-3. Свой RPC Arbitrum Sepolia (Alchemy или Infura). Узел читает родительскую сеть постоянно, публичный RPC для этого ненадёжен.
+3. RPC Arbitrum Sepolia, который отдаёт `eth_getLogs` по широкому диапазону блоков: узел читает inbox и утверждения кусками до тысяч блоков. Бесплатный Alchemy (10 блоков) и бесплатный QuickNode (5) не подходят: узел бесконечно повторяет запросы и не видит депозитов. Без ключа работают `https://arbitrum-sepolia-rpc.publicnode.com` и `https://sepolia-rollup.arbitrum.io/rpc` (проверено 20.10.2026). Проверка кандидата:
+   ```bash
+   curl -s -X POST -H 'content-type: application/json' --data '{"jsonrpc":"2.0","id":1,"method":"eth_getLogs","params":[{"fromBlock":"0x131ea6ef","toBlock":"0x131eaad7","address":"0x4D1FdE71BAd635148727694FEa04f24CAf881990"}]}' АДРЕС_RPC | head -c 200
+   ```
+   Подходит, если в ответе `"result":[`, а не `error`.
 4. Две DNS-записи типа A на IP сервера, например `rpc.testnet.latheon.xyz` и `explorer.testnet.latheon.xyz`. Их добавляют там, где управляется DNS домена latheon.xyz.
 
 ## Шаги
