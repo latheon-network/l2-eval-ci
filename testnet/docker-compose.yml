@@ -108,6 +108,27 @@ services:
     volumes:
       - ./faucet:/faucet
 
+  bot:
+    # Telegram bot for the operator: answers /status in the chat TG_CHAT_ID (both set in .env; idle when empty).
+    # Long polling, no open port, no keys of the chain: reads the public out/ files and asks the services directly.
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    user: "1000:1000"
+    command: node /bot/bot.js
+    depends_on:
+      - nitro
+    environment:
+      TG_BOT_TOKEN: ${TG_BOT_TOKEN:-}
+      TG_CHAT_ID: ${TG_CHAT_ID:-}
+      L3_RPC: http://nitro:8449
+      PARENT_RPC: ${PARENT_RPC:-https://sepolia-rollup.arbitrum.io/rpc}
+      RPC_HOST: ${RPC_HOST}
+      EXPLORER_HOST: ${EXPLORER_HOST}
+    volumes:
+      - ./bot:/bot:ro
+      - ./chain/out:/chain-out:ro
+      - ./latheon/out:/latheon-out:ro
+
   caddy:
     # Caddy plus the rate_limit module (caddy/Dockerfile); limits per IP are set in Caddyfile and .env
     build:

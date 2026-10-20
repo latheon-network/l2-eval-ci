@@ -3,10 +3,11 @@ name: testnet monitor
 # Every 15 minutes, from outside the server: is the public test chain up (RPC, explorer, faucet page) and do the batch
 # poster and validator still have ETH on Arbitrum Sepolia. Telegram messages in Russian (secrets TG_BOT_TOKEN and
 # TG_CHAT_ID): when a problem appears or changes, a reminder every 2 hours while it lasts, and once when all is well
-# again. The run fails while there is a problem. Scheduled runs can start late when GitHub is busy.
+# again; a summary at 00:00 and 12:00 UTC. The run fails while there is a problem. Scheduled runs can start late when GitHub is busy.
 on:
   schedule:
     - cron: '7,22,37,52 * * * *'
+    - cron: '0 0,12 * * *'        # summary to Telegram at 00:00 and 12:00 UTC (03:00 and 15:00 Moscow)
   workflow_dispatch:
     inputs:
       test_alert:
@@ -45,7 +46,8 @@ jobs:
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           OUTCOME: ${{ steps.check.outcome }}
-          TEST: ${{ inputs.test_alert }}
+          TEST: ${{ inputs.test_alert || github.event.schedule == '0 0,12 * * *' }}
+          DAILY: ${{ github.event.schedule == '0 0,12 * * *' }}
         run: |
           mkdir -p monitor-state
           prev=$(cat monitor-state/status 2>/dev/null || echo ok)
@@ -66,8 +68,9 @@ jobs:
             text=$(printf '🟢 Latheon testnet: снова всё работает\n\n%s\n\n%s' "$summary" "$when")
           fi
           if [ -z "$text" ] && [ "$TEST" = true ]; then
-            [ "$status" = ok ] && text=$(printf '✅ Latheon testnet: всё работает (проверка по запросу)\n\n%s\n\n%s' "$summary" "$when") \
-                               || text=$(printf '🔴 Latheon testnet: проблема (проверка по запросу)\n\n%s\n\n%s\n%s' "$problems" "$when" "$RUN_URL")
+            [ "$DAILY" = true ] && kind="сводка" || kind="проверка по запросу"
+            [ "$status" = ok ] && text=$(printf '✅ Latheon testnet: всё работает (%s)\n\n%s\n\n%s' "$kind" "$summary" "$when") \
+                               || text=$(printf '🔴 Latheon testnet: проблема (%s)\n\n%s\n\n%s\n%s' "$kind" "$problems" "$when" "$RUN_URL")
           fi
           if [ -n "$text" ]; then
             if [ -n "$TG_BOT_TOKEN" ] && [ -n "$TG_CHAT_ID" ]; then
