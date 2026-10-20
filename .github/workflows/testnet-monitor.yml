@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
+    inputs:
+      test_alert:
+        description: 'Send a test message to Telegram even if everything is fine'
+        type: boolean
+        default: false
 
 concurrency:
   group: testnet-monitor
@@ -26,13 +31,15 @@ jobs:
           PROBLEMS_FILE: /tmp/problems.txt
         run: testnet/monitor/check.sh
       - name: Alert in Telegram
-        if: failure()
+        if: failure() || inputs.test_alert
         env:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ -z "$TG_BOT_TOKEN" ] || [ -z "$TG_CHAT_ID" ]; then echo "Telegram secrets not set; the failed run itself is the alert"; exit 0; fi
-          TEXT=$(printf 'Latheon testnet: problem\n%s\n%s' "$(cat /tmp/problems.txt 2>/dev/null || echo 'check failed')" "$RUN_URL")
+          if [ -s /tmp/problems.txt ]; then TEXT=$(printf 'Latheon testnet: problem\n%s\n%s' "$(cat /tmp/problems.txt)" "$RUN_URL")
+          elif [ "${{ job.status }}" != success ]; then TEXT=$(printf 'Latheon testnet: monitor check failed\n%s' "$RUN_URL")
+          else TEXT=$(printf 'Latheon testnet monitor: test message, all checks passed\n%s' "$RUN_URL"); fi
           curl -s -m 20 -o /dev/null -w 'telegram HTTP %{http_code}\n' "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TG_CHAT_ID}" --data-urlencode "text=${TEXT}" --data-urlencode "disable_web_page_preview=true"
