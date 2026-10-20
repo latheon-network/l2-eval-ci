@@ -110,8 +110,24 @@ cd ~/l2-eval-ci/testnet
 
 ## Обслуживание
 
+Сводка одной командой, ключ не нужен и не выводится:
+
 ```bash
 cd ~/l2-eval-ci/testnet
+./status.sh        # контейнеры, ошибки узла за час, диск; блоки, пакеты, валидатор, кому идут комиссии,
+                   # ETH batch poster, валидатора и деплоера в Arbitrum Sepolia, где лежит тестовый LTH, предупреждения
+./status.sh 24     # то же, ошибки узла за сутки
+```
+
+Завести в сеть больше тестового LTH (депозит идёт 20–60 минут, через финальность Arbitrum Sepolia; спросит ключ):
+
+```bash
+L3_DEPOSIT=50000000 ./chain-cmd.sh fund
+```
+
+Остальное:
+
+```bash
 docker compose ps                 # состояние
 docker compose logs -f --tail 50 nitro
 ./chain-cmd.sh batches            # пакеты доходят до Arbitrum Sepolia?
