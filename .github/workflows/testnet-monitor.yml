@@ -1,0 +1,38 @@
+name: testnet monitor
+
+# Every 15 minutes, from outside the server: is the public test chain up (RPC, explorer, faucet page) and do the batch
+# poster and validator still have ETH on Arbitrum Sepolia. On a problem the run fails and, if the repository has the
+# secrets TG_BOT_TOKEN and TG_CHAT_ID, a Telegram message is sent. Scheduled runs can start late when GitHub is busy.
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: testnet-monitor
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: testnet/monitor
+      - name: Check the public endpoints
+        id: check
+        env:
+          PROBLEMS_FILE: /tmp/problems.txt
+        run: testnet/monitor/check.sh
+      - name: Alert in Telegram
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$TG_BOT_TOKEN" ] || [ -z "$TG_CHAT_ID" ]; then echo "Telegram secrets not set; the failed run itself is the alert"; exit 0; fi
+          TEXT=$(printf 'Latheon testnet: problem\n%s\n%s' "$(cat /tmp/problems.txt 2>/dev/null || echo 'check failed')" "$RUN_URL")
+          curl -s -m 20 -o /dev/null -w 'telegram HTTP %{http_code}\n' "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TG_CHAT_ID}" --data-urlencode "text=${TEXT}" --data-urlencode "disable_web_page_preview=true"
