@@ -3,6 +3,7 @@
  * Faucet administration on the server (run through ../faucet-cmd.sh):
  *   node admin.js init           create the faucet key in secret/faucet.key (once; never printed) and show its address
  *   node admin.js address        show the faucet address and its balance
+ *   node admin.js ops-init | ops-address | fund-ops AMOUNT | fund-from-ops AMOUNT   operator wallet for refills from the bot
  *   node admin.js fund AMOUNT    send AMOUNT LTH from the deployer to the faucet (asks for the deployer key without echo,
  *                                or DEPLOYER_KEY)
  * The faucet key is a separate wallet: if it leaks, only the faucet balance is at risk.
@@ -33,6 +34,11 @@ function askHidden(q) {
     });
   });
 }
+const OPS_KEY_FILE = env('OPS_KEY_FILE', path.join(path.dirname(KEY_FILE), 'ops.key'));
+const opsAddress = () => {
+  if (!fs.existsSync(OPS_KEY_FILE)) die('no ops wallet yet: run ops-init first');
+  return new ethers.Wallet(fs.readFileSync(OPS_KEY_FILE, 'utf8').trim()).address;
+};
 const faucetAddress = () => {
   if (!fs.existsSync(KEY_FILE)) die('no faucet key yet: run init first');
   return new ethers.Wallet(fs.readFileSync(KEY_FILE, 'utf8').trim()).address;
@@ -54,9 +60,37 @@ async function main() {
     console.log('Faucet address: ' + a + '\nBalance: ' + ethers.formatEther(await provider.getBalance(a)) + ' LTH');
     return;
   }
-  if (cmd === 'fund') {
-    if (!arg || !/^\d+(\.\d+)?$/.test(arg)) die('usage: fund AMOUNT (LTH, for example 5000)');
-    const to = faucetAddress();
+  // Operator wallet ("ops"): a separate key with a limited LTH balance, used only to refill the faucet from the
+  // Telegram bot (through ops-runner.sh), so the deployer key never sits on the server.
+  if (cmd === 'ops-init') {
+    if (fs.existsSync(OPS_KEY_FILE)) { console.log('Ops key already exists. Address: ' + opsAddress()); return; }
+    const w = ethers.Wallet.createRandom();
+    fs.writeFileSync(OPS_KEY_FILE, w.privateKey + '\n', { mode: 0o600 });
+    console.log('Ops key created in ' + OPS_KEY_FILE + ' (keep it private). Address: ' + w.address);
+    return;
+  }
+  if (cmd === 'ops-address') {
+    const a = opsAddress();
+    console.log('Ops wallet: ' + a + '\nBalance: ' + ethers.formatEther(await provider.getBalance(a)) + ' LTH');
+    return;
+  }
+  if (cmd === 'fund-from-ops') {
+    if (!arg || !/^\d+$/.test(arg)) die('usage: fund-from-ops AMOUNT (whole LTH)');
+    const max = Number(env('OPS_FUND_MAX', '50000'));
+    if (Number(arg) < 1 || Number(arg) > max) die(`the amount must be between 1 and ${max} LTH`);
+    if (!fs.existsSync(OPS_KEY_FILE)) die('no ops wallet yet: ./faucet-cmd.sh ops-init');
+    const w = new ethers.Wallet(fs.readFileSync(OPS_KEY_FILE, 'utf8').trim(), provider);
+    const value = ethers.parseEther(arg), to = faucetAddress();
+    const bal = await provider.getBalance(w.address);
+    if (bal < value) die(`the ops wallet ${w.address} holds ${ethers.formatEther(bal)} LTH, less than ${arg}`);
+    const rc = await (await w.sendTransaction({ to, value })).wait();
+    if (rc.status !== 1) die('the transfer reverted');
+    console.log(`Sent ${arg} LTH from the ops wallet to the faucet, tx ${rc.hash}. Faucet: ${ethers.formatEther(await provider.getBalance(to))} LTH, ops wallet: ${ethers.formatEther(await provider.getBalance(w.address))} LTH`);
+    return;
+  }
+  if (cmd === 'fund' || cmd === 'fund-ops') {
+    if (!arg || !/^\d+(\.\d+)?$/.test(arg)) die('usage: ' + cmd + ' AMOUNT (LTH, for example 5000)');
+    const to = cmd === 'fund' ? faucetAddress() : opsAddress();
     let key = env('DEPLOYER_KEY', '') || await askHidden('Deployer private key (input hidden): ');
     if (/^[0-9a-fA-F]{64}$/.test(key)) key = '0x' + key;
     if (!/^0x[0-9a-fA-F]{64}$/.test(key)) die('the key must be 64 hex characters');
@@ -67,9 +101,9 @@ async function main() {
     const tx = await w.sendTransaction({ to, value });
     const rc = await tx.wait();
     if (rc.status !== 1) die('the transfer reverted');
-    console.log(`Sent ${arg} LTH to the faucet ${to}, tx ${rc.hash}. Faucet balance: ${ethers.formatEther(await provider.getBalance(to))} LTH`);
+    console.log(`Sent ${arg} LTH to the ${cmd === 'fund' ? 'faucet' : 'ops wallet'} ${to}, tx ${rc.hash}. Its balance: ${ethers.formatEther(await provider.getBalance(to))} LTH`);
     return;
   }
-  die('usage: node admin.js init | address | fund AMOUNT');
+  die('usage: node admin.js init | address | fund AMOUNT | ops-init | ops-address | fund-ops AMOUNT | fund-from-ops AMOUNT');
 }
 main().catch((e) => die((e && (e.shortMessage || e.message)) || String(e)));

@@ -29,6 +29,17 @@
 
 {$EXPLORER_HOST} {
 	{$TLS_LINE}
+	# operator dashboard (static PWA in ops/, data written by the bot); public data only
+	handle_path /ops/data/* {
+		header Cache-Control "no-store"
+		root * /srv/ops-data
+		file_server
+	}
+	redir /ops /ops/ 308
+	handle_path /ops/* {
+		root * /srv/ops
+		file_server
+	}
 	handle /faucet* {
 		request_body {
 			max_size 4KB

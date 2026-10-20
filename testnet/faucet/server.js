@@ -21,6 +21,9 @@ const env = (k, d) => (process.env[k] && process.env[k].trim()) || d;
 const PORT = Number(env('PORT', '8080'));
 const L3_RPC = env('L3_RPC', 'http://nitro:8449');
 const KEY_FILE = env('FAUCET_KEY_FILE', path.join(__dirname, 'secret', 'faucet.key'));
+// The operator pauses the faucet by creating this file (Telegram bot → ops-runner.sh) and resumes it by removing it.
+const PAUSE_FILE = env('FAUCET_PAUSE_FILE', path.join(path.dirname(KEY_FILE), 'paused'));
+const paused = () => fs.existsSync(PAUSE_FILE);
 const STATE_DIR = env('STATE_DIR', path.join(__dirname, 'secret'));
 const EXPLORER_URL = env('EXPLORER_URL', '');
 const PUBLIC_RPC = env('PUBLIC_RPC', '');
@@ -67,6 +70,7 @@ const serial = (fn) => { const p = queue.then(fn, fn); queue = p.catch(() => {})
 class Refusal extends Error { constructor(status, msg, extra) { super(msg); this.status = status; this.extra = extra; } }
 
 async function claim(rawAddress, ip) {
+  if (paused()) throw new Refusal(503, 'The faucet is paused for maintenance. Please try again later.');
   if (typeof rawAddress !== 'string' || !ethers.isAddress(rawAddress.trim())) throw new Refusal(400, 'Not a valid address.');
   const to = ethers.getAddress(rawAddress.trim());
   const w = loadWallet();
@@ -102,7 +106,7 @@ async function claim(rawAddress, ip) {
 
 async function status() {
   const w = loadWallet();
-  const out = { configured: !!w, amount: ethers.formatEther(AMOUNT), cooldownHours: COOLDOWN_MS / 3600_000, dailyCap: ethers.formatEther(DAILY_CAP), explorer: EXPLORER_URL || null, rpc: PUBLIC_RPC || null };
+  const out = { configured: !!w, paused: paused(), amount: ethers.formatEther(AMOUNT), cooldownHours: COOLDOWN_MS / 3600_000, dailyCap: ethers.formatEther(DAILY_CAP), explorer: EXPLORER_URL || null, rpc: PUBLIC_RPC || null };
   if (!w) return out;
   prune(Date.now());
   const [net, bal] = await Promise.all([provider.getNetwork(), provider.getBalance(w.address)]);
