@@ -13,7 +13,8 @@ const REPO = path.resolve(process.env.LATHEON_REPO || path.join(__dirname, '..',
 const rd = (p) => fs.readFileSync(path.join(REPO, p), 'utf8');
 const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n, E18 = 10n ** 18n, LEVELS = 8;
 const rnd = () => BigInt('0x' + crypto.randomBytes(31).toString('hex')) % FIELD;
-const results = []; const rec = (n, ok, note) => { results.push(ok); console.log((ok ? 'ok   ' : 'FAIL ') + n + (note ? '   [' + note + ']' : '')); };
+const CI = !!process.env.GITHUB_ACTIONS;
+const results = []; const rec = (n, ok, note) => { results.push(ok); console.log((ok ? 'ok   ' : 'FAIL ') + n + (note ? '   [' + note + ']' : '')); if (!ok && CI) console.log(`::error::${n} [${note || ''}]`); };
 
 (async () => {
   const out = JSON.parse(solc.compile(JSON.stringify({ language: 'Solidity', sources: {
@@ -112,4 +113,4 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
 
   const pass = results.filter(Boolean).length;
   console.log(`\n${pass}/${results.length} checks passed`); process.exit(pass === results.length ? 0 : 1);
-})().catch((e) => { console.error(e); process.exit(1); });
+})().catch((e) => { console.error(e); if (CI) console.log('::error::' + String(e && e.message || e).split('\n')[0].slice(0, 300)); process.exit(1); });
