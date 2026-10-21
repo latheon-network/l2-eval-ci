@@ -87,7 +87,8 @@ services:
       NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS: "18"
       NEXT_PUBLIC_IS_TESTNET: "true"
       NEXT_PUBLIC_HOMEPAGE_CHARTS: "[]"
-      # branding: files in brand/ served by Caddy at /brand/
+      # branding: files in brand/ served by Caddy at /brand/. The frontend downloads them when it starts,
+      # so start (or restart) it after Caddy is up: docker compose restart frontend
       NEXT_PUBLIC_NETWORK_LOGO: https://${EXPLORER_HOST}/brand/logo-light.png
       NEXT_PUBLIC_NETWORK_LOGO_DARK: https://${EXPLORER_HOST}/brand/logo-dark.png
       NEXT_PUBLIC_NETWORK_ICON: https://${EXPLORER_HOST}/brand/icon-light.png
@@ -97,6 +98,10 @@ services:
       NEXT_PUBLIC_OG_DESCRIPTION: "Explorer of the Latheon test chain, an Arbitrum Orbit chain on Arbitrum Sepolia with test LTH as gas. Testnet only, no audit."
       NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE: "false"
       NEXT_PUBLIC_COLOR_THEME_DEFAULT: dark
+      NEXT_PUBLIC_FONT_FAMILY_HEADING: '{"name":"Cinzel","url":"https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap"}'
+      NEXT_PUBLIC_FONT_FAMILY_BODY: '{"name":"IBM Plex Sans","url":"https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"}'
+      NEXT_PUBLIC_AD_BANNER_PROVIDER: none
+      NEXT_PUBLIC_AD_TEXT_PROVIDER: none
       NEXT_PUBLIC_HOMEPAGE_HERO_BANNER_CONFIG: '{"background":["linear-gradient(135deg, #14121C 0%, #2A2360 55%, #0F6E56 100%)"],"text_color":["#F2EFE9"],"border":["1px solid #534AB7"],"button":{"_default":{"background":["#0F6E56"],"text_color":["#F2EFE9"]},"_hover":{"background":["#5DCAA5"],"text_color":["#14121C"]},"_selected":{"background":["#534AB7"],"text_color":["#F2EFE9"]}}}'
       NEXT_PUBLIC_MAINTENANCE_ALERT_MESSAGE: 'Test network. Test LTH has no value, no audit. <a href="https://${EXPLORER_HOST}/faucet">Faucet</a> · <a href="https://latheon.xyz/demo">Demo</a>'
       NEXT_PUBLIC_FOOTER_LINKS: '[{"title":"Latheon","links":[{"text":"Website","url":"https://latheon.xyz"},{"text":"Demo","url":"https://latheon.xyz/demo"},{"text":"Faucet","url":"https://${EXPLORER_HOST}/faucet"}]},{"title":"Developers","links":[{"text":"GitHub","url":"https://github.com/latheon-network/Latheon"},{"text":"Testnet guide","url":"https://github.com/latheon-network/Latheon/blob/main/docs/testnet.md"},{"text":"Threat model","url":"https://github.com/latheon-network/Latheon/blob/main/THREAT-MODEL.md"}]},{"title":"Community","links":[{"text":"X","url":"https://x.com/Latheon_xyz"}]}]'
