@@ -27,5 +27,8 @@ jobs:
         env:
           LATHEON_REPO: ${{ github.workspace }}/latheon
         run: |
-          npm ci --no-audit --no-fund > /dev/null
-          node test.js
+          npm ci --no-audit --no-fund > /tmp/npm.txt 2>&1 || { echo "::error::npm ci failed: $(tail -5 /tmp/npm.txt | tr '\n' ' ')"; exit 1; }
+          ls "$LATHEON_REPO/circuits/build/withdraw_v3/" || echo "::error::no withdraw_v3 build in the Latheon checkout"
+          node test.js > /tmp/test.txt 2>&1; rc=$?; cat /tmp/test.txt
+          [ $rc = 0 ] || echo "::error::test exit $rc: $(grep -v 'uws\|µWS\|Require stack\|^- ' /tmp/test.txt | tail -4 | tr '\n' ' ' | cut -c1-600)"
+          exit $rc
