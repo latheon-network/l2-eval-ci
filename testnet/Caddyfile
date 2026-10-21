@@ -35,6 +35,12 @@
 		root * /srv/ops-data
 		file_server
 	}
+	# explorer branding: logo, icon, social preview (static files in brand/)
+	handle_path /brand/* {
+		header Cache-Control "public, max-age=3600"
+		root * /srv/brand
+		file_server
+	}
 	redir /ops /ops/ 308
 	handle_path /ops/* {
 		root * /srv/ops

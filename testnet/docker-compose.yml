@@ -87,6 +87,20 @@ services:
       NEXT_PUBLIC_NETWORK_CURRENCY_DECIMALS: "18"
       NEXT_PUBLIC_IS_TESTNET: "true"
       NEXT_PUBLIC_HOMEPAGE_CHARTS: "[]"
+      # branding: files in brand/ served by Caddy at /brand/
+      NEXT_PUBLIC_NETWORK_LOGO: https://${EXPLORER_HOST}/brand/logo-light.png
+      NEXT_PUBLIC_NETWORK_LOGO_DARK: https://${EXPLORER_HOST}/brand/logo-dark.png
+      NEXT_PUBLIC_NETWORK_ICON: https://${EXPLORER_HOST}/brand/icon-light.png
+      NEXT_PUBLIC_NETWORK_ICON_DARK: https://${EXPLORER_HOST}/brand/icon.png
+      FAVICON_MASTER_URL: https://${EXPLORER_HOST}/brand/icon.png
+      NEXT_PUBLIC_OG_IMAGE_URL: https://${EXPLORER_HOST}/brand/og.png
+      NEXT_PUBLIC_OG_DESCRIPTION: "Explorer of the Latheon test chain, an Arbitrum Orbit chain on Arbitrum Sepolia with test LTH as gas. Testnet only, no audit."
+      NEXT_PUBLIC_PROMOTE_BLOCKSCOUT_IN_TITLE: "false"
+      NEXT_PUBLIC_COLOR_THEME_DEFAULT: dark
+      NEXT_PUBLIC_HOMEPAGE_HERO_BANNER_CONFIG: '{"background":["linear-gradient(135deg, #14121C 0%, #2A2360 55%, #0F6E56 100%)"],"text_color":["#F2EFE9"],"border":["1px solid #534AB7"],"button":{"_default":{"background":["#0F6E56"],"text_color":["#F2EFE9"]},"_hover":{"background":["#5DCAA5"],"text_color":["#14121C"]},"_selected":{"background":["#534AB7"],"text_color":["#F2EFE9"]}}}'
+      NEXT_PUBLIC_MAINTENANCE_ALERT_MESSAGE: 'Test network. Test LTH has no value, no audit. <a href="https://${EXPLORER_HOST}/faucet">Faucet</a> · <a href="https://latheon.xyz/demo">Demo</a>'
+      NEXT_PUBLIC_FOOTER_LINKS: '[{"title":"Latheon","links":[{"text":"Website","url":"https://latheon.xyz"},{"text":"Demo","url":"https://latheon.xyz/demo"},{"text":"Faucet","url":"https://${EXPLORER_HOST}/faucet"}]},{"title":"Developers","links":[{"text":"GitHub","url":"https://github.com/latheon-network/Latheon"},{"text":"Testnet guide","url":"https://github.com/latheon-network/Latheon/blob/main/docs/testnet.md"},{"text":"Threat model","url":"https://github.com/latheon-network/Latheon/blob/main/THREAT-MODEL.md"}]},{"title":"Community","links":[{"text":"X","url":"https://x.com/Latheon_xyz"}]}]'
+      NEXT_PUBLIC_OTHER_LINKS: '[{"url":"https://${EXPLORER_HOST}/faucet","text":"Faucet (test LTH)"},{"url":"https://latheon.xyz/demo","text":"Latheon demo"},{"url":"https://github.com/latheon-network/Latheon/blob/main/docs/testnet.md","text":"Testnet guide"}]'
 
   faucet:
     # Test LTH for new addresses: https://EXPLORER_HOST/faucet. Its key is created by ./faucet-cmd.sh init and funded by
@@ -179,6 +193,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./ops:/srv/ops:ro
+      - ./brand:/srv/brand:ro
       - ./ops-data:/srv/ops-data:ro
       - caddy-data:/data
       - caddy-config:/config
