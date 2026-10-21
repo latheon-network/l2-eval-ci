@@ -45,4 +45,13 @@ if [ -n "$w" ]; then
   sum "Кран: $(pretty "$e" 0) LTH"
 fi
 
+if [ "${CHECK_RELAYER:-0}" = 1 ]; then
+code=$(curl -s -m 20 -o /tmp/relayer.json -w '%{http_code}' "$EXPLORER_URL/relay/api/status")
+if [ "$code" = 200 ] && jq -e .address /tmp/relayer.json >/dev/null 2>&1; then
+  rb=$(jq -r .balance /tmp/relayer.json); ok "relayer $rb LTH"
+  if lt "$rb" "${MIN_RELAYER_LTH:-100}"; then bad "у релейера $(pretty "$rb" 0) LTH, меньше ${MIN_RELAYER_LTH:-100} — ./relayer-cmd.sh fund"; fi
+  sum "Релейер: $(pretty "$rb" 0) LTH на газ, выводов за сутки $(jq -r .relayedLast24h /tmp/relayer.json)"
+else bad "релейер: HTTP $code"; fi
+fi
+
 [ -s "$PROBLEMS_FILE" ] && exit 1 || exit 0

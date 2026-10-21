@@ -1,0 +1,31 @@
+name: testnet relayer
+
+# Local test of the withdrawal relayer (testnet/relayer) with real withdraw_v3 proofs against the native-coin pools and
+# router from the Latheon repository, on ganache. No testnet funds are used.
+on:
+  workflow_dispatch:
+  push:
+    paths: ['testnet/relayer/**', '.github/workflows/relayer.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: latheon-network/Latheon
+          ref: 180b4b8448939e3b3f3a61eabb003b84d2b9277c
+          path: latheon
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test
+        working-directory: testnet/relayer
+        env:
+          LATHEON_REPO: ${{ github.workspace }}/latheon
+        run: |
+          npm ci --no-audit --no-fund > /dev/null
+          node test.js

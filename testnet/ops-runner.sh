@@ -2,12 +2,12 @@
 # Runs operator requests from the Telegram bot. The bot (uid 1000, no docker access) drops ID.req files into ops-queue/;
 # systemd (ops-install.sh) starts this script as root when one appears. Only the actions below are possible; anything
 # else is refused. The answer goes to ID.out for the bot to read.
-#   restart SERVICE | logs SERVICE   SERVICE ∈ nitro blockscout frontend faucet caddy db bot
+#   restart SERVICE | logs SERVICE   SERVICE ∈ nitro blockscout frontend faucet relayer caddy db bot
 #   faucet-pause | faucet-resume | faucet-fund AMOUNT (1..OPS_FUND_MAX LTH from the ops wallet) | ops-address
 set -uo pipefail
 cd "$(dirname "$0")"
 Q=ops-queue
-SERVICES=" nitro blockscout frontend faucet caddy db bot "
+SERVICES=" nitro blockscout frontend faucet relayer caddy db bot "
 shopt -s nullglob
 for req in "$Q"/*.req; do
   id=$(basename "$req" .req)

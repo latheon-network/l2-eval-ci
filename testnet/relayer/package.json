@@ -1,0 +1,8 @@
+{
+  "name": "latheon-testnet-relayer",
+  "private": true,
+  "description": "Withdrawal relayer for the Latheon test chain (service) and its local test with real proofs",
+  "scripts": { "test": "node test.js" },
+  "dependencies": { "ethers": "6.17.0" },
+  "devDependencies": { "ganache": "7.9.2", "poseidon-lite": "0.3.0", "snarkjs": "0.7.6", "solc": "0.8.37" }
+}

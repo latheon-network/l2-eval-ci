@@ -108,6 +108,26 @@ services:
     volumes:
       - ./faucet:/faucet
 
+  relayer:
+    # Withdrawal relayer: https://EXPLORER_HOST/relay/api/ submits withdrawals so an empty address can receive without gas.
+    # Own key (./relayer-cmd.sh init), funded with LTH (./relayer-cmd.sh fund AMOUNT); only our pools and router.
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /relayer
+    command: sh -c 'npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node relayer.js serve'
+    depends_on:
+      - nitro
+    environment:
+      L3_RPC: http://nitro:8449
+      LATHEON_JSON: /latheon-out/latheon-deployments.json
+      PORT: "8090"
+      RELAY_PER_IP_HOUR: ${RELAY_PER_IP_HOUR:-10}
+      RELAY_DAILY_CAP: ${RELAY_DAILY_CAP:-500}
+    volumes:
+      - ./relayer:/relayer
+      - ./latheon/out:/latheon-out:ro
+
   bot:
     # Telegram bot for the operator (/status, /menu with confirmed actions) in the chat TG_CHAT_ID, and the writer of the
     # dashboard data. Actions run through ops-runner.sh on the host (install once: ./ops-install.sh).
@@ -144,6 +164,7 @@ services:
       - nitro
       - frontend
       - faucet
+      - relayer
     ports:
       - "80:80"
       - "443:443"

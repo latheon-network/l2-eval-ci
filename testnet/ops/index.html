@@ -138,6 +138,7 @@ function render(s) {
     ['Публичный RPC', st(s.publicRpc, s.publicRpc ? 'работает' : 'не отвечает')],
     ['Обозреватель', st(s.explorerOk, s.explorerOk ? 'работает' : 'ошибка')],
     ['Кран', s.faucet ? st(true, s.faucet.paused ? 'на паузе' : 'работает', s.faucet.paused ? 'warn' : 'ok') : st(false, 'не отвечает')],
+    ['Релейер', s.relayer ? st(s.relayer.enabled, s.relayer.enabled ? `работает · ${nf(s.relayer.balance, 0)} LTH · ${s.relayer.relayed24h} за сутки` : 'нет газа', s.relayer.enabled ? 'ok' : 'bad') : st(false, 'не отвечает')],
     ['Валидатор', st(!!s.latestConfirmed, s.latestConfirmed ? 'есть подтверждения' : 'нет данных', s.latestConfirmed ? 'ok' : 'warn')],
   ].map(([k, v]) => `<div class="row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
   $('eth').innerHTML = [['batchPoster', 'Batch poster', 0.02], ['validator', 'Валидатор', 0.01], ['deployer', 'Деплоер', 0.15]].map(([k, label, full]) => {

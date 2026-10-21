@@ -29,8 +29,9 @@ const OPS_QUEUE = process.env.OPS_QUEUE || '/ops-queue';
 const OPS_DATA = process.env.OPS_DATA || '/ops-data';
 const TG_API = process.env.TG_API || 'https://api.telegram.org';   // overridable for the local test
 const SNAPSHOT_MS = Number(process.env.SNAPSHOT_MS || 120000), HISTORY_EVERY_MS = 15 * 60000, HISTORY_DAYS = 7;
-const MIN = { batchPoster: 0.005, validator: 0.003, deployer: 0.02, faucet: 1000 };
-const SERVICES = ['nitro', 'blockscout', 'frontend', 'faucet', 'caddy', 'db', 'bot'];
+const MIN = { batchPoster: 0.005, validator: 0.003, deployer: 0.02, faucet: 1000, relayer: 100 };
+const RELAYER_URL = process.env.RELAYER_STATUS_URL || 'http://relayer:8090/relay/api/status';
+const SERVICES = ['nitro', 'blockscout', 'frontend', 'faucet', 'relayer', 'caddy', 'db', 'bot'];
 const FUND_STEPS = [10000, 50000];
 const log = (...a) => console.log(new Date().toISOString(), ...a);
 
@@ -76,6 +77,11 @@ async function collect() {
     s.faucet = { address: f.address, balance: Number(f.balance), sent24h: Number(f.sentLast24h || 0), paused: !!f.paused };
     if (s.faucet.balance < MIN.faucet) s.problems.push(`в кране меньше ${fmt(MIN.faucet, 0)} LTH`);
   } else s.faucet = null;
+  const rl = await safe(async () => (await fetch(RELAYER_URL, { signal: AbortSignal.timeout(10000) })).json());
+  if (rl && rl.address) {
+    s.relayer = { address: rl.address, balance: Number(rl.balance), relayed24h: rl.relayedLast24h, enabled: rl.enabled };
+    if (s.relayer.balance < MIN.relayer) s.problems.push(`у релейера ${fmt(s.relayer.balance, 0)} LTH, меньше ${MIN.relayer} — ./relayer-cmd.sh fund`);
+  } else { s.relayer = null; s.problems.push('релейер не отвечает'); }
   if (lat) {
     s.pools = [];
     for (const p of lat.pools || []) {
@@ -96,6 +102,7 @@ function summaryText(s) {
   if (s.eth) L.push(['batchPoster:Batch poster', 'validator:Валидатор', 'deployer:Деплоер'].map((x) => { const [k, n] = x.split(':'); const e = s.eth[k] && s.eth[k].eth; return `${n}: ${e === null || e === undefined ? 'н/д' : fmt(e, 4) + ' ETH'}`; }).join(' · '));
   if (s.faucet) L.push(`Кран: ${fmt(s.faucet.balance, 0)} LTH, выдано за сутки ${fmt(s.faucet.sent24h, 0)}${s.faucet.paused ? ' · НА ПАУЗЕ' : ''}`);
   else L.push('Кран: не настроен или не отвечает');
+  L.push(s.relayer ? `Релейер: ${fmt(s.relayer.balance, 0)} LTH на газ, выводов за сутки ${s.relayer.relayed24h}` : 'Релейер: не отвечает');
   if (s.pools) L.push(`В пулах: ${fmt(s.pools.reduce((a, p) => a + (p.lth || 0), 0), 0)} LTH, депозитов ${s.pools.reduce((a, p) => a + (p.deposits || 0), 0)}`);
   if (s.deployerLth !== null && s.deployerLth !== undefined) L.push(`Деплоер в сети: ${fmt(s.deployerLth, 0)} LTH`);
   const head = s.problems.length ? '🔴 Latheon testnet: есть проблемы' : '✅ Latheon testnet: всё работает';
@@ -115,7 +122,7 @@ async function snapshot() {
       const hp = path.join(OPS_DATA, 'history.json'), h = readJson(hp) || [];
       h.push({ t: s.time, block: s.block ? s.block.number : null, batches: s.batches, faucet: s.faucet ? s.faucet.balance : null,
         deposits: s.pools ? s.pools.reduce((a, p) => a + (p.deposits || 0), 0) : null, shielded: s.pools ? s.pools.reduce((a, p) => a + (p.lth || 0), 0) : null,
-        bp: s.eth && s.eth.batchPoster ? s.eth.batchPoster.eth : null, val: s.eth && s.eth.validator ? s.eth.validator.eth : null, ok: s.problems.length === 0 });
+        relayed: s.relayer ? s.relayer.relayed24h : null, bp: s.eth && s.eth.batchPoster ? s.eth.batchPoster.eth : null, val: s.eth && s.eth.validator ? s.eth.validator.eth : null, ok: s.problems.length === 0 });
       const cut = Date.now() - HISTORY_DAYS * 86400000;
       const kept = h.filter((x) => Date.parse(x.t) >= cut);
       fs.writeFileSync(hp + '.tmp', JSON.stringify(kept)); fs.renameSync(hp + '.tmp', hp);

@@ -40,6 +40,12 @@
 		root * /srv/ops
 		file_server
 	}
+	handle /relay/* {
+		request_body {
+			max_size 64KB
+		}
+		reverse_proxy relayer:8090
+	}
 	handle /faucet* {
 		request_body {
 			max_size 4KB
