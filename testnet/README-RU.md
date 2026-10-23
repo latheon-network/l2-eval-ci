@@ -143,6 +143,10 @@ docker compose restart nitro
 - Ограничение частоты запросов на один IP: публичный RPC 25 в секунду и 600 в минуту, API обозревателя 40 в секунду и 1200 в минуту (сверх этого ответ 429 с Retry-After); страницы обозревателя не ограничены. Значения меняются в `.env` (`RPC_RATE_PER_SECOND` и др.), после изменения `docker compose up -d caddy`. Caddy собирается с модулем rate_limit из `caddy/Dockerfile` (`docker compose build caddy`, несколько минут), проверка в CI: workflow `caddy with rate limits`. Тело запроса ограничено 1 МБ, пакетный JSON-RPC запрос считается за один.
 - Контракты Latheon разворачиваются командой `./latheon-cmd.sh deploy` (см. выше); в демо сеть ещё не подключена: нужна поддержка нативных пулов (депозит с `value`, без approve).
 
+## Пополнить отправителя пакетов или валидатора ETH
+
+Если MetaMask не отправляет, это можно сделать с сервера: `./topup-cmd.sh batch-poster 0.1` или `./topup-cmd.sh validator 0.05` (сумма в ETH, не больше 1). Ключ деплоера спрашивается скрыто и нигде не сохраняется. Скрипт показывает балансы до и после и ссылку на транзакцию в Arbiscan.
+
 ## Оформление обозревателя
 
 Логотип, иконка и картинка для соцсетей лежат в `brand/` (logo-light.png и logo-dark.png высотой 48 px, icon.png и icon-light.png 180×180, og.png 1200×600). Caddy отдаёт их по `https://EXPLORER_HOST/brand/…`. Переменные Blockscout (логотип, баннер на главной, тёмная тема, плашка «тестовая сеть», ссылки в подвале) заданы в `docker-compose.yml`, сервис `frontend`. После правки: `docker compose up -d caddy frontend`; favicon собирается при старте контейнера frontend.
