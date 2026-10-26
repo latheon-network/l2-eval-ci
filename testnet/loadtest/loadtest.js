@@ -228,28 +228,40 @@ async function act(s, P, c, master, wal, notesOf) {
   if (s.kind === 'withdraw-part') { const per = Math.ceil(notes.length / (s.parts - s.part)); take = notes.slice(0, per); }
   const groups = s.kind === 'withdraw-notes' ? take.map((n) => [n]) : [take];
   const txs = [], recipients = [];
-  for (const g of groups) {
-    const to = ethers.Wallet.createRandom().address; recipients.push(to);
-    const proofs = []; for (const n of g) proofs.push({ n, p: await proofFor(c, n, to) });
-    let tx;
-    if (s.via === 'self') {
-      const me2 = wal(s.w);
-      if (g.length === 1) tx = (await (await c.pool(g[0].pool, me2).withdraw(proofs[0].p.pA, proofs[0].p.pB, proofs[0].p.pC, proofs[0].p.root, proofs[0].p.nullifierHash, to, ZERO, 0n)).wait()).hash;
-      else tx = (await (await c.routerC(me2).withdrawMany(proofs.map(({ n, p }) => [n.pool, p.pA, p.pB, p.pC, p.root, p.nullifierHash, 0n]), to, ZERO)).wait()).hash;
-    } else if (g.length === 1) {
-      const { p } = proofs[0];
-      tx = (await post(RELAYER_URL + '/withdraw', { pool: c.pools[g[0].pool].address, pA: p.pA, pB: p.pB, pC: p.pC, root: p.root, nullifierHash: p.nullifierHash, recipient: to, relayer: ZERO, fee: '0' })).tx;
-    } else {
-      for (let k = 0; k < proofs.length; k += 16) {
-        const items = proofs.slice(k, k + 16).map(({ n, p }) => [n.pool, p.pA, p.pB, p.pC, p.root, p.nullifierHash, '0']);
-        const t = (await post(RELAYER_URL + '/withdrawMany', { router: c.router.address, items, recipient: to, relayer: ZERO })).tx;
-        if (k + 16 < proofs.length) txs.push(t); else tx = t;
+  let staleRetries = 0;
+  // One chunk (at most 16 notes, one recipient) proven and sent; if a pool forgot the proof's root meanwhile ("Unknown
+  // root": many deposits between proving and sending), prove again against the current root, as the demo does.
+  async function sendChunk(chunk, to) {
+    for (let attempt = 1; ; attempt++) {
+      const proofs = []; for (const n of chunk) proofs.push({ n, p: await proofFor(c, n, to) });
+      try {
+        if (s.via === 'self') {
+          const me2 = wal(s.w);
+          if (chunk.length === 1) return (await (await c.pool(chunk[0].pool, me2).withdraw(proofs[0].p.pA, proofs[0].p.pB, proofs[0].p.pC, proofs[0].p.root, proofs[0].p.nullifierHash, to, ZERO, 0n)).wait()).hash;
+          return (await (await c.routerC(me2).withdrawMany(proofs.map(({ n, p }) => [n.pool, p.pA, p.pB, p.pC, p.root, p.nullifierHash, 0n]), to, ZERO)).wait()).hash;
+        }
+        if (chunk.length === 1) {
+          const { p } = proofs[0];
+          return (await post(RELAYER_URL + '/withdraw', { pool: c.pools[chunk[0].pool].address, pA: p.pA, pB: p.pB, pC: p.pC, root: p.root, nullifierHash: p.nullifierHash, recipient: to, relayer: ZERO, fee: '0' })).tx;
+        }
+        const items = proofs.map(({ n, p }) => [n.pool, p.pA, p.pB, p.pC, p.root, p.nullifierHash, '0']);
+        return (await post(RELAYER_URL + '/withdrawMany', { router: c.router.address, items, recipient: to, relayer: ZERO })).tx;
+      } catch (e) {
+        const m = String((e && (e.shortMessage || e.message)) || e);
+        if (attempt >= 3 || !/Unknown root/i.test(m)) throw e;
+        staleRetries++; log(`   ${s.id}: the pool forgot the proof's root (many deposits meanwhile); proving again`);
       }
     }
-    for (const n of g) n.spent = true;
-    txs.push(tx);
   }
-  return { txs, recipients, nullifiers: take.map((n) => nullifierOf(BigInt(n.sk)).toString()), notes: take.map((n) => n.commitment), via: s.via };
+  for (const g of groups) {
+    const to = ethers.Wallet.createRandom().address; recipients.push(to);
+    for (let k = 0; k < g.length; k += 16) {
+      const chunk = g.slice(k, k + 16);
+      txs.push(await sendChunk(chunk, to));
+      for (const n of chunk) n.spent = true;
+    }
+  }
+  return { txs, recipients, nullifiers: take.map((n) => nullifierOf(BigInt(n.sk)).toString()), notes: take.map((n) => n.commitment), via: s.via, staleRetries };
 }
 
 // ------------------------------------------------------------------ bridge (Arbitrum Sepolia <-> the chain)
@@ -346,6 +358,7 @@ async function analyze() {
     sizes.sort((a, b) => a - b);
     report.anonymitySet[DENOMS[i] + ' LTH'] = sizes.length ? { withdrawals: sizes.length, min: sizes[0], median: sizes[Math.floor(sizes.length / 2)], max: sizes[sizes.length - 1] } : null;
   }
+  report.staleRootRetries = J.reduce((a, e) => a + (e.staleRetries || 0), 0);   // proofs made again because a pool forgot their root
   report.failures = J.filter((e) => e.ok === false).map((e) => ({ kind: e.kind, error: e.error })).slice(0, 50);
   fs.mkdirSync(OUT, { recursive: true });
   saveJson(path.join(OUT, 'loadtest-report.json'), report);
@@ -357,7 +370,7 @@ async function analyze() {
     ...Object.entries(report.byBehaviour).map(([k, v]) => `| ${k} | ${v.withdrawals} | ${v.linkedByAny} | ${v.linkedShare} |`), '',
     '## Anonymity set at withdrawal time (unspent deposits in the pool)', '', '| Pool | Withdrawals | Min | Median | Max |', '|---|---|---|---|---|',
     ...Object.entries(report.anonymitySet).map(([k, v]) => (v ? `| ${k} | ${v.withdrawals} | ${v.min} | ${v.median} | ${v.max} |` : `| ${k} | 0 | | | |`)), '',
-    `Failed steps: ${report.failures.length}.`, ''].join('\n');
+    `Failed steps: ${report.failures.length}. Proofs made again because a pool no longer knew their root: ${report.staleRootRetries}.`, ''].join('\n');
   fs.writeFileSync(path.join(OUT, 'loadtest-report.md'), md);
   console.log(md);
 }

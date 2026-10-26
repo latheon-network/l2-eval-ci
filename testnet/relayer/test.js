@@ -157,6 +157,15 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
   let okAll = true;
   for (let i = 0; i < 3; i++) { const n = note(); await depositTo(pools6[3], n); const r = fresh(); const p = await prove(pools6[3], n, r, { relayer: ethers.ZeroAddress, fee: 0n }); const x = await RL.handle('POST', '/relay/api/withdraw', { pool: pools6[3].target, ...p, recipient: r }, 'ip-load'); if (x.status !== 200) okAll = false; }
   rec('an exempt client IP (RELAY_EXEMPT_IPS, for our load tests) is not held to the hourly and daily limits', okAll);
+  // a proof whose root the pool has forgotten (100 deposits since): refused before sending, with "Unknown root" in the
+  // message, which the demo and the load test recognise and answer with a new proof
+  const n15 = note(); await depositTo(pools6[3], n15); const r15 = fresh(); const p15 = await prove(pools6[3], n15, r15, { relayer: ethers.ZeroAddress, fee: 0n });
+  for (let i = 0; i < 100; i++) await depositTo(pools6[3], note());
+  res = await R6.handle('POST', '/relay/api/withdraw', { pool: pools6[3].target, ...p15, recipient: r15 }, 'ip-g');
+  const stale = res.status === 400 && /Unknown root/.test(res.body.error);
+  const p15b = await prove(pools6[3], n15, r15, { relayer: ethers.ZeroAddress, fee: 0n });
+  res = await R6.handle('POST', '/relay/api/withdraw', { pool: pools6[3].target, ...p15b, recipient: r15 }, 'ip-g');
+  rec('V6: a proof against a root the pool forgot (100 deposits since) is refused with "Unknown root"; a new proof for the same note is relayed', stale && res.status === 200 && (await bal(r15)) === E18, res.body.error || 'ok');
   res = await R6.handle('GET', '/relay/api/status', null, 'ip-x');
   rec('V6 status reports the minimum fee and V6 support', res.status === 200 && res.body.v6 === true && res.body.minFeeV6 === '0.01', JSON.stringify(res.body).slice(0, 140));
 
