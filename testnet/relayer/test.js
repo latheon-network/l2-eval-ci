@@ -168,6 +168,7 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
   rec('V6: a proof against a root the pool forgot (100 deposits since) is refused with "Unknown root"; a new proof for the same note is relayed', stale && res.status === 200 && (await bal(r15)) === E18, res.body.error || 'ok');
   res = await R6.handle('GET', '/relay/api/status', null, 'ip-x');
   rec('V6 status reports the minimum fee and V6 support', res.status === 200 && res.body.v6 === true && res.body.minFeeV6 === '0.01', JSON.stringify(res.body).slice(0, 140));
+  rec('status tells the caller its own IP as seen by the relayer, and whether it is exempt', res.body.yourIp === 'ip-x' && res.body.exempt === false && (await RL.handle('GET', '/relay/api/status', null, 'ip-load')).body.exempt === true);
 
   const pass = results.filter(Boolean).length;
   console.log(`\n${pass}/${results.length} checks passed`); process.exit(pass === results.length ? 0 : 1);

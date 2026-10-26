@@ -125,17 +125,18 @@ function createRelayer(o) {
     });
   }
 
-  async function status() {
+  async function status(ip) {
     const bal = await wallet.provider.getBalance(wallet.address);
     sent = sent.filter((t) => Date.now() - t < 86400e3);
     return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16,
-      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0 };
+      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0,
+      yourIp: ip, exempt: exempt.has(ip) };   // the caller's own address as the relayer sees it (to set RELAY_EXEMPT_IPS / FAUCET_EXEMPT_IPS)
   }
 
   /** HTTP-independent entry: returns {status, body}. */
   async function handle(method, url, body, ip) {
     try {
-      if (method === 'GET' && url === '/relay/api/status') return { status: 200, body: await status() };
+      if (method === 'GET' && url === '/relay/api/status') return { status: 200, body: await status(ip) };
       if (method === 'POST' && url === '/relay/api/withdraw') return { status: 200, body: await relay('withdraw', body || {}, ip) };
       if (method === 'POST' && url === '/relay/api/withdrawMany') return { status: 200, body: await relay('withdrawMany', body || {}, ip) };
       return { status: 404, body: { error: 'Not found.' } };

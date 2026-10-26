@@ -128,7 +128,9 @@ async function fund() {
     const parent = new ethers.JsonRpcProvider(PARENT_RPC, 421614, { staticNetwork: true });
     const dp = new ethers.Wallet(deployer.privateKey, parent);
     const tok = new ethers.Contract(cj.feeToken, ['function transfer(address,uint256) returns (bool)', 'function balanceOf(address) view returns (uint256)'], dp);
-    const ethNeed = BigInt(nb) * ethers.parseEther('0.0004'), lthNeed = BigInt(nb) * 300n * E18;
+    const bridgeIdx = new Set(P.wallets.filter((w) => w.bridge).map((w) => w.i));   // exactly what bridgeIn() will send each of them
+    const lthNeed = P.steps.filter((x) => bridgeIdx.has(x.w) && /deposit/.test(x.kind)).reduce((a, x) => a + BigInt(x.amount), 0n) * E18 + BigInt(nb) * 3n * E18;
+    const ethNeed = BigInt(nb) * ethers.parseEther('0.0004');
     const eh = await parent.getBalance(m), th = await tok.balanceOf(m);
     if (eh < ethNeed) log('ETH on Arbitrum Sepolia: ' + (await (await dp.sendTransaction({ to: m, value: ethNeed - eh })).wait()).hash);
     if (th < lthNeed) log('LTH tokens on Arbitrum Sepolia: ' + (await (await tok.transfer(m, lthNeed - th)).wait()).hash);
