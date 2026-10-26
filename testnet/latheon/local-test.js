@@ -41,6 +41,19 @@ const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
     entry.routers.length === 1 && entry.routers[0].native === true && entry.network.tokens.LTH.native === true && entry.network.tokens.LTH.address === '0x0000000000000000000000000000000000000000');
   const s = await run('smoke.js');
   check('smoke: router deposit 11 LTH, withdrawMany 2 notes with real proofs to an empty address, invariants, disclosure', s.status === 0 && /All checks passed/.test(s.stdout));
+  // V6 next to V5
+  const v1 = await run('deploy-v6.js');
+  check('deploy-v6: verifier V4, four 20-level native pools, V6 router; every check passed', v1.status === 0);
+  const v2 = await run('deploy-v6.js');
+  check('deploy-v6 again: every V6 contract reused', v2.status === 0 && (v2.stdout.match(/already deployed/g) || []).length === 6 && !/gas \d/.test(v2.stdout));
+  const e6 = JSON.parse(fs.readFileSync(path.join(envs.OUT_DIR, 'latheon-deployments.json'), 'utf8'));
+  check('entry: V6 pools and router listed first, V5 kept, v6Verifier set',
+    e6.pools.length === 8 && e6.pools.slice(0, 4).every((p) => p.version === 'v6-native') && e6.pools.slice(4).every((p) => p.version === 'v5-native') &&
+    e6.routers.length === 2 && e6.routers[0].version === 'v6' && !!e6.network.v6Verifier);
+  const s5 = await run('smoke.js');
+  check('smoke (V5) still passes with V6 listed first', s5.status === 0 && /All checks passed/.test(s5.stdout));
+  const s6 = await run('smoke-v6.js');
+  check('smoke-v6: router deposit 11, withdrawMany with relayer fees bound into the proofs, 23-note deposit, invariants, disclosure', s6.status === 0 && /All checks passed/.test(s6.stdout));
   const recKey = JSON.parse(fs.readFileSync(path.join(envs.STATE_DIR, 'latheon-smoke-notes.json'), 'utf8')).recipientKey.slice(2).toLowerCase();
   check('no private key (deployer or test recipient) in any output file', !fs.readdirSync(envs.OUT_DIR).some((f) => { const t = fs.readFileSync(path.join(envs.OUT_DIR, f), 'utf8').toLowerCase(); return t.includes(KEY.slice(2)) || t.includes(recKey); }));
 

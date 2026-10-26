@@ -10,6 +10,9 @@
  *   GET  /relay/api/status        relayer address, balance, limits
  *   POST /relay/api/withdraw      {pool, pA, pB, pC, root, nullifierHash, recipient}        one note, to one of our pools
  *   POST /relay/api/withdrawMany  {router, items: [[pool, pA, pB, pC, root, nullifierHash], ...], recipient}   through our router
+ *   V6 pools and router (withdraw_v4): the same, plus `relayer` and `fee` (withdraw) or `relayer` and a 7th item field `fee`
+ *   (withdrawMany). Both are bound into the proof. The relayer accepts relayer = 0 with fee = 0 (no fee, as today) or
+ *   relayer = its own address with fee >= RELAY_MIN_FEE; nothing else.
  *
  * Every request is simulated first (eth_call from the relayer); a request that would revert — bad proof, spent note,
  * unknown root, a recipient that refuses the coin — is refused without spending gas. Only the pools and routers listed in
@@ -18,7 +21,9 @@
  * for the hourly limit only; the log has transaction hashes.
  *
  * Service: node relayer.js serve     Admin: node relayer.js init | address | fund AMOUNT (deployer key, asked without echo)
- * Env: L3_RPC, RELAYER_KEY_FILE, LATHEON_JSON, PORT, RELAY_PER_IP_HOUR (10), RELAY_DAILY_CAP (500), RELAY_MIN_BALANCE (1).
+ * Env: L3_RPC, RELAYER_KEY_FILE, LATHEON_JSON, PORT, RELAY_PER_IP_HOUR (10), RELAY_DAILY_CAP (500), RELAY_MIN_BALANCE (1),
+ * RELAY_MIN_FEE (0, in LTH: the smallest fee accepted when a request names this relayer), RELAY_EXEMPT_IPS (none; comma-separated
+ * client IPs the hourly and daily limits do not apply to, for our own load tests).
  */
 const fs = require('fs');
 const path = require('path');
@@ -27,17 +32,22 @@ const http = require('http');
 const POOL_ABI = ['function withdraw(uint256[2] _pA, uint256[2][2] _pB, uint256[2] _pC, uint256 root, uint256 nullifierHash, address recipient)'];
 const ROUTER_ABI = ['function withdrawMany((uint256 pool, uint256[2] pA, uint256[2][2] pB, uint256[2] pC, uint256 root, uint256 nullifierHash)[] items, address recipient)',
   'function MAX_WITHDRAWALS() view returns (uint256)'];
+const POOL_ABI_V6 = ['function withdraw(uint256[2] _pA, uint256[2][2] _pB, uint256[2] _pC, uint256 root, uint256 nullifierHash, address recipient, address relayer, uint256 fee)'];
+const ROUTER_ABI_V6 = ['function withdrawMany((uint256 pool, uint256[2] pA, uint256[2][2] pB, uint256[2] pC, uint256 root, uint256 nullifierHash, uint256 fee)[] items, address recipient, address relayer)',
+  'function MAX_WITHDRAWALS() view returns (uint256)'];
 
 class Refusal extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 
 /**
  * The relayer logic, independent of HTTP and of where the chain runs (tests inject a local chain).
- * @param {{ethers: any, wallet: any, pools: string[], routers: string[], perIpHour?: number, dailyCap?: number, minBalance?: bigint, log?: Function}} o
+ * @param {{ethers: any, wallet: any, pools: string[], routers: string[], v6Pools?: string[], v6Routers?: string[], perIpHour?: number, dailyCap?: number, minBalance?: bigint, minFee?: bigint, exemptIps?: string[], log?: Function}} o
  */
 function createRelayer(o) {
   const { ethers, wallet } = o;
   const log = o.log || (() => {});
   const pools = new Set(o.pools.map((a) => a.toLowerCase())), routers = new Set(o.routers.map((a) => a.toLowerCase()));
+  const v6Pools = new Set((o.v6Pools || []).map((a) => a.toLowerCase())), v6Routers = new Set((o.v6Routers || []).map((a) => a.toLowerCase()));
+  const minFee = o.minFee ?? 0n, exempt = new Set(o.exemptIps || []);
   const perIpHour = o.perIpHour ?? 10, dailyCap = o.dailyCap ?? 500, minBalance = o.minBalance ?? ethers.parseEther('1');
   const byIp = new Map(); let sent = [];   // timestamps of successful relays
   let queue = Promise.resolve();
@@ -53,10 +63,20 @@ function createRelayer(o) {
   const reason = (e) => (e && (e.reason || e.shortMessage || e.message) || 'reverted').split('\n')[0].slice(0, 160);
 
   function checkLimits(ip, now) {
+    if (exempt.has(ip)) return;
     const h = (byIp.get(ip) || []).filter((t) => now - t < 3600e3); byIp.set(ip, h);
     sent = sent.filter((t) => now - t < 86400e3);
     if (h.length >= perIpHour) throw new Refusal(429, `Limit: ${perIpHour} relayed withdrawals per hour from one address. Try later, or send the withdrawal from your own wallet.`);
     if (sent.length >= dailyCap) throw new Refusal(429, 'The relayer reached its daily limit. Try tomorrow, or send the withdrawal from your own wallet.');
+  }
+
+  // V6: who is paid the fee, and how much, are in the proof. Accept no fee at all, or a fee to this relayer only.
+  function feeTerms(relayerField, fees) {
+    const rel = relayerField === undefined || relayerField === null || relayerField === '' ? ethers.ZeroAddress : address(relayerField, 'relayer');
+    if (rel === ethers.ZeroAddress) { if (fees.some((f) => f !== 0n)) throw new Refusal(400, 'A fee needs a relayer address.'); return rel; }
+    if (rel !== wallet.address) throw new Refusal(400, 'This relayer only sends withdrawals that name it (or no relayer) as the fee recipient.');
+    if (fees.some((f) => f < minFee)) throw new Refusal(400, 'Fee below this relayer\'s minimum (' + ethers.formatEther(minFee) + ' LTH per note).');
+    return rel;
   }
 
   async function relay(kind, body, ip) {
@@ -66,16 +86,28 @@ function createRelayer(o) {
     if (recipient === ethers.ZeroAddress || recipient === wallet.address) throw new Refusal(400, 'This recipient cannot be used.');
     let contract, args;
     if (kind === 'withdraw') {
-      const pool = address(body.pool, 'pool');
-      if (!pools.has(pool.toLowerCase())) throw new Refusal(400, 'Not a Latheon pool on this chain.');
+      const pool = address(body.pool, 'pool'), v6 = v6Pools.has(pool.toLowerCase());
+      if (!v6 && !pools.has(pool.toLowerCase())) throw new Refusal(400, 'Not a Latheon pool on this chain.');
       const p = proof(body);
-      contract = new ethers.Contract(pool, POOL_ABI, wallet); args = [p.pA, p.pB, p.pC, p.root, p.nullifierHash, recipient];
+      if (v6) {
+        const fee = body.fee === undefined ? 0n : uint(body.fee, 'fee'); const rel = feeTerms(body.relayer, [fee]);
+        contract = new ethers.Contract(pool, POOL_ABI_V6, wallet); args = [p.pA, p.pB, p.pC, p.root, p.nullifierHash, recipient, rel, fee];
+      } else { contract = new ethers.Contract(pool, POOL_ABI, wallet); args = [p.pA, p.pB, p.pC, p.root, p.nullifierHash, recipient]; }
     } else {
-      const router = address(body.router, 'router');
-      if (!routers.has(router.toLowerCase())) throw new Refusal(400, 'Not a Latheon router on this chain.');
+      const router = address(body.router, 'router'), v6 = v6Routers.has(router.toLowerCase());
+      if (!v6 && !routers.has(router.toLowerCase())) throw new Refusal(400, 'Not a Latheon router on this chain.');
       if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > 16) throw new Refusal(400, 'Between 1 and 16 notes per request.');
-      const items = body.items.map((it) => { if (!Array.isArray(it) || it.length !== 6) throw new Refusal(400, 'Bad item.'); const p = proof({ pA: it[1], pB: it[2], pC: it[3], root: it[4], nullifierHash: it[5] }); return [uint(it[0], 'pool index'), p.pA, p.pB, p.pC, p.root, p.nullifierHash]; });
-      contract = new ethers.Contract(router, ROUTER_ABI, wallet); args = [items, recipient];
+      const items = body.items.map((it) => {
+        if (!Array.isArray(it) || it.length !== (v6 ? 7 : 6)) throw new Refusal(400, 'Bad item.');
+        const p = proof({ pA: it[1], pB: it[2], pC: it[3], root: it[4], nullifierHash: it[5] });
+        const item = [uint(it[0], 'pool index'), p.pA, p.pB, p.pC, p.root, p.nullifierHash];
+        if (v6) item.push(uint(it[6], 'fee'));
+        return item;
+      });
+      if (v6) {
+        const rel = feeTerms(body.relayer, items.map((x) => x[6]));
+        contract = new ethers.Contract(router, ROUTER_ABI_V6, wallet); args = [items, recipient, rel];
+      } else { contract = new ethers.Contract(router, ROUTER_ABI, wallet); args = [items, recipient]; }
     }
     const fn = kind === 'withdraw' ? 'withdraw' : 'withdrawMany';
     return serial(async () => {
@@ -96,7 +128,8 @@ function createRelayer(o) {
   async function status() {
     const bal = await wallet.provider.getBalance(wallet.address);
     sent = sent.filter((t) => Date.now() - t < 86400e3);
-    return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16, fee: '0' };
+    return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16,
+      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0 };
   }
 
   /** HTTP-independent entry: returns {status, body}. */
@@ -155,8 +188,12 @@ if (require.main === module) {
     if (cmd !== 'serve') die('usage: node relayer.js serve | init | address | fund AMOUNT');
 
     const dep = JSON.parse(fs.readFileSync(LATHEON_JSON, 'utf8'));
-    const relayer = createRelayer({ ethers, wallet, log, pools: dep.pools.map((p) => p.address), routers: (dep.routers || []).map((r) => r.address),
-      perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')) });
+    const isV6 = (x) => x.version === 'v6-native' || x.version === 'v6';
+    const relayer = createRelayer({ ethers, wallet, log,
+      pools: dep.pools.filter((p) => !isV6(p)).map((p) => p.address), routers: (dep.routers || []).filter((r) => !isV6(r)).map((r) => r.address),
+      v6Pools: dep.pools.filter(isV6).map((p) => p.address), v6Routers: (dep.routers || []).filter(isV6).map((r) => r.address),
+      perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
+      minFee: ethers.parseEther(env('RELAY_MIN_FEE', '0')), exemptIps: env('RELAY_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean) });
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '600' };
     const ipOf = (req) => { const x = String(req.headers['x-forwarded-for'] || '').split(',').map((s) => s.trim()).filter(Boolean); return x.length ? x[x.length - 1] : (req.socket.remoteAddress || 'unknown'); };
     http.createServer((req, res) => {

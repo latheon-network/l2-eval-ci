@@ -89,4 +89,4 @@ function linkPool(poseidon, name = 'PoolNative') {
   return code;
 }
 
-module.exports = { ethers, ART, E18, DENOMS, LEVELS, ZERO_TOP, L3_RPC, STATE_DIR, OUT_DIR, HERE, env, rnd, log, die, retry, connect, loadJson, saveJson, linkPool, sleep };
+module.exports = { ethers, ART, E18, DENOMS, LEVELS, ZERO_TOP, L3_RPC, STATE_DIR, OUT_DIR, HERE, env, rnd, log, die, retry, connect, loadJson, saveJson, linkPool, sleep, getKey };

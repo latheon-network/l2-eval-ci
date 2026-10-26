@@ -30,6 +30,8 @@ const PUBLIC_RPC = env('PUBLIC_RPC', '');
 const AMOUNT = ethers.parseEther(env('FAUCET_AMOUNT', '100'));
 const COOLDOWN_MS = Number(env('FAUCET_COOLDOWN_HOURS', '24')) * 3600_000;
 const DAILY_CAP = ethers.parseEther(env('FAUCET_DAILY_CAP', '5000'));
+// Client IPs the per-IP limit and the daily cap do not apply to (our own load tests from the server); empty by default.
+const EXEMPT_IPS = new Set(env('FAUCET_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean));
 const DAY_MS = 24 * 3600_000;
 const STATE_FILE = path.join(STATE_DIR, 'claims.json');
 
@@ -81,13 +83,14 @@ async function claim(rawAddress, ip) {
     prune(now);
     const a = to.toLowerCase();
     if (state.addr[a]) throw new Refusal(429, 'This address already received LTH recently.', { retryAfterSeconds: Math.ceil((state.addr[a] + COOLDOWN_MS - now) / 1000) });
-    if (state.ip[ip]) throw new Refusal(429, 'A claim was already made from your connection recently.', { retryAfterSeconds: Math.ceil((state.ip[ip] + COOLDOWN_MS - now) / 1000) });
-    if (sentToday() + AMOUNT > DAILY_CAP) throw new Refusal(503, 'The faucet reached its daily limit. Try again later.');
+    const exempt = EXEMPT_IPS.has(ip);
+    if (state.ip[ip] && !exempt) throw new Refusal(429, 'A claim was already made from your connection recently.', { retryAfterSeconds: Math.ceil((state.ip[ip] + COOLDOWN_MS - now) / 1000) });
+    if (!exempt && sentToday() + AMOUNT > DAILY_CAP) throw new Refusal(503, 'The faucet reached its daily limit. Try again later.');
     if ((await provider.getBalance(to)) >= AMOUNT) throw new Refusal(400, 'This address already holds enough LTH.');
     const bal = await provider.getBalance(w.address);
     if (bal < AMOUNT + ethers.parseEther('0.01')) throw new Refusal(503, 'The faucet is empty. Try again later.');
     // reserve the limits before sending, release them if the transaction is not sent
-    state.addr[a] = now; state.ip[ip] = now; state.sent.push([now, AMOUNT.toString()]); save();
+    state.addr[a] = now; if (!exempt) { state.ip[ip] = now; state.sent.push([now, AMOUNT.toString()]); } save();
     let tx;
     try {
       tx = await w.sendTransaction({ to, value: AMOUNT });

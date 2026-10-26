@@ -124,6 +124,7 @@ services:
       FAUCET_AMOUNT: ${FAUCET_AMOUNT:-100}
       FAUCET_COOLDOWN_HOURS: ${FAUCET_COOLDOWN_HOURS:-24}
       FAUCET_DAILY_CAP: ${FAUCET_DAILY_CAP:-5000}
+      FAUCET_EXEMPT_IPS: ${FAUCET_EXEMPT_IPS:-}
     volumes:
       - ./faucet:/faucet
 
@@ -143,6 +144,8 @@ services:
       PORT: "8090"
       RELAY_PER_IP_HOUR: ${RELAY_PER_IP_HOUR:-10}
       RELAY_DAILY_CAP: ${RELAY_DAILY_CAP:-500}
+      RELAY_MIN_FEE: ${RELAY_MIN_FEE:-0}
+      RELAY_EXEMPT_IPS: ${RELAY_EXEMPT_IPS:-}
     volumes:
       - ./relayer:/relayer
       - ./latheon/out:/latheon-out:ro

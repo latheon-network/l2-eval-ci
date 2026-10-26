@@ -21,7 +21,7 @@ async function main() {
   if (chainId !== dep.network.chainId) die(`RPC chain ${chainId} is not the deployed chain ${dep.network.chainId}`);
   if (!dep.network.tokens.LTH.native) die('the deployment entry is not the native-coin set');
   const C = ART.contracts;
-  const router = dep.routers[0].address, pools = dep.pools.map((p) => p.address);
+  const dpools = dep.pools.filter((p) => p.version === 'v5-native'), router = dep.routers.find((r) => r.version !== 'v6').address, pools = dpools.map((p) => p.address);
   const R = new ethers.Contract(router, C.RouterNative.abi, wallet);
   const P = pools.map((a) => new ethers.Contract(a, C.PoolNative.abi, provider));
   const result = { chainId, started: new Date().toISOString(), steps: {} };
@@ -65,7 +65,7 @@ async function main() {
   for (const n of notes) {
     const pool = P[n.pool];
     const next = Number(await pool.nextIndex());
-    const logs = await retry(() => pool.queryFilter(pool.filters.Deposit(), dep.pools[n.pool].deployBlock), 'logs');
+    const logs = await retry(() => pool.queryFilter(pool.filters.Deposit(), dpools[n.pool].deployBlock), 'logs');
     const leaves = new Array(next).fill(null);
     for (const l of logs) leaves[Number(l.args.leafIndex)] = l.args.commitment;
     if (leaves.some((x) => x === null)) die('could not rebuild the tree of pool ' + n.pool);
@@ -81,8 +81,8 @@ async function main() {
   ok((await provider.getBalance(router)) === 0n, 'router holds no LTH');
   for (let i = 0; i < 4; i++) {
     const d = await P[i].DENOMINATION(), n = BigInt(await P[i].nextIndex());
-    const w = BigInt((await retry(() => P[i].queryFilter(P[i].filters.Withdrawal(), dep.pools[i].deployBlock), 'logs')).length);
-    ok((await provider.getBalance(pools[i])) >= d * (n - w), `pool ${dep.pools[i].amount}: holds at least denomination × (deposits − withdrawals)`);
+    const w = BigInt((await retry(() => P[i].queryFilter(P[i].filters.Withdrawal(), dpools[i].deployBlock), 'logs')).length);
+    ok((await provider.getBalance(pools[i])) >= d * (n - w), `pool ${dpools[i].amount}: holds at least denomination × (deposits − withdrawals)`);
   }
   const dp = await discloseProof({ sk: notes[0].sk, vk: notes[0].vk, nonce: rnd() });
   const D = new ethers.Contract(dep.network.discloseVerifier, C.DiscloseVerifier.abi, provider);

@@ -1,0 +1,108 @@
+'use strict';
+/*
+ * Smoke test of the deployed V6 native-coin contracts (20-level trees, withdraw_v4) with real proofs:
+ *   router deposit of 11 LTH with 2 commitments = one note of 10 and one of 1
+ *   → withdrawMany of both notes to a NEW, EMPTY address, with a relayer fee of 0.1 LTH per note bound into the proofs:
+ *     the address receives exactly 10.8 LTH and the relayer named in the proofs exactly 0.2
+ *   → a router deposit of 999 LTH (23 notes) to measure the gas of a large deposit on the real chain
+ *   → the router holds nothing, every pool holds at least denomination × (deposits − withdrawals); a disclosure proof.
+ *
+ *   L3_RPC=http://127.0.0.1:8449 node smoke-v6.js      (needs the V6 entries written by deploy-v6.js)
+ *
+ * The test notes and the recipient's key stay in STATE_DIR (private); OUT_DIR/latheon-smoke.json holds only public data.
+ */
+const path = require('path');
+const { ethers, ART, E18, STATE_DIR, OUT_DIR, rnd, log, die, retry, connect, loadJson, saveJson } = require('./lib');
+const { commitmentOf, withdrawProof, discloseProof } = require('./zk');
+
+async function main() {
+  const dep = loadJson(path.join(OUT_DIR, 'latheon-deployments.json'), null);
+  if (!dep) die('run deploy.js first');
+  const { provider, wallet, chainId } = await connect();
+  if (chainId !== dep.network.chainId) die(`RPC chain ${chainId} is not the deployed chain ${dep.network.chainId}`);
+  if (!dep.network.tokens.LTH.native) die('the deployment entry is not the native-coin set');
+  const C = ART.contracts;
+  const dpools = dep.pools.filter((p) => p.version === 'v6-native'), rv6 = (dep.routers || []).find((r) => r.version === 'v6');
+  if (dpools.length !== 4 || !rv6) die('no V6 set in the deployment entry: run deploy-v6.js first');
+  const router = rv6.address, pools = dpools.map((p) => p.address);
+  const R = new ethers.Contract(router, C.RouterV6Native.abi, wallet);
+  const P = pools.map((a) => new ethers.Contract(a, C.PoolV6Native.abi, provider));
+  const result = { chainId, started: new Date().toISOString(), steps: {} };
+  const step = async (name, send) => {
+    const tx = await retry(send, name);
+    const rc = await retry(() => tx.wait(), 'receipt');
+    if (rc.status !== 1) die(name + ': reverted');
+    // On an Arbitrum chain gasUsed includes the parent-chain data fee converted into gas (gasUsedForL1 in the raw receipt)
+    const raw = await retry(() => provider.send('eth_getTransactionReceipt', [rc.hash]), 'raw receipt').catch(() => null);
+    const l1 = raw && raw.gasUsedForL1 !== undefined ? BigInt(raw.gasUsedForL1) : null;
+    const price = raw && raw.effectiveGasPrice ? BigInt(raw.effectiveGasPrice) : rc.gasPrice;
+    result.steps[name] = { tx: rc.hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString(),
+      ...(l1 !== null && { gasUsedForL1: l1.toString(), gasUsedExecution: (rc.gasUsed - l1).toString() }),
+      ...(price && { effectiveGasPrice: price.toString(), feeLTH: ethers.formatEther(rc.gasUsed * price) }) };
+    log(`   ✔ ${name}: gas ${rc.gasUsed}${l1 !== null ? ` (execution ${rc.gasUsed - l1}, parent-chain data ${l1})` : ''}${price ? `, fee ${ethers.formatEther(rc.gasUsed * price)} LTH` : ''}  ${dep.network.explorerUrl}/tx/${rc.hash}`);
+    return rc;
+  };
+  const ok = (cond, what) => { if (!cond) die('check failed: ' + what); log('   ✔ ' + what); result.steps[what] = true; };
+
+  const amount = 11n * E18;
+  log('1. Deposit 11 LTH through the router (one transaction, no wrapping, no approve)');
+  const notes = [{ sk: rnd(), vk: rnd() }, { sk: rnd(), vk: rnd() }];   // 10 then 1: commitments grouped by pool, largest first
+  const recipient = ethers.Wallet.createRandom();
+  saveJson(path.join(STATE_DIR, 'latheon-smoke-v6-notes.json'), { notes: notes.map((n) => ({ sk: n.sk.toString(), vk: n.vk.toString() })), recipientKey: recipient.privateKey });
+  const rc = await step('router deposit 11 LTH (2 notes)', () => R.deposit(amount, notes.map((n) => commitmentOf(n.sk, n.vk)), { value: amount }));
+  for (const n of notes) {
+    const c = commitmentOf(n.sk, n.vk);
+    for (const lg of rc.logs) {
+      const i = pools.findIndex((a) => a.toLowerCase() === lg.address.toLowerCase());
+      if (i < 0) continue;
+      const ev = P[i].interface.parseLog(lg);
+      if (ev && ev.name === 'Deposit' && ev.args.commitment === c) { n.pool = i; n.leaf = Number(ev.args.leafIndex); }
+    }
+  }
+  ok(notes[0].pool === 2 && notes[1].pool === 3, 'notes landed in the 10 and 1 pools');
+  ok((await provider.getBalance(router)) === 0n, 'router holds no LTH after the deposit');
+
+  log('2. withdrawMany with real proofs to a new, empty address, relayer fee 0.1 LTH per note bound into the proofs');
+  const feeTo = ethers.Wallet.createRandom().address, FEE = E18 / 10n;
+  ok((await provider.getBalance(recipient.address)) === 0n, 'recipient ' + recipient.address + ' starts with 0 LTH');
+  const items = [];
+  for (const n of notes) {
+    const pool = P[n.pool];
+    const next = Number(await pool.nextIndex());
+    const logs = await retry(() => pool.queryFilter(pool.filters.Deposit(), dpools[n.pool].deployBlock), 'logs');
+    const leaves = new Array(next).fill(null);
+    for (const l of logs) leaves[Number(l.args.leafIndex)] = l.args.commitment;
+    if (leaves.some((x) => x === null)) die('could not rebuild the tree of pool ' + n.pool);
+    const zeros = []; for (let l = 0; l < 20; l++) zeros.push(await pool.zeros(l));
+    const p = await withdrawProof({ sk: n.sk, vk: n.vk, leaf: n.leaf, leaves, zeros, recipient: recipient.address, v6: true, relayer: feeTo, fee: FEE });
+    if (!(await pool.isKnownRoot(p.root))) die('the proof root is not known to pool ' + n.pool);
+    items.push([n.pool, p.pA, p.pB, p.pC, p.root, p.nullifierHash, FEE]);
+  }
+  let refused = false; try { await R.withdrawMany.staticCall(items, recipient.address, ethers.Wallet.createRandom().address); } catch (e) { refused = true; }
+  ok(refused, 'the same batch naming another relayer is refused (the fee recipient is in the proofs)');
+  await step('withdrawMany 2 notes with fees', () => R.withdrawMany(items, recipient.address, feeTo));
+  ok((await provider.getBalance(recipient.address)) === amount - 2n * FEE, 'the empty address received exactly 10.8 LTH, usable as gas');
+  ok((await provider.getBalance(feeTo)) === 2n * FEE, 'the relayer named in the proofs received exactly 0.2 LTH');
+
+  log('2b. A large router deposit: 999 LTH = 23 notes (gas on the real chain)');
+  const big = Array.from({ length: 23 }, () => commitmentOf(rnd(), rnd()));
+  await step('router deposit 999 LTH (23 notes)', () => R.deposit(999n * E18, big, { value: 999n * E18 }));
+
+  log('3. Invariants and disclosure');
+  ok((await provider.getBalance(router)) === 0n, 'router holds no LTH');
+  for (let i = 0; i < 4; i++) {
+    const d = await P[i].DENOMINATION(), n = BigInt(await P[i].nextIndex());
+    const w = BigInt((await retry(() => P[i].queryFilter(P[i].filters.Withdrawal(), dpools[i].deployBlock), 'logs')).length);
+    ok((await provider.getBalance(pools[i])) >= d * (n - w), `pool ${dpools[i].amount}: holds at least denomination × (deposits − withdrawals)`);
+  }
+  const dp = await discloseProof({ sk: notes[0].sk, vk: notes[0].vk, nonce: rnd() });
+  const D = new ethers.Contract(dep.network.discloseVerifier, C.DiscloseVerifier.abi, provider);
+  ok(await D.verifyProof(dp.pA, dp.pB, dp.pC, dp.pub), 'disclosure proof for a deposited note verifies on chain');
+
+  result.finished = new Date().toISOString();
+  const out = path.join(OUT_DIR, 'latheon-smoke-v6.json');
+  saveJson(out, result);
+  log('All checks passed. Written ' + out);
+}
+
+main().then(() => process.exit(0)).catch((e) => die((e && (e.shortMessage || e.message)) || String(e)));

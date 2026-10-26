@@ -2,7 +2,8 @@
 /*
  * Compiles the Latheon contracts for the test chain into artifacts/latheon-testnet.json (committed, so the server
  * does not compile anything). Protocol contracts come unchanged from latheon-network/Latheon at the commit in
- * LATHEON_COMMIT. The test chain uses the native-coin pools and router (PoolNative, RouterNative); the ERC-20 V5
+ * LATHEON_COMMIT. The test chain uses the native-coin pools and routers (V5: PoolNative, RouterNative; V6: PoolV6Native,
+ * RouterV6Native with WithdrawVerifierV4); the ERC-20 V5
  * pool, router and the local WrappedLTH are built too, for the gas comparison in bench/ only.
  *
  *   LATHEON_REPO=/path/to/Latheon node build.js
@@ -37,6 +38,10 @@ const files = {
   'contracts/LatheonShieldedPoolV5Native.sol': path.join(REPO, 'contracts', 'LatheonShieldedPoolV5Native.sol'),
   'contracts/LatheonDistributionPoolNative.sol': path.join(REPO, 'contracts', 'LatheonDistributionPoolNative.sol'),
   'contracts/WithdrawVerifierV3.sol': path.join(REPO, 'contracts', 'WithdrawVerifierV3.sol'),
+  // V6: 20-level trees, recipient + relayer + fee bound into the proof (withdraw_v4)
+  'contracts/WithdrawVerifierV4.sol': path.join(REPO, 'contracts', 'WithdrawVerifierV4.sol'),
+  'contracts/LatheonShieldedPoolV6Native.sol': path.join(REPO, 'contracts', 'LatheonShieldedPoolV6Native.sol'),
+  'contracts/LatheonDistributionPoolV6Native.sol': path.join(REPO, 'contracts', 'LatheonDistributionPoolV6Native.sol'),
   'contracts/DiscloseVerifier.sol': path.join(REPO, 'contracts', 'DiscloseVerifier.sol'),
   'contracts/WrappedLTH.sol': path.join(HERE, 'contracts', 'WrappedLTH.sol'),
 };
@@ -57,7 +62,7 @@ const pick = (file, name) => {
 };
 // Circuit files the deploy check and the smoke test prove with; fetched by commit and checked against these hashes.
 const circuits = {};
-for (const f of ['withdraw_v3/withdraw_v3.wasm', 'withdraw_v3/withdraw_v3_final.zkey', 'disclose/disclose.wasm', 'disclose/disclose_final.zkey'])
+for (const f of ['withdraw_v3/withdraw_v3.wasm', 'withdraw_v3/withdraw_v3_final.zkey', 'withdraw_v4/withdraw_v4.wasm', 'withdraw_v4/withdraw_v4_final.zkey', 'disclose/disclose.wasm', 'disclose/disclose_final.zkey'])
   circuits[f] = crypto.createHash('sha256').update(fs.readFileSync(path.join(REPO, 'circuits', 'build', f))).digest('hex');
 const art = {
   compiler: 'solc ' + solc.version(),
@@ -72,6 +77,9 @@ const art = {
     Router: pick('contracts/LatheonDistributionPool.sol', 'LatheonDistributionPool'),
     PoolNative: pick('contracts/LatheonShieldedPoolV5Native.sol', 'LatheonShieldedPoolV5Native'),
     RouterNative: pick('contracts/LatheonDistributionPoolNative.sol', 'LatheonDistributionPoolNative'),
+    WithdrawVerifierV4: pick('contracts/WithdrawVerifierV4.sol', 'WithdrawVerifierV4'),
+    PoolV6Native: pick('contracts/LatheonShieldedPoolV6Native.sol', 'LatheonShieldedPoolV6Native'),
+    RouterV6Native: pick('contracts/LatheonDistributionPoolV6Native.sol', 'LatheonDistributionPoolV6Native'),
   },
 };
 fs.mkdirSync(path.join(HERE, 'artifacts'), { recursive: true });
