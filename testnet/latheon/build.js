@@ -42,6 +42,10 @@ const files = {
   'contracts/WithdrawVerifierV4.sol': path.join(REPO, 'contracts', 'WithdrawVerifierV4.sol'),
   'contracts/LatheonShieldedPoolV6Native.sol': path.join(REPO, 'contracts', 'LatheonShieldedPoolV6Native.sol'),
   'contracts/LatheonDistributionPoolV6Native.sol': path.join(REPO, 'contracts', 'LatheonDistributionPoolV6Native.sol'),
+  // V7: V6 plus the withdraw_v5 fix (pathIndices constrained to a bit) — supersedes V6
+  'contracts/WithdrawVerifierV5.sol': path.join(REPO, 'contracts', 'WithdrawVerifierV5.sol'),
+  'contracts/LatheonShieldedPoolV7Native.sol': path.join(REPO, 'contracts', 'LatheonShieldedPoolV7Native.sol'),
+  'contracts/LatheonDistributionPoolV7Native.sol': path.join(REPO, 'contracts', 'LatheonDistributionPoolV7Native.sol'),
   'contracts/DiscloseVerifier.sol': path.join(REPO, 'contracts', 'DiscloseVerifier.sol'),
   'contracts/WrappedLTH.sol': path.join(HERE, 'contracts', 'WrappedLTH.sol'),
 };
@@ -62,7 +66,7 @@ const pick = (file, name) => {
 };
 // Circuit files the deploy check and the smoke test prove with; fetched by commit and checked against these hashes.
 const circuits = {};
-for (const f of ['withdraw_v3/withdraw_v3.wasm', 'withdraw_v3/withdraw_v3_final.zkey', 'withdraw_v4/withdraw_v4.wasm', 'withdraw_v4/withdraw_v4_final.zkey', 'disclose/disclose.wasm', 'disclose/disclose_final.zkey'])
+for (const f of ['withdraw_v3/withdraw_v3.wasm', 'withdraw_v3/withdraw_v3_final.zkey', 'withdraw_v4/withdraw_v4.wasm', 'withdraw_v4/withdraw_v4_final.zkey', 'withdraw_v5/withdraw_v5.wasm', 'withdraw_v5/withdraw_v5_final.zkey', 'disclose/disclose.wasm', 'disclose/disclose_final.zkey'])
   circuits[f] = crypto.createHash('sha256').update(fs.readFileSync(path.join(REPO, 'circuits', 'build', f))).digest('hex');
 const art = {
   compiler: 'solc ' + solc.version(),
@@ -80,6 +84,9 @@ const art = {
     WithdrawVerifierV4: pick('contracts/WithdrawVerifierV4.sol', 'WithdrawVerifierV4'),
     PoolV6Native: pick('contracts/LatheonShieldedPoolV6Native.sol', 'LatheonShieldedPoolV6Native'),
     RouterV6Native: pick('contracts/LatheonDistributionPoolV6Native.sol', 'LatheonDistributionPoolV6Native'),
+    WithdrawVerifierV5: pick('contracts/WithdrawVerifierV5.sol', 'WithdrawVerifierV5'),
+    PoolV7Native: pick('contracts/LatheonShieldedPoolV7Native.sol', 'LatheonShieldedPoolV7Native'),
+    RouterV7Native: pick('contracts/LatheonDistributionPoolV7Native.sol', 'LatheonDistributionPoolV7Native'),
   },
 };
 fs.mkdirSync(path.join(HERE, 'artifacts'), { recursive: true });

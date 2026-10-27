@@ -52,13 +52,13 @@ function tree(leaves, zeros) {
 }
 
 // V5 (withdraw_v3, 8 levels) by default; v6: true proves with withdraw_v4 (20 levels) and binds relayer and fee too.
-async function withdrawProof({ sk, vk, leaf, leaves, zeros, recipient, v6 = false, relayer = '0x0000000000000000000000000000000000000000', fee = 0n }) {
+async function withdrawProof({ sk, vk, leaf, leaves, zeros, recipient, v6 = false, v7 = false, relayer = '0x0000000000000000000000000000000000000000', fee = 0n }) {
   const t = tree(leaves, zeros);
   const { el, idx } = t.path(leaf);
   const input = { root: t.root.toString(), nullifierHash: nullifierOf(sk).toString(), recipient: BigInt(recipient).toString(),
     spendKey: sk.toString(), viewKey: vk.toString(), pathElements: el, pathIndices: idx };
-  if (v6) { input.relayer = BigInt(relayer).toString(); input.fee = BigInt(fee).toString(); }
-  const c = v6 ? 'withdraw_v4/withdraw_v4' : 'withdraw_v3/withdraw_v3';
+  if (v6 || v7) { input.relayer = BigInt(relayer).toString(); input.fee = BigInt(fee).toString(); }
+  const c = v7 ? 'withdraw_v5/withdraw_v5' : v6 ? 'withdraw_v4/withdraw_v4' : 'withdraw_v3/withdraw_v3';
   const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, await circuitFile(c + '.wasm'), await circuitFile(c + '_final.zkey'));
   const [pA, pB, pC, pub] = JSON.parse('[' + (await snarkjs.groth16.exportSolidityCallData(proof, publicSignals)) + ']');
   return { pA, pB, pC, pub, root: pub[0], nullifierHash: pub[1] };

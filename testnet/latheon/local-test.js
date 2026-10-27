@@ -54,6 +54,17 @@ const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
   check('smoke (V5) still passes with V6 listed first', s5.status === 0 && /All checks passed/.test(s5.stdout));
   const s6 = await run('smoke-v6.js');
   check('smoke-v6: router deposit 11, withdrawMany with relayer fees bound into the proofs, 23-note deposit, invariants, disclosure', s6.status === 0 && /All checks passed/.test(s6.stdout));
+
+  // V7 next to V5/V6: the withdraw_v5 fix (pathIndices constrained to a bit)
+  const v7a = await run('deploy-v7.js');
+  check('deploy-v7: verifier V5, four 20-level native pools, V7 router; every check passed', v7a.status === 0);
+  const v7b = await run('deploy-v7.js');
+  check('deploy-v7 again: every V7 contract reused', v7b.status === 0 && (v7b.stdout.match(/already deployed/g) || []).length === 6 && !/gas \d/.test(v7b.stdout));
+  const e7 = JSON.parse(fs.readFileSync(path.join(envs.OUT_DIR, 'latheon-deployments.json'), 'utf8'));
+  check('entry: V7 pools and router listed first, V6 and V5 kept, v7Verifier set',
+    e7.pools.length === 12 && e7.pools.slice(0, 4).every((p) => p.version === 'v7-native') && e7.routers[0].version === 'v7' && !!e7.network.v7Verifier);
+  const s7 = await run('smoke-v7.js');
+  check('smoke-v7: router deposit 11, withdrawMany with relayer fees bound into the proofs, 23-note deposit, invariants, disclosure', s7.status === 0 && /All checks passed/.test(s7.stdout));
   const recKey = JSON.parse(fs.readFileSync(path.join(envs.STATE_DIR, 'latheon-smoke-notes.json'), 'utf8')).recipientKey.slice(2).toLowerCase();
   check('no private key (deployer or test recipient) in any output file', !fs.readdirSync(envs.OUT_DIR).some((f) => { const t = fs.readFileSync(path.join(envs.OUT_DIR, f), 'utf8').toLowerCase(); return t.includes(KEY.slice(2)) || t.includes(recKey); }));
 

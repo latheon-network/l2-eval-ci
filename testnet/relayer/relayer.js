@@ -189,7 +189,9 @@ if (require.main === module) {
     if (cmd !== 'serve') die('usage: node relayer.js serve | init | address | fund AMOUNT');
 
     const dep = JSON.parse(fs.readFileSync(LATHEON_JSON, 'utf8'));
-    const isV6 = (x) => x.version === 'v6-native' || x.version === 'v6';
+    // V6 and V7 share the fee-bearing interface (withdraw + relayer + fee; 7-field withdrawMany items), so the relayer
+    // treats them the same; the v6Pools/v6Routers buckets below mean "fee-bearing pools", V6 and V7 alike.
+    const isV6 = (x) => ['v6-native', 'v6', 'v7-native', 'v7'].includes(x.version);
     const relayer = createRelayer({ ethers, wallet, log,
       pools: dep.pools.filter((p) => !isV6(p)).map((p) => p.address), routers: (dep.routers || []).filter((r) => !isV6(r)).map((r) => r.address),
       v6Pools: dep.pools.filter(isV6).map((p) => p.address), v6Routers: (dep.routers || []).filter(isV6).map((r) => r.address),
