@@ -46,6 +46,13 @@ const split = (amount) => { let r = amount; return DENOMS.map((d) => { const c =
 
 function journal(entry) { fs.mkdirSync(STATE, { recursive: true }); fs.appendFileSync(JOURNAL, JSON.stringify({ t: Date.now(), ...entry }, (k, v) => (typeof v === 'bigint' ? v.toString() : v)) + '\n', { mode: 0o600 }); }
 function readJournal() { return fs.existsSync(JOURNAL) ? fs.readFileSync(JOURNAL, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []; }
+// The last record of each step (a step retried after a failure has two records; the later one counts).
+function latest(J) { const m = new Map(); for (const e of J) if (e.step) m.set(e.step, e); return [...m.values()]; }
+// A stop (docker stop sends SIGTERM) lets the step in progress finish and be journaled, so nothing is sent twice or lost.
+let stopping = false;
+process.on('SIGTERM', () => { stopping = true; log('stop requested: finishing the current step'); });
+process.on('SIGINT', () => { stopping = true; log('stop requested: finishing the current step'); });
+async function nap(ms) { const end = Date.now() + ms; while (!stopping && Date.now() < end) await sleep(Math.min(5000, end - Date.now())); }
 
 // ------------------------------------------------------------------ plan
 // Behaviours (share of wallets): careful users wait hours and split; careless ones withdraw soon, the same amount, or
@@ -173,7 +180,9 @@ async function run() {
   const P = loadJson(PLAN, null); if (!P) die('plan first');
   const c = ctx();
   const master = masterWallet(c.provider);
-  const done = new Set(readJournal().filter((e) => e.ok !== undefined).map((e) => e.step));
+  // LOADTEST_RETRY_KINDS (e.g. bridge-out): failed steps of these kinds run again; everything else that was tried is skipped
+  const retryKinds = new Set(env('LOADTEST_RETRY_KINDS', '').split(',').map((x) => x.trim()).filter(Boolean));
+  const done = new Set(latest(readJournal()).filter((e) => e.ok !== undefined && !(e.ok === false && retryKinds.has(e.kind))).map((e) => e.step));
   const notesOf = new Map();   // deposit step id -> notes [{pool, sk, vk, commitment, spent}]
   for (const e of readJournal()) if (e.kind && /deposit/.test(e.kind) && e.ok && e.notes) notesOf.set(e.step, e.notes);
   const spent = new Set(readJournal().filter((e) => e.ok && /^withdraw/.test(e.kind)).flatMap((e) => e.notes || []));
@@ -183,7 +192,8 @@ async function run() {
   for (const s of P.steps) {
     if (done.has(s.id)) continue;
     const wait = s.at - Date.now();
-    if (wait > 0) { log(`next ${s.id} (${s.kind}) in ${Math.round(wait / 60e3)} min`); await sleep(wait); }
+    if (stopping) break;
+    if (wait > 0) { log(`next ${s.id} (${s.kind}) in ${Math.round(wait / 60e3)} min`); await nap(wait); if (stopping) break; }
     const rec = { step: s.id, kind: s.kind, w: s.w, behaviour: P.wallets[s.w].behaviour };
     try {
       Object.assign(rec, await act(s, P, c, master, wal, notesOf));
@@ -192,6 +202,7 @@ async function run() {
     journal(rec);
     log(`${rec.ok ? 'ok  ' : 'FAIL'} ${s.id} ${s.kind}${rec.tx ? ' ' + rec.tx : ''}${rec.error ? ' — ' + rec.error : ''}`);
   }
+  if (stopping) { log('Stopped. Start again to continue where it stopped.'); return; }
   log('Run finished. Next: node loadtest.js analyze');
 }
 
@@ -288,7 +299,7 @@ async function bridgeIn(s, P, c, master, w) {
 }
 async function bridgeOut(s, P, c, me) {
   const bal = await c.provider.getBalance(me.address);
-  const amount = bal > 3n * E18 ? bal - 2n * E18 : 0n;
+  const amount = bal > E18 ? bal - E18 / 2n : 0n;   // what is left after the deposits (about 3 LTH), keeping 0.5 for gas
   if (amount <= 0n) throw new Error('nothing left to bridge out');
   const rc = await (await new ethers.Contract('0x0000000000000000000000000000000000000064', ['function withdrawEth(address) payable returns (uint256)'], me).withdrawEth(me.address, { value: amount })).wait();
   return { tx: rc.hash, amount: ethers.formatEther(amount), note: 'claim on Arbitrum Sepolia later from the bridge page (Find by hash)' };
@@ -297,7 +308,7 @@ async function bridgeOut(s, P, c, me) {
 // ------------------------------------------------------------------ status
 function status() {
   const P = loadJson(PLAN, null); if (!P) die('no plan');
-  const J = readJournal(); const ok = J.filter((e) => e.ok).length, bad = J.filter((e) => e.ok === false);
+  const J = latest(readJournal()); const ok = J.filter((e) => e.ok).length, bad = J.filter((e) => e.ok === false);
   const byKind = {}; for (const e of J) { const k = e.kind + (e.ok ? '' : ' (failed)'); byKind[k] = (byKind[k] || 0) + 1; }
   const next = P.steps.find((s) => !J.some((e) => e.step === s.id));
   log(`${ok} ok, ${bad.length} failed, ${P.steps.length - J.length} to go${next ? `; next ${next.id} ${next.kind} at ${new Date(next.at).toISOString()}` : ''}`);
@@ -308,7 +319,7 @@ function status() {
 // ------------------------------------------------------------------ analyze: an observer with public data only
 async function analyze() {
   const P = loadJson(PLAN, null); if (!P) die('no plan');
-  const J = readJournal(); const c = ctx();
+  const J = latest(readJournal()); const c = ctx();
   // public data: deposits (who sent each, when, which pool), withdrawals (who sent, recipient, when, which pool)
   const from = Math.min(...c.pools.map((p) => p.deployBlock));
   const pub = { deposits: [], withdrawals: [] };
