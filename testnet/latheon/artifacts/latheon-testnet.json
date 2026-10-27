@@ -9,7 +9,7 @@
  },
  "source": {
   "repo": "https://github.com/latheon-network/Latheon",
-  "commit": "afc531a8ae736420b10c9c9155eadb68d07bd4ad",
+  "commit": "129a4c0d38af03b0ad2db59e8ad01823e813ed77",
   "sha256": {
    "contracts/PoseidonT3.sol": "08a7493be37838166954af6c77d583d797cc17d37673196498fc70cbf557831c",
    "contracts/LatheonShieldedPoolV5.sol": "d8afa93de8f7d7f6567625cfdfae7b9032602ed093471b09aff45891b21e1010",
