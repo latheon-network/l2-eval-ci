@@ -1,6 +1,6 @@
 'use strict';
 /*
- * Load and anonymity test of the Latheon test chain (V6 pools and router). Testnet only.
+ * Load and anonymity test of the Latheon test chain (V7 pools and router by default; LOADTEST_GEN=v6 for the V6 set). Testnet only.
  *
  * Many wallets use the chain over a day the way people would: faucet claims, deposits into fixed pools and through the
  * router (exact amounts and rounded ones), withdrawals to fresh addresses (all at once, in parts, note by note), through
@@ -14,10 +14,13 @@
  *                                             LTH on the chain, and ETH + LTH tokens on Arbitrum Sepolia for the bridge wallets
  *   node loadtest.js run                      executes the plan in time order (resumable: done steps are skipped)
  *   node loadtest.js status                   progress
+ *   node loadtest.js sweep                    after analyze: test LTH from recipients and wallets back to the master
+ *   node loadtest.js hashes                   bridge-out transactions to claim on Arbitrum Sepolia (public hashes, no keys)
  *   node loadtest.js analyze                  observer heuristics vs the journal → out/loadtest-report.json and .md (no keys)
  *
  * Env: L3_RPC, PARENT_RPC, LATHEON_JSON, CHAIN_JSON, RELAYER_URL, FAUCET_URL, STATE_DIR (secret/), OUT_DIR (out/).
- * Needs the V6 set in LATHEON_JSON (deploy-v6). The relayer and faucet should list this server's IP in RELAY_EXEMPT_IPS and
+ * Needs the V7 (or V6) set in LATHEON_JSON (deploy-v7 / deploy-v6). LOADTEST_CONCURRENCY (default 4) steps of different
+ * wallets run at once; the steps of one wallet always run one after another, in plan order. The relayer and faucet should list this server's IP in RELAY_EXEMPT_IPS and
  * FAUCET_EXEMPT_IPS, or most requests will hit the per-IP limits (which is itself a finding the run records).
  */
 const fs = require('fs');
@@ -36,7 +39,7 @@ const CHAIN_JSON = env('CHAIN_JSON', path.join(HERE, '..', 'chain', 'out', 'chai
 const RELAYER_URL = env('RELAYER_URL', 'https://explorer.testnet.latheon.xyz/relay/api');
 const FAUCET_URL = env('FAUCET_URL', 'https://explorer.testnet.latheon.xyz/faucet/api');
 const PLAN = path.join(STATE, 'plan.json'), JOURNAL = path.join(STATE, 'journal.jsonl'), MASTER = path.join(STATE, 'master.key');
-const LEVELS6 = 20, DENOMS = [100n, 50n, 10n, 1n];
+const LEVELS6 = 20, CONCURRENCY = Math.max(1, Number(env('LOADTEST_CONCURRENCY', '4'))), DENOMS = [100n, 50n, 10n, 1n];
 const ZERO = ethers.ZeroAddress;
 
 // ------------------------------------------------------------------ deterministic randomness for the plan
@@ -100,7 +103,7 @@ function plan() {
   fs.mkdirSync(STATE, { recursive: true, mode: 0o700 });
   const master = fs.existsSync(MASTER) ? fs.readFileSync(MASTER, 'utf8').trim() : ethers.Wallet.createRandom().privateKey;
   fs.writeFileSync(MASTER, master + '\n', { mode: 0o600 });
-  saveJson(PLAN, { seed, created: new Date().toISOString(), hours, wallets, steps });
+  saveJson(PLAN, { seed, created: new Date().toISOString(), gen: env('LOADTEST_GEN', 'v7'), derivedRecipients: true, hours, wallets, steps });
   fs.chmodSync(PLAN, 0o600);
   const lth = steps.filter((s) => /deposit/.test(s.kind)).reduce((a, s) => a + BigInt(s.amount), 0n);
   log(`Planned ${n} wallets (${nb} via the bridge), ${steps.length} steps over ${hours} h, ${lth} LTH in deposits. Master wallet ${new ethers.Wallet(master).address}.`);
@@ -108,16 +111,23 @@ function plan() {
 }
 
 // ------------------------------------------------------------------ chain access
+// The generation comes from the plan (old plans without it were V6 runs); a new plan takes LOADTEST_GEN, default v7.
+function genOf() { const P = loadJson(PLAN, null); return (P && (P.gen || 'v6')) || env('LOADTEST_GEN', 'v7'); }
 function ctx() {
   const dep = loadJson(LATHEON_JSON, null); if (!dep) die('no ' + LATHEON_JSON);
-  const pools = dep.pools.filter((p) => p.version === 'v6-native'), router = (dep.routers || []).find((x) => x.version === 'v6');
-  if (pools.length !== 4 || !router) die('no V6 set in ' + LATHEON_JSON + ' (run latheon-cmd.sh deploy-v6)');
+  const gen = genOf(); if (gen !== 'v6' && gen !== 'v7') die('LOADTEST_GEN must be v6 or v7');
+  const pools = dep.pools.filter((p) => p.version === gen + '-native'), router = (dep.routers || []).find((x) => x.version === gen);
+  if (pools.length !== 4 || !router) die('no ' + gen.toUpperCase() + ' set in ' + LATHEON_JSON + ' (run latheon-cmd.sh deploy-' + gen + ')');
+  const G = gen.toUpperCase();
   const provider = new ethers.JsonRpcProvider(L3_RPC, undefined, { staticNetwork: true, cacheTimeout: -1 });
   const C = ART.contracts;
-  return { dep, pools, router, provider, C,
-    pool: (i, s) => new ethers.Contract(pools[i].address, C.PoolV6Native.abi, s || provider),
-    routerC: (s) => new ethers.Contract(router.address, C.RouterV6Native.abi, s || provider) };
+  return { dep, gen, pools, router, provider, C,
+    pool: (i, s) => new ethers.Contract(pools[i].address, C['Pool' + G + 'Native'].abi, s || provider),
+    routerC: (s) => new ethers.Contract(router.address, C['Router' + G + 'Native'].abi, s || provider) };
 }
+// Withdrawal recipients are fresh addresses whose keys can be re-derived from the master key (which never leaves the
+// server), so the test LTH can be swept back after the analysis instead of being stranded. An observer cannot tell.
+const recipientWallet = (stepId, k, p) => new ethers.Wallet(ethers.keccak256(ethers.toUtf8Bytes(fs.readFileSync(MASTER, 'utf8').trim() + ':recipient:' + stepId + ':' + k)), p);
 const masterWallet = (p) => new ethers.NonceManager(new ethers.Wallet(fs.readFileSync(MASTER, 'utf8').trim(), p));
 
 async function fund() {
@@ -127,6 +137,9 @@ async function fund() {
   const m = new ethers.Wallet(fs.readFileSync(MASTER, 'utf8').trim()).address;
   const need = P.steps.filter((s) => /deposit/.test(s.kind)).reduce((a, s) => a + BigInt(s.amount), 0n) * E18 + BigInt(P.wallets.length) * 5n * E18;
   const have = await provider.getBalance(m);
+  const dbal = await provider.getBalance(deployer.address);
+  log(`Needs ${ethers.formatEther(need)} LTH on the chain (deposits + 5 per wallet); master holds ${ethers.formatEther(have)}, deployer ${ethers.formatEther(dbal)}.`);
+  if (have < need && dbal < need - have + E18) die(`the deployer holds too little LTH on the chain: needs ${ethers.formatEther(need - have)} more for the master (bridge more LTH in first)`);
   if (have < need) { const rc = await (await deployer.sendTransaction({ to: m, value: need - have })).wait(); log(`Master funded on the chain with ${ethers.formatEther(need - have)} LTH (${rc.hash}).`); }
   else log('Master already holds enough LTH on the chain.');
   const nb = P.wallets.filter((w) => w.bridge).length;
@@ -165,7 +178,7 @@ async function proofFor(c, note, recipient, relayer = ZERO, fee = 0n) {
   const leaves = await leavesOf(c, note.pool);
   const leaf = leaves.findIndex((x) => x === BigInt(note.commitment));
   if (leaf < 0) throw new Error('note not found in pool ' + note.pool);
-  return withdrawProof({ sk: BigInt(note.sk), vk: BigInt(note.vk), leaf, leaves, zeros: zeros6, recipient, v6: true, relayer, fee });
+  return withdrawProof({ sk: BigInt(note.sk), vk: BigInt(note.vk), leaf, leaves, zeros: zeros6, recipient, v6: c.gen === 'v6', v7: c.gen === 'v7', relayer, fee });
 }
 
 async function post(url, body) {
@@ -188,20 +201,37 @@ async function run() {
   const spent = new Set(readJournal().filter((e) => e.ok && /^withdraw/.test(e.kind)).flatMap((e) => e.notes || []));
   for (const ns of notesOf.values()) for (const n of ns) if (spent.has(n.commitment)) n.spent = true;   // resume after a stop
   const wal = (i) => new ethers.Wallet(P.wallets[i].key, c.provider);
-  log(`Run: ${P.steps.length} steps, ${done.size} already done.`);
-  for (const s of P.steps) {
-    if (done.has(s.id)) continue;
-    const wait = s.at - Date.now();
-    if (stopping) break;
-    if (wait > 0) { log(`next ${s.id} (${s.kind}) in ${Math.round(wait / 60e3)} min`); await nap(wait); if (stopping) break; }
+  log(`Run (${c.gen.toUpperCase()} pools, up to ${CONCURRENCY} at once): ${P.steps.length} steps, ${done.size} already done.`);
+  const queue = P.steps.filter((s) => !done.has(s.id)).sort((a, b) => a.at - b.at);
+  const running = new Set(), busy = new Set();
+  let lastWaitLog = 0;
+  async function one(s) {
     const rec = { step: s.id, kind: s.kind, w: s.w, behaviour: P.wallets[s.w].behaviour };
     try {
       Object.assign(rec, await act(s, P, c, master, wal, notesOf));
       rec.ok = true;
-    } catch (e) { rec.ok = false; rec.error = String((e && (e.shortMessage || e.message)) || e).slice(0, 200); rec.status = e && e.status; }
+    } catch (e) {
+      rec.ok = false; rec.error = String((e && (e.shortMessage || e.message)) || e).slice(0, 200); rec.status = e && e.status;
+      if (/nonce/i.test(rec.error) && master.reset) master.reset();   // a nonce mix-up on the shared master wallet: resync
+    }
     journal(rec);
     log(`${rec.ok ? 'ok  ' : 'FAIL'} ${s.id} ${s.kind}${rec.tx ? ' ' + rec.tx : ''}${rec.error ? ' — ' + rec.error : ''}`);
   }
+  while (!stopping && (queue.length || running.size)) {
+    const now = Date.now(); const seen = new Set();
+    for (let i = 0; i < queue.length && running.size < CONCURRENCY; i++) {
+      const s = queue[i];
+      if (s.at > now) break;                                  // sorted by time: nothing later is due yet
+      if (seen.has(s.w) || busy.has(s.w)) { seen.add(s.w); continue; }   // one step per wallet at a time, in plan order
+      seen.add(s.w); queue.splice(i, 1); i--; busy.add(s.w);
+      const pr = one(s).finally(() => { running.delete(pr); busy.delete(s.w); });
+      running.add(pr);
+    }
+    const nextAt = queue.length ? queue[0].at : Infinity;
+    if (!running.size && nextAt - now > 60e3 && now - lastWaitLog > 30 * 60e3) { lastWaitLog = now; log(`next ${queue[0].id} (${queue[0].kind}) in ${Math.round((nextAt - now) / 60e3)} min`); }
+    await Promise.race([...running, sleep(Math.max(200, Math.min(5000, nextAt - now)))]);
+  }
+  if (running.size) { log(`finishing ${running.size} step(s) in progress`); await Promise.all([...running]); }
   if (stopping) { log('Stopped. Start again to continue where it stopped.'); return; }
   log('Run finished. Next: node loadtest.js analyze');
 }
@@ -266,8 +296,8 @@ async function act(s, P, c, master, wal, notesOf) {
       }
     }
   }
-  for (const g of groups) {
-    const to = ethers.Wallet.createRandom().address; recipients.push(to);
+  for (const [gi, g] of groups.entries()) {
+    const to = recipientWallet(s.id, gi).address; recipients.push(to);
     for (let k = 0; k < g.length; k += 16) {
       const chunk = g.slice(k, k + 16);
       txs.push(await sendChunk(chunk, to));
@@ -303,6 +333,36 @@ async function bridgeOut(s, P, c, me) {
   if (amount <= 0n) throw new Error('nothing left to bridge out');
   const rc = await (await new ethers.Contract('0x0000000000000000000000000000000000000064', ['function withdrawEth(address) payable returns (uint256)'], me).withdrawEth(me.address, { value: amount })).wait();
   return { tx: rc.hash, amount: ethers.formatEther(amount), note: 'claim on Arbitrum Sepolia later from the bridge page (Find by hash)' };
+}
+
+// ------------------------------------------------------------------ sweep: test LTH back to the master after the analysis
+// Only for runs whose recipients are derived (the plan says derivedRecipients); run it AFTER analyze, because sweeping
+// links the recipients publicly. Wallets of the plan are swept too.
+async function sweep() {
+  const P = loadJson(PLAN, null); if (!P) die('no plan');
+  if (!P.derivedRecipients) die('this run used random recipients (no keys kept); nothing to sweep from them');
+  const c = ctx(); const m = new ethers.Wallet(fs.readFileSync(MASTER, 'utf8').trim()).address;
+  const J = latest(readJournal()).filter((e) => e.ok && /^withdraw/.test(e.kind));
+  const keys = [];
+  for (const e of J) (e.recipients || []).forEach((a, k) => { const w = recipientWallet(e.step, k, c.provider); if (w.address === a) keys.push(w); });
+  for (const w of P.wallets) keys.push(new ethers.Wallet(w.key, c.provider));
+  const fd = await c.provider.getFeeData(); const price = (fd.maxFeePerGas || fd.gasPrice) * 2n;
+  let total = 0n, n = 0;
+  for (const w of keys) {
+    const bal = await retry(() => c.provider.getBalance(w.address), 'balance'); if (bal === 0n) continue;
+    const gas = await retry(() => c.provider.estimateGas({ from: w.address, to: m, value: 1n }), 'estimate');
+    const value = bal - gas * 2n * price; if (value <= 0n) continue;
+    try { await (await w.sendTransaction({ to: m, value, gasLimit: gas * 2n, maxFeePerGas: price, maxPriorityFeePerGas: 0n })).wait(); total += value; n++; }
+    catch (e) { log('sweep ' + w.address + ' failed: ' + String(e.shortMessage || e.message).slice(0, 120)); }
+  }
+  log(`Swept ${ethers.formatEther(total)} LTH from ${n} addresses back to the master ${m}.`);
+}
+
+// ------------------------------------------------------------------ hashes: bridge-out transactions to claim (public)
+function hashes() {
+  const J = latest(readJournal()).filter((e) => e.kind === 'bridge-out' && e.ok);
+  log(`${J.length} bridge-out transaction(s) on the chain; claim each on Arbitrum Sepolia from latheon.xyz/bridge (Find by hash) once its assertion is confirmed (about two hours):`);
+  for (const e of J) console.log(`${e.tx}  ${e.amount} LTH  ${new Date(e.t).toISOString()}`);
 }
 
 // ------------------------------------------------------------------ status
@@ -375,7 +435,7 @@ async function analyze() {
   report.failures = J.filter((e) => e.ok === false).map((e) => ({ kind: e.kind, error: e.error })).slice(0, 50);
   fs.mkdirSync(OUT, { recursive: true });
   saveJson(path.join(OUT, 'loadtest-report.json'), report);
-  const md = ['# Latheon load and anonymity test', '', `Generated ${report.generated}. ${report.wallets} wallets, ${report.deposits} deposits, ${report.withdrawalTxs} withdrawal transactions (V6 pools).`, '',
+  const md = ['# Latheon load and anonymity test', '', `Generated ${report.generated}. ${report.wallets} wallets, ${report.deposits} deposits, ${report.withdrawalTxs} withdrawal transactions (${c.gen.toUpperCase()} pools).`, '',
     'This is a simulation: the wallets\' behaviour was chosen by us. It shows how far simple, public-data heuristics get against typical habits, not how real users behave.', '',
     '## Heuristics (public data only)', '', '| Heuristic | Guesses | Right | Precision | Share of withdrawals linked |', '|---|---|---|---|---|',
     ...Object.entries(report.heuristics).map(([k, v]) => `| ${k} | ${v.guessed} | ${v.right} | ${v.precision ?? '—'} | ${v.linkedShare} |`), '',
@@ -389,6 +449,6 @@ async function analyze() {
 }
 
 const cmd = process.argv[2];
-const fn = { plan, fund, run, status, analyze }[cmd];
-if (!fn) { console.log('usage: node loadtest.js plan|fund|run|status|analyze'); process.exit(2); }
+const fn = { plan, fund, run, status, hashes, analyze, sweep }[cmd];
+if (!fn) { console.log('usage: node loadtest.js plan|fund|run|status|hashes|analyze|sweep'); process.exit(2); }
 Promise.resolve(fn()).then(() => process.exit(0)).catch((e) => die((e && (e.shortMessage || e.message)) || String(e)));
