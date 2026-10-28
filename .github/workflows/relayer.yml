@@ -1,6 +1,6 @@
 name: testnet relayer
 
-# Local test of the withdrawal relayer (testnet/relayer) with real withdraw_v3 proofs against the native-coin pools and
+# Local test of the withdrawal relayer (testnet/relayer) with real withdraw_v3 and withdraw_v4 proofs against the native-coin pools and
 # router from the Latheon repository, on ganache. No testnet funds are used.
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: latheon-network/Latheon
-          ref: 180b4b8448939e3b3f3a61eabb003b84d2b9277c
+          ref: 53f3fa75e5ec9f3a329d8addd5f06a191faddc77
           path: latheon
           fetch-depth: 1
       - uses: actions/setup-node@v4
