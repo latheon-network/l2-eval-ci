@@ -21,7 +21,7 @@ for req in "$Q"/*.req; do
         if [[ "$SERVICES" == *" $arg "* ]]; then docker compose restart "$arg" > /tmp/ops-restart.txt 2>&1 && echo "restarted $arg" || { echo "restart failed"; tail -3 /tmp/ops-restart.txt; }; sleep 3; docker compose ps "$arg" --format '{{.Service}}: {{.Status}}'
         else echo "refused: unknown service"; fi ;;
       logs)
-        if [[ "$SERVICES" == *" $arg "* ]]; then docker compose logs --no-color --tail 40 "$arg" 2>&1 | grep -v 'Getting file info' | sed -E 's#(https?://[^ "]*/v2/)[A-Za-z0-9_-]+#\1***#g' | tail -25 | cut -c1-220
+        if [[ "$SERVICES" == *" $arg "* ]]; then docker compose logs --no-color --tail 40 "$arg" 2>&1 | grep -v 'Getting file info' | sed -E -e 's#(https?://[^ "]*/v[0-9]+/)[A-Za-z0-9_-]{8,}#\1***#g' -e 's#([?&](api[_-]?key|key|token|apikey|access[_-]?token)=)[^&" ]+#\1***#gI' | tail -25 | cut -c1-220
         else echo "refused: unknown service"; fi ;;
       faucet-pause) touch faucet/secret/paused && chown 1000:1000 faucet/secret/paused && echo "faucet paused" ;;
       faucet-resume) rm -f faucet/secret/paused && echo "faucet resumed" ;;

@@ -84,7 +84,7 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
   // 5. a recipient that refuses the coin
   const n5 = note(); await depositTo(pools[3], n5); const p5 = await prove(pools[3], n5, refuser.target);
   res = await R.handle('POST', '/relay/api/withdraw', { pool: pools[3].target, ...p5, recipient: refuser.target }, 'ip-b');
-  rec('a recipient that refuses the coin: refused before sending, note stays spendable', res.status === 400 && (await bal(relayerAddr)) === b0 && !(await pools[3].nullifierHashes(p5.nullifierHash)), res.body.error);
+  rec('a contract recipient (here one that refuses the coin) is refused before sending: no gas, note stays spendable', res.status === 400 && /ordinary addresses/.test(res.body.error) && (await bal(relayerAddr)) === b0 && !(await pools[3].nullifierHashes(p5.nullifierHash)), res.body.error);
   // 6. malformed input
   res = await R.handle('POST', '/relay/api/withdraw', { pool: pools[3].target, pA: [1], pB: 'x', recipient: fresh() }, 'ip-b');
   rec('malformed proof fields are refused', res.status === 400, res.body.error);
@@ -169,6 +169,26 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
   res = await R6.handle('GET', '/relay/api/status', null, 'ip-x');
   rec('V6 status reports the minimum fee and V6 support', res.status === 200 && res.body.v6 === true && res.body.minFeeV6 === '0.01', JSON.stringify(res.body).slice(0, 140));
   rec('status tells the caller its own IP as seen by the relayer, and whether it is exempt', res.body.yourIp === 'ip-x' && res.body.exempt === false && (await RL.handle('GET', '/relay/api/status', null, 'ip-load')).body.exempt === true);
+
+  // 12. limits that hold against abuse (internal review 27.10)
+  const RF = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], perIpHour: 50, dailyCap: 100, failPerIpHour: 3 });
+  const bad = { pool: pools6[3].target, pA: [1, 2], pB: [[1, 2], [3, 4]], pC: [1, 2], root: '1', nullifierHash: '2', recipient: fresh() };
+  const fr = []; for (let i = 0; i < 4; i++) fr.push((await RF.handle('POST', '/relay/api/withdraw', bad, 'ip-bad')).status);
+  const okAfter = (await RF.handle('POST', '/relay/api/withdraw', bad, 'ip-good')).status;
+  rec('refused requests are limited too: after 3 refusals in an hour the same IP gets 429, another IP is not affected', fr.join(',') === '400,400,400,429' && okAfter === 400, fr.join(','));
+  const RB = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], perIpHour: 3, dailyCap: 100 });
+  const burst = [];
+  for (let i = 0; i < 6; i++) { const n = note(); await depositTo(pools6[3], n); const r = fresh(); const p = await prove(pools6[3], n, r, { relayer: ethers.ZeroAddress, fee: 0n }); burst.push({ pool: pools6[3].target, ...p, recipient: r }); }
+  const bs = (await Promise.all(burst.map((b) => RB.handle('POST', '/relay/api/withdraw', b, 'ip-burst')))).map((x) => x.status);
+  rec('a burst of 6 parallel valid requests from one IP with a limit of 3 per hour: exactly 3 relayed, 3 refused (429)', bs.filter((x) => x === 200).length === 3 && bs.filter((x) => x === 429).length === 3, bs.join(','));
+  const RQ = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], perIpHour: 50, dailyCap: 100, maxQueue: 1 });
+  const qs = (await Promise.all([0, 1, 2].map((i) => RQ.handle('POST', '/relay/api/withdraw', { ...bad, recipient: fresh() }, 'ip-q' + i)))).map((x) => x.status);
+  rec('when RELAY_MAX_QUEUE requests are already waiting, new ones get 503 instead of piling up', qs.includes(503), qs.join(','));
+  const RS = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], perIpHour: 2, dailyCap: 100 });
+  for (let i = 0; i < 3; i++) await RS.handle('POST', '/relay/api/withdraw', bad, 'ip-s');
+  const nS = note(); await depositTo(pools6[3], nS); const rS = fresh(); const pS = await prove(pools6[3], nS, rS, { relayer: ethers.ZeroAddress, fee: 0n });
+  res = await RS.handle('POST', '/relay/api/withdraw', { pool: pools6[3].target, ...pS, recipient: rS }, 'ip-s');
+  rec('a refused request gives its slot back: after 3 refusals an IP with a limit of 2 can still relay', res.status === 200 && (await bal(rS)) === E18, res.body.error || 'ok');
 
   const pass = results.filter(Boolean).length;
   console.log(`\n${pass}/${results.length} checks passed`); process.exit(pass === results.length ? 0 : 1);

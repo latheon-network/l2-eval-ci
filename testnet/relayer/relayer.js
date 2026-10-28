@@ -15,13 +15,17 @@
  *   relayer = its own address with fee >= RELAY_MIN_FEE; nothing else.
  *
  * Every request is simulated first (eth_call from the relayer); a request that would revert — bad proof, spent note,
- * unknown root, a recipient that refuses the coin — is refused without spending gas. Only the pools and routers listed in
- * the deployment file are accepted. Limits: RELAY_PER_IP_HOUR successful relays per IP per hour, RELAY_DAILY_CAP per day in
- * total, one transaction at a time, RELAY_MIN_BALANCE LTH kept for gas. Nothing is stored about users: IPs live in memory
- * for the hourly limit only; the log has transaction hashes.
+ * unknown root, a recipient that refuses the coin — is refused without spending gas. Recipients must be ordinary
+ * addresses without code (a contract recipient could burn the relayer's gas in its receive function). Only the pools and
+ * routers listed in the deployment file are accepted. Limits: RELAY_PER_IP_HOUR relays per IP per hour and RELAY_DAILY_CAP
+ * per day in total (a slot is reserved when the request arrives, so a burst of parallel requests cannot pass the check
+ * together; it is given back if the request is refused before sending), RELAY_FAIL_PER_IP_HOUR refused or failed requests
+ * per IP per hour, at most RELAY_MAX_QUEUE requests waiting, one transaction at a time, RELAY_MIN_BALANCE LTH kept for gas.
+ * Nothing is stored about users: IPs live in memory for the hourly limits only; the log has transaction hashes.
  *
  * Service: node relayer.js serve     Admin: node relayer.js init | address | fund AMOUNT (deployer key, asked without echo)
  * Env: L3_RPC, RELAYER_KEY_FILE, LATHEON_JSON, PORT, RELAY_PER_IP_HOUR (10), RELAY_DAILY_CAP (500), RELAY_MIN_BALANCE (1),
+ * RELAY_FAIL_PER_IP_HOUR (20), RELAY_MAX_QUEUE (30),
  * RELAY_MIN_FEE (0, in LTH: the smallest fee accepted when a request names this relayer), RELAY_EXEMPT_IPS (none; comma-separated
  * client IPs the hourly and daily limits do not apply to, for our own load tests).
  */
@@ -49,9 +53,14 @@ function createRelayer(o) {
   const v6Pools = new Set((o.v6Pools || []).map((a) => a.toLowerCase())), v6Routers = new Set((o.v6Routers || []).map((a) => a.toLowerCase()));
   const minFee = o.minFee ?? 0n, exempt = new Set(o.exemptIps || []);
   const perIpHour = o.perIpHour ?? 10, dailyCap = o.dailyCap ?? 500, minBalance = o.minBalance ?? ethers.parseEther('1');
-  const byIp = new Map(); let sent = [];   // timestamps of successful relays
-  let queue = Promise.resolve();
+  const failPerIpHour = o.failPerIpHour ?? 20, maxQueue = o.maxQueue ?? 30;
+  // Slots: {t} objects. A slot is reserved in byIp/sent when a request arrives and removed again if the request is refused
+  // before anything is sent; a sent transaction keeps its slot whether it succeeded or reverted. Refusals and failures
+  // also count in failsByIp, which has its own, separate hourly limit.
+  const byIp = new Map(), failsByIp = new Map(); let sent = [];
+  let queue = Promise.resolve(), waiting = 0;
   const serial = (fn) => { const p = queue.then(fn, fn); queue = p.catch(() => {}); return p; };
+  const recent = (m, ip, now, span) => { const h = (m.get(ip) || []).filter((x) => now - x.t < span); m.set(ip, h); return h; };
 
   const uint = (v, name) => { try { const x = BigInt(v); if (x < 0n || x >= 2n ** 256n) throw 0; return x; } catch (e) { throw new Refusal(400, `Bad ${name}.`); } };
   const pair = (v, name) => { if (!Array.isArray(v) || v.length !== 2) throw new Refusal(400, `Bad ${name}.`); return v.map((x) => uint(x, name)); };
@@ -62,13 +71,18 @@ function createRelayer(o) {
   const address = (a, name) => { try { return ethers.getAddress(String(a)); } catch (e) { throw new Refusal(400, `Bad ${name}.`); } };
   const reason = (e) => (e && (e.reason || e.shortMessage || e.message) || 'reverted').split('\n')[0].slice(0, 160);
 
-  function checkLimits(ip, now) {
-    if (exempt.has(ip)) return;
-    const h = (byIp.get(ip) || []).filter((t) => now - t < 3600e3); byIp.set(ip, h);
-    sent = sent.filter((t) => now - t < 86400e3);
+  // Checks the limits and, in the same synchronous step, reserves a slot (so parallel requests see each other).
+  function reserve(ip, now) {
+    if (exempt.has(ip)) return null;
+    if (recent(failsByIp, ip, now, 3600e3).length >= failPerIpHour) throw new Refusal(429, `Limit: ${failPerIpHour} refused requests per hour from one address. Check the proof (or make a new one) and try later.`);
+    const h = recent(byIp, ip, now, 3600e3);
+    sent = sent.filter((x) => now - x.t < 86400e3);
     if (h.length >= perIpHour) throw new Refusal(429, `Limit: ${perIpHour} relayed withdrawals per hour from one address. Try later, or send the withdrawal from your own wallet.`);
     if (sent.length >= dailyCap) throw new Refusal(429, 'The relayer reached its daily limit. Try tomorrow, or send the withdrawal from your own wallet.');
+    const slot = { t: now }; h.push(slot); sent.push(slot); return slot;
   }
+  function release(ip, slot) { if (!slot) return; const h = byIp.get(ip) || []; const i = h.indexOf(slot); if (i >= 0) h.splice(i, 1); const j = sent.indexOf(slot); if (j >= 0) sent.splice(j, 1); }
+  function failed(ip) { if (exempt.has(ip)) return; const h = failsByIp.get(ip) || []; h.push({ t: Date.now() }); failsByIp.set(ip, h); }
 
   // V6: who is paid the fee, and how much, are in the proof. Accept no fee at all, or a fee to this relayer only.
   function feeTerms(relayerField, fees) {
@@ -81,7 +95,19 @@ function createRelayer(o) {
 
   async function relay(kind, body, ip) {
     const now = Date.now();
-    checkLimits(ip, now);
+    if (waiting >= maxQueue) throw new Refusal(503, 'The relayer is busy. Try again in a minute, or send the withdrawal from your own wallet.');
+    const slot = reserve(ip, now);
+    let wasSent = false;
+    try {
+      return await prepareAndSend(kind, body, () => { wasSent = true; });
+    } catch (e) {
+      failed(ip);
+      if (!wasSent) release(ip, slot);   // refused before sending: the slot is given back, the refusal still counts
+      throw e;
+    }
+  }
+
+  async function prepareAndSend(kind, body, markSent) {
     const recipient = address(body.recipient, 'recipient');
     if (recipient === ethers.ZeroAddress || recipient === wallet.address) throw new Refusal(400, 'This recipient cannot be used.');
     let contract, args;
@@ -110,25 +136,27 @@ function createRelayer(o) {
       } else { contract = new ethers.Contract(router, ROUTER_ABI, wallet); args = [items, recipient]; }
     }
     const fn = kind === 'withdraw' ? 'withdraw' : 'withdrawMany';
+    waiting++;
     return serial(async () => {
       const bal = await wallet.provider.getBalance(wallet.address);
       if (bal < minBalance) throw new Refusal(503, 'The relayer is out of gas money. Try later, or send the withdrawal from your own wallet.');
+      if ((await wallet.provider.getCode(recipient)) !== '0x') throw new Refusal(400, 'The relayer only pays to ordinary addresses, not to contracts. Use a fresh address, or send the withdrawal from your own wallet.');
       let gas;
       try { await contract[fn].staticCall(...args); gas = await contract[fn].estimateGas(...args); }
       catch (e) { throw new Refusal(400, 'Refused before sending (the chain would reject it): ' + reason(e)); }
+      markSent();
       const tx = await contract[fn](...args, { gasLimit: gas + gas / 5n });
       const rc = await tx.wait();
       if (!rc || rc.status !== 1) throw new Refusal(502, 'The transaction failed on-chain: ' + tx.hash);
-      const h = byIp.get(ip) || []; h.push(Date.now()); byIp.set(ip, h); sent.push(Date.now());
       log(`relayed ${fn} ${tx.hash} gas ${rc.gasUsed}`);
       return { tx: tx.hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString() };
-    });
+    }).finally(() => { waiting--; });
   }
 
   async function status(ip) {
     const bal = await wallet.provider.getBalance(wallet.address);
-    sent = sent.filter((t) => Date.now() - t < 86400e3);
-    return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16,
+    sent = sent.filter((x) => Date.now() - x.t < 86400e3);
+    return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16, failPerIpHour, maxQueue,
       fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0,
       yourIp: ip, exempt: exempt.has(ip) };   // the caller's own address as the relayer sees it (to set RELAY_EXEMPT_IPS / FAUCET_EXEMPT_IPS)
   }
@@ -195,11 +223,11 @@ if (require.main === module) {
     const relayer = createRelayer({ ethers, wallet, log,
       pools: dep.pools.filter((p) => !isV6(p)).map((p) => p.address), routers: (dep.routers || []).filter((r) => !isV6(r)).map((r) => r.address),
       v6Pools: dep.pools.filter(isV6).map((p) => p.address), v6Routers: (dep.routers || []).filter(isV6).map((r) => r.address),
-      perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
+      perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), failPerIpHour: Number(env('RELAY_FAIL_PER_IP_HOUR', '20')), maxQueue: Number(env('RELAY_MAX_QUEUE', '30')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
       minFee: ethers.parseEther(env('RELAY_MIN_FEE', '0')), exemptIps: env('RELAY_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean) });
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '600' };
     const ipOf = (req) => { const x = String(req.headers['x-forwarded-for'] || '').split(',').map((s) => s.trim()).filter(Boolean); return x.length ? x[x.length - 1] : (req.socket.remoteAddress || 'unknown'); };
-    http.createServer((req, res) => {
+    const server = http.createServer((req, res) => {
       const url = (req.url || '').split('?')[0].replace(/\/+$/, '');
       const reply = (code, body) => { res.writeHead(code, { ...cors, 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(JSON.stringify(body)); };
       if (req.method === 'OPTIONS') { res.writeHead(204, cors); return res.end(); }
@@ -210,6 +238,8 @@ if (require.main === module) {
         let body = null; if (req.method === 'POST') { try { body = JSON.parse(raw || '{}'); } catch (e) { return reply(400, { error: 'Send JSON.' }); } }
         const r = await relayer.handle(req.method, url, body, ipOf(req)); reply(r.status, r.body);
       });
-    }).listen(Number(env('PORT', '8090')), () => log('relayer ' + wallet.address + ' listening; pools ' + dep.pools.length + ', routers ' + (dep.routers || []).length));
+    });
+    server.headersTimeout = 10000; server.requestTimeout = 15000;   // slow clients cannot hold connections open
+    server.listen(Number(env('PORT', '8090')), () => log('relayer ' + wallet.address + ' listening; pools ' + dep.pools.length + ', routers ' + (dep.routers || []).length));
   })().catch((e) => die(e.message || String(e)));
 }

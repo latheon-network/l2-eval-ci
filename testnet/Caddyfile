@@ -43,6 +43,8 @@
 	}
 	redir /ops /ops/ 308
 	handle_path /ops/* {
+		header X-Frame-Options "DENY"
+		header X-Content-Type-Options "nosniff"
 		root * /srv/ops
 		file_server
 	}
@@ -50,11 +52,25 @@
 		request_body {
 			max_size 64KB
 		}
+		rate_limit {
+			zone relay_minute {
+				key {remote_host}
+				events {$RELAY_RATE_PER_MINUTE:60}
+				window 1m
+			}
+		}
 		reverse_proxy relayer:8090
 	}
 	handle /faucet* {
 		request_body {
 			max_size 4KB
+		}
+		rate_limit {
+			zone faucet_minute {
+				key {remote_host}
+				events {$FAUCET_RATE_PER_MINUTE:30}
+				window 1m
+			}
 		}
 		reverse_proxy faucet:8080
 	}
