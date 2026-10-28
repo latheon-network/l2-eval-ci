@@ -172,9 +172,12 @@ async function leavesOf(c, i) {
   if (t.leaves.some((x) => x === undefined)) { trees.delete(k); die('incomplete deposit scan for pool ' + i); }
   return t.leaves;
 }
-let zeros6 = null;
+// Loaded once; parallel steps share the same promise, so none of them sees a half-filled list (with 4 steps at once a
+// plain "if (!zeros6) fill it" let early withdrawals after a start prove with fewer than 20 zeros).
+let zerosP = null;
+const zerosOf = (c) => (zerosP ||= (async () => { const z = []; for (let l = 0; l < LEVELS6; l++) z.push(await c.pool(0).zeros(l)); return z; })().catch((e) => { zerosP = null; throw e; }));
 async function proofFor(c, note, recipient, relayer = ZERO, fee = 0n) {
-  if (!zeros6) { zeros6 = []; for (let l = 0; l < LEVELS6; l++) zeros6.push(await c.pool(0).zeros(l)); }
+  const zeros6 = await zerosOf(c);
   const leaves = await leavesOf(c, note.pool);
   const leaf = leaves.findIndex((x) => x === BigInt(note.commitment));
   if (leaf < 0) throw new Error('note not found in pool ' + note.pool);
