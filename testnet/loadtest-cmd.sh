@@ -27,7 +27,7 @@ case "$cmd" in
   start)
     if [ "$(docker inspect -f '{{.State.Running}}' latheon-loadtest 2>/dev/null)" = "true" ]; then echo "already running; ./loadtest-cmd.sh stop first"; exit 1; fi
     docker rm latheon-loadtest >/dev/null 2>&1 || true
-    docker run -d --name latheon-loadtest --restart on-failure:20 --network host -u 0 \
+    docker run -d --name latheon-loadtest --restart on-failure:20 --log-opt max-size=50m --log-opt max-file=3 --network host -u 0 \
       -e L3_RPC=http://127.0.0.1:8449 -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -e CHAIN_JSON=/t/chain/out/chain.json \
       -e RELAYER_URL -e FAUCET_URL -e CIRCUIT_CACHE=/t/latheon/secret/circuits \
       -e LOADTEST_RETRY_KINDS -e LOADTEST_CONCURRENCY -v "$PWD:/t" -w /t/loadtest node:22-bookworm-slim \
