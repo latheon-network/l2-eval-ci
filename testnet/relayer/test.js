@@ -190,6 +190,15 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
   res = await RS.handle('POST', '/relay/api/withdraw', { pool: pools6[3].target, ...pS, recipient: rS }, 'ip-s');
   rec('a refused request gives its slot back: after 3 refusals an IP with a limit of 2 can still relay', res.status === 200 && (await bal(rS)) === E18, res.body.error || 'ok');
 
+  // a "nonce has already been used" refusal from the node (nothing was sent) is retried with a fresh nonce
+  const orig = relayerSigner.sendTransaction.bind(relayerSigner); let thrown = 0;
+  relayerSigner.sendTransaction = async (tx) => { if (!thrown++) throw new Error('nonce has already been used'); return orig(tx); };
+  const RN = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], perIpHour: 50, dailyCap: 100 });
+  const nN = note(); await depositTo(pools6[3], nN); const rN = fresh(); const pN = await prove(pools6[3], nN, rN, { relayer: ethers.ZeroAddress, fee: 0n });
+  res = await RN.handle('POST', '/relay/api/withdraw', { pool: pools6[3].target, ...pN, recipient: rN }, 'ip-n');
+  relayerSigner.sendTransaction = orig;
+  rec('a "nonce has already been used" answer from the node is retried with a fresh nonce: the withdrawal goes through once', thrown >= 2 && res.status === 200 && (await bal(rN)) === E18, res.body.error || 'ok');
+
   const pass = results.filter(Boolean).length;
   console.log(`\n${pass}/${results.length} checks passed`); process.exit(pass === results.length ? 0 : 1);
 })().catch((e) => { console.error(e); if (CI) console.log('::error::' + String(e && e.message || e).split('\n')[0].slice(0, 300)); process.exit(1); });

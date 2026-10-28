@@ -145,7 +145,13 @@ function createRelayer(o) {
       try { await contract[fn].staticCall(...args); gas = await contract[fn].estimateGas(...args); }
       catch (e) { throw new Refusal(400, 'Refused before sending (the chain would reject it): ' + reason(e)); }
       markSent();
-      const tx = await contract[fn](...args, { gasLimit: gas + gas / 5n });
+      // "nonce has already been used" / "nonce too low": the node's pending count lagged behind our last transaction. The
+      // transaction was rejected before it was sent, so sending again with a fresh nonce is safe.
+      let tx;
+      for (let attempt = 1; ; attempt++) {
+        try { tx = await contract[fn](...args, { gasLimit: gas + gas / 5n, nonce: await wallet.provider.getTransactionCount(wallet.address, 'pending') }); break; }
+        catch (e) { if (attempt < 4 && /nonce/i.test(reason(e))) { log('nonce taken, retrying: ' + reason(e)); await new Promise((r) => setTimeout(r, 400 * attempt)); continue; } throw e; }
+      }
       const rc = await tx.wait();
       if (!rc || rc.status !== 1) throw new Refusal(502, 'The transaction failed on-chain: ' + tx.hash);
       log(`relayed ${fn} ${tx.hash} gas ${rc.gasUsed}`);
