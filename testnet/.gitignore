@@ -1,3 +1,4 @@
 .env
 ops-queue/
 ops-data/
+legacy-pools/out/
