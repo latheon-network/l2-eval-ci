@@ -5,7 +5,8 @@
  * injects faults; the relayer talks to it through ethers.JsonRpcProvider with staticNetwork, as in the service.
  *
  * No proofs here: the pool is a test double with the V6/V7 withdraw interface (root != 0, nullifier spent once, pays the
- * recipient). Proof handling is covered by test.js with real proofs; this file is about RPC failures, nonces and limits.
+ * recipient), and a router double with the V7 withdrawMany(items, recipient, relayer) forwarding over it. Proof handling
+ * is covered by test.js with real proofs; this file is about RPC failures, nonces and limits, for withdraw and withdrawMany.
  *
  *   node test-faults.js            (about a minute)      npm run test:faults
  *   DEBUG=1 node test-faults.js    every RPC call through the proxy and the relayer's log
@@ -43,6 +44,23 @@ contract MockPoolV7 {
         nullifierHashes[nullifierHash] = true;
         payable(recipient).transfer(DENOMINATION - fee);
         if (fee > 0) payable(relayer).transfer(fee);
+    }
+}
+// Test double of the V7 router: the same forwarding as LatheonDistributionPoolV7(Native).withdrawMany, over one mock pool.
+interface IMockPool { function withdraw(uint256[2] calldata, uint256[2][2] calldata, uint256[2] calldata, uint256, uint256, address, address, uint256) external; }
+contract MockRouterV7 {
+    struct Withdrawal { uint256 pool; uint256[2] pA; uint256[2][2] pB; uint256[2] pC; uint256 root; uint256 nullifierHash; uint256 fee; }
+    uint256 public constant MAX_WITHDRAWALS = 16;
+    address public immutable pool0;
+    constructor(address p) { pool0 = p; }
+    function withdrawMany(Withdrawal[] calldata items, address recipient, address relayer) external {
+        require(items.length > 0, "No withdrawals");
+        require(items.length <= MAX_WITHDRAWALS, "Too many withdrawals");
+        for (uint256 i = 0; i < items.length; i++) {
+            Withdrawal calldata w = items[i];
+            require(w.pool == 0, "Unknown pool");
+            IMockPool(pool0).withdraw(w.pA, w.pB, w.pC, w.root, w.nullifierHash, recipient, relayer, w.fee);
+        }
     }
 }`;
 
@@ -94,12 +112,14 @@ function startProxy(gp) {
   const deployer = new ethers.Wallet(keys[0], direct);
   const pool = await (await new ethers.ContractFactory(M.abi, '0x' + M.evm.bytecode.object, deployer).deploy()).waitForDeployment();
   await (await deployer.sendTransaction({ to: pool.target, value: ethers.parseEther('5000') })).wait();
+  const MR = out.contracts['M.sol'].MockRouterV7;
+  const router = await (await new ethers.ContractFactory(MR.abi, '0x' + MR.evm.bytecode.object, deployer).deploy(pool.target)).waitForDeployment();
   const proxy = await startProxy(gp);
 
   const relayerAddr = new ethers.Wallet(keys[1]).address;
   const mkProvider = () => { const p = new ethers.JsonRpcProvider(proxy.url, undefined, { staticNetwork: true }); p.pollingInterval = 200; return p; };
   let provider = mkProvider();
-  const mk = (opts = {}) => createRelayer({ ethers, wallet: new ethers.Wallet(opts.key || keys[1], provider), pools: [], routers: [], v6Pools: [pool.target], v6Routers: [],
+  const mk = (opts = {}) => createRelayer({ ethers, wallet: new ethers.Wallet(opts.key || keys[1], provider), pools: [], routers: [], v6Pools: [pool.target], v6Routers: [router.target],
     perIpHour: 1000, dailyCap: 10000, failPerIpHour: 1000, maxQueue: 30, log: process.env.DEBUG ? (m) => console.log('   log: ' + m) : undefined, ...opts });
   let nh = 1000n;
   const body = (o = {}) => ({ pool: pool.target, pA: [1, 2], pB: [[1, 2], [3, 4]], pC: [1, 2], root: 7, nullifierHash: (nh++).toString(), recipient: ethers.Wallet.createRandom().address, ...o });
@@ -264,6 +284,97 @@ function startProxy(gp) {
   b = body(); const n5 = await nonceOf();
   rs = await Promise.all(Array.from({ length: 5 }, (_, i) => W(R, { ...b, recipient: ethers.Wallet.createRandom().address }, 'ip-same' + i)));
   rec('5 parallel requests with one nullifier: 1 relayed, 4 refused, 1 tx', rs.filter((x) => x.status === 200).length === 1 && (await nonceOf()) === n5 + 1, `200=${rs.filter((x) => x.status === 200).length}`);
+
+  // ---------------- withdrawMany through the router (V7 interface: items with fee, recipient, relayer) ----------------
+  const item = (n, fee = 0) => [0, [1, 2], [[1, 2], [3, 4]], [1, 2], 7, n.toString(), fee];
+  const many = (k, o = {}) => ({ router: router.target, items: Array.from({ length: k }, () => item(nh++)), recipient: ethers.Wallet.createRandom().address, ...o });
+  const WM = (R, b, ip = 'ip-m') => R.handle('POST', '/relay/api/withdrawMany', b, ip);
+  const allSpent = async (bb) => (await Promise.all(bb.items.map((x) => spent(x[5])))).every(Boolean);
+
+  // M0. baseline: 16 notes in one transaction
+  R = mk();
+  let mb = many(16), nm0 = await nonceOf();
+  r = await WM(R, mb);
+  rec('many: 16 notes relayed in one tx', r.status === 200 && (await allSpent(mb)) && (await nonceOf()) === nm0 + 1, `gas ${r.body.gasUsed}`);
+  r = await WM(R, many(17));
+  rec('many: 17 notes refused before anything is sent (400)', r.status === 400);
+
+  // M1. duplicate note inside one batch: the second withdraw of the same nullifier reverts the whole batch in simulation
+  mb = many(4); mb.items[3] = mb.items[1].slice(); nm0 = await nonceOf();
+  r = await WM(R, mb, 'ip-dup');
+  rec('many: duplicate note in a batch -> refused by simulation, no tx, no note spent', r.status === 400 && /spent/i.test(r.body.error) && (await nonceOf()) === nm0 && !(await spent(mb.items[0][5])), (r.body.error || '').slice(0, 70));
+  // a batch where one note was already spent earlier: whole batch refused, the other notes stay spendable
+  mb = many(3); mb.items[2] = [...mb.items[2]]; mb.items[2][5] = item(1000)[5];   // nullifier 1000 was spent by the baseline
+  r = await WM(R, mb, 'ip-dup');
+  rec('many: one already-spent note -> whole batch refused, others unspent', r.status === 400 && !(await spent(mb.items[0][5])));
+
+  // M2. 429 on the RPC during a batch, then recovery
+  let m429 = 0;
+  proxy.set((c) => (c.method === 'eth_estimateGas' && m429++ < 3 ? { http: 429 } : undefined));
+  mb = many(5); r = await WM(R, mb, 'ip-m429');
+  proxy.set(); await sleep(400);
+  rec('many: 429 x3 on estimateGas -> retried by ethers, batch relayed', r.status === 200 && (await allSpent(mb)), `429 sent ${Math.min(m429, 3)}`);
+  proxy.set((c) => (c.method === 'eth_call' ? { http: 429, retryAfter: 1 } : undefined));
+  mb = many(5); nm0 = await nonceOf(); r = await WM(R, mb, 'ip-m429b');
+  proxy.set(); await sleep(400);
+  // KNOWN-DEFECT (low): the simulation's catch (relayer.js:146) turns ANY error into 400 "the chain would reject it",
+  // so an RPC outage during eth_call reads as a bad proof to the user (and counts against their IP).
+  rec('KNOWN-DEFECT: many: 429 on every eth_call -> 400 "chain would reject it" (node error shown as a bad request), nothing sent',
+    r.status === 400 && /would reject/.test(r.body.error) && (await nonceOf()) === nm0, (r.body.error || '').slice(0, 90));
+  r = await WM(R, many(2), 'ip-m429c');
+  rec('many: after the 429 storm the queue moves on', r.status === 200);
+
+  // M3. nonce too low (node lagging)
+  let mlag = 1; nm0 = await nonceOf();
+  proxy.set((c) => (c.method === 'eth_getTransactionCount' && mlag-- > 0 ? { result: '0x0' } : undefined));
+  mb = many(6); r = await WM(R, mb, 'ip-mnonce');
+  proxy.set(); await sleep(400);
+  rec('many: nonce too low -> retried, batch relayed, exactly one tx', r.status === 200 && (await nonceOf()) === nm0 + 1 && (await allSpent(mb)), `nonce ${nm0}->${await nonceOf()}`);
+
+  // M4. lost answer after broadcast (mined), then the user retries the same batch
+  mb = many(8); nm0 = await nonceOf();
+  proxy.set((c) => (c.method === 'eth_sendRawTransaction' ? { forwardThenDrop: true } : undefined));
+  r = await WM(R, mb, 'ip-mlost');
+  proxy.set(); await sleep(1000);
+  rec('KNOWN-DEFECT: many: lost answer -> batch mined (all 8 spent) but the user gets 502 without a hash', r.status === 502 && (await allSpent(mb)) && (await nonceOf()) === nm0 + 1, `status ${r.status}`);
+  r = await WM(R, mb, 'ip-mlost');
+  rec('many: retry of the same batch after a lost answer -> refused before sending, no 2nd tx', r.status === 400 && (await nonceOf()) === nm0 + 1, (r.body.error || '').slice(0, 60));
+
+  // M5. lost answer while the batch is still pending + immediate retry (node counts the pending tx, as Nitro does)
+  mb = many(8);
+  await gp.request({ method: 'miner_stop', params: [] });
+  const nm2 = await nonceOf(), bm2 = await balOf(), hm0 = proxy.stats.hashes.length;
+  proxy.set((c) => (c.method === 'eth_sendRawTransaction' ? { forwardThenDrop: true } : undefined));
+  r = await WM(R, mb, 'ip-mpend');
+  proxy.set((c) => (c.method === 'eth_getTransactionCount' && c.params[1] === 'pending' ? { result: ethers.toQuantity(nm2 + 1) } : undefined));
+  await sleep(400);
+  const mr2p = WM(R, mb, 'ip-mpend');
+  await sleep(1500);
+  await gp.request({ method: 'miner_start', params: [] });
+  const mr2 = await withTimeout(mr2p, 20000);
+  proxy.set(); await sleep(500);
+  const mrcs = (await Promise.all(proxy.stats.hashes.slice(hm0).map((h) => direct.getTransactionReceipt(h)))).filter(Boolean);
+  const mrev = mrcs.filter((x) => x.status === 0);
+  rec('KNOWN-DEFECT: many: pending batch + lost answer + retry -> 2 txs, the 2nd reverts (relayer pays its gas)', mrcs.length === 2 && mrev.length === 1 && (await allSpent(mb)),
+    `mined ${mrcs.length}, reverted ${mrev.length} (gas ${mrev.map((x) => x.gasUsed).join()}), answers ${r.status}/${mr2.v && mr2.v.status}, relayer spent ${ethers.formatEther(bm2 - (await balOf()))} ETH`);
+
+  // M6. limits under a burst of batches: one slot per request, not per note
+  R = mk({ perIpHour: 3 });
+  let mrs = await Promise.all(Array.from({ length: 5 }, () => WM(R, many(16), 'ip-mburst')));
+  rec('many: burst of 5 batches x 16 notes from one IP, perIpHour 3 -> 3 relayed (48 notes), 2 x 429',
+    mrs.filter((x) => x.status === 200).length === 3 && mrs.filter((x) => x.status === 429).length === 2, mrs.map((x) => x.status).join());
+  R = mk({ maxQueue: 2 });
+  mrs = await Promise.all(Array.from({ length: 4 }, (_, i) => WM(R, many(4), 'ip-mq' + i)));
+  rec('many: burst of 4 batches, maxQueue 2 -> 2 relayed, 2 busy 503', mrs.filter((x) => x.status === 200).length === 2 && mrs.filter((x) => x.status === 503).length === 2, mrs.map((x) => x.status).join());
+  // parallel identical batches: one tx, the rest refused by simulation
+  R = mk(); mb = many(5); nm0 = await nonceOf();
+  mrs = await Promise.all(Array.from({ length: 4 }, (_, i) => WM(R, { ...mb, recipient: ethers.Wallet.createRandom().address }, 'ip-msame' + i)));
+  rec('many: 4 parallel requests with the same notes -> 1 tx, 3 refused', mrs.filter((x) => x.status === 200).length === 1 && (await nonceOf()) === nm0 + 1, mrs.map((x) => x.status).join());
+  // a fee that does not name this relayer, and a fee without a relayer
+  r = await WM(R, many(2, { relayer: ethers.Wallet.createRandom().address }), 'ip-mfee');
+  const mf = many(2); mf.items[0][6] = 5;
+  const r2f = await WM(R, mf, 'ip-mfee');
+  rec('many: another relayer named / a fee without a relayer -> 400 before sending', r.status === 400 && r2f.status === 400);
 
   console.log(`\n${results.filter(Boolean).length}/${results.length} passed`);
   provider.destroy(); proxy.server.close();
