@@ -50,6 +50,12 @@ services:
       nitro:
         condition: service_started
     command: sh -c 'bin/blockscout eval "Elixir.Explorer.ReleaseTasks.create_and_migrate()" && bin/blockscout start'
+    # Blockscout opens a new connection to the node for most requests; after the load test (thousands of new addresses)
+    # its container ran out of local ports (Mint "eaddrnotavail"), retried without pause and used ~5 cores and ~100 GB of
+    # logs. A wider port range with reuse of closed connections, and less parallel background fetching, fix that.
+    sysctls:
+      net.ipv4.ip_local_port_range: "1024 65000"
+      net.ipv4.tcp_tw_reuse: "1"
     environment:
       DATABASE_URL: postgresql://blockscout:${BS_DB_PASSWORD}@db:5432/blockscout
       ECTO_SSL_MODE: disable
@@ -59,7 +65,6 @@ services:
       ETHEREUM_JSONRPC_TRANSPORT: http
       ETHEREUM_JSONRPC_HTTP_URL: http://nitro:8449/
       ETHEREUM_JSONRPC_TRACE_URL: http://nitro:8449/
-      ETHEREUM_JSONRPC_DISABLE_ARCHIVE_BALANCES: "false"
       CHAIN_ID: ${CHAIN_ID}
       COIN: LTH
       COIN_NAME: LTH (test)
@@ -75,6 +80,12 @@ services:
       API_V1_READ_METHODS_DISABLED: "false"
       API_V1_WRITE_METHODS_DISABLED: "false"
       DISABLE_FILE_LOGGING: "true"
+      INDEXER_CATCHUP_BLOCKS_CONCURRENCY: ${BS_CATCHUP_CONCURRENCY:-2}
+      INDEXER_RECEIPTS_CONCURRENCY: ${BS_RECEIPTS_CONCURRENCY:-2}
+      INDEXER_COIN_BALANCES_CONCURRENCY: ${BS_COIN_BALANCES_CONCURRENCY:-2}
+      INDEXER_CURRENT_TOKEN_BALANCES_CONCURRENCY: ${BS_TOKEN_BALANCES_CONCURRENCY:-2}
+      INDEXER_ARCHIVAL_TOKEN_BALANCES_CONCURRENCY: ${BS_TOKEN_BALANCES_CONCURRENCY:-2}
+      ETHEREUM_JSONRPC_DISABLE_ARCHIVE_BALANCES: ${BS_DISABLE_ARCHIVE_BALANCES:-true}
 
   frontend:
     logging: *logging
