@@ -42,7 +42,9 @@ services:
 
   blockscout:
     logging: *logging
-    image: ghcr.io/blockscout/blockscout:${BLOCKSCOUT_TAG}
+    # The Arbitrum build of Blockscout (CHAIN_TYPE=arbitrum): the standard build has no Arbitrum tables, and on every
+    # block with a withdrawal to the parent chain (ArbSys, e.g. through the bridge page) it failed and retried without pause.
+    image: ${BLOCKSCOUT_IMAGE:-ghcr.io/blockscout/blockscout-arbitrum}:${BLOCKSCOUT_TAG}
     restart: unless-stopped
     depends_on:
       db:
@@ -66,6 +68,7 @@ services:
       ETHEREUM_JSONRPC_HTTP_URL: http://nitro:8449/
       ETHEREUM_JSONRPC_TRACE_URL: http://nitro:8449/
       CHAIN_ID: ${CHAIN_ID}
+      CHAIN_TYPE: ${BS_CHAIN_TYPE:-arbitrum}
       COIN: LTH
       COIN_NAME: LTH (test)
       PORT: "4000"
