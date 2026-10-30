@@ -16,8 +16,9 @@
  * Proxy note: ganache leaves pool transactions out of eth_getTransactionCount(…, 'pending'); geth and Nitro count them.
  * Check 4 answers that call as they would.
  *
- * Checks marked KNOWN-DEFECT describe current behaviour that is a reliability problem (see the comments next to them):
- * they pass when the defect is still there, so the suite stays green and shows when a fix changes the behaviour.
+ * Checks marked FIXED were KNOWN-DEFECT checks of the internal review (29.10.2026) and now assert the fixed behaviour:
+ * node trouble is not the client's fault (503, not counted), the hash is known before broadcast (a lost answer still
+ * returns it), a note in flight is not sent twice (409), and every wait has a timeout (the queue never hangs).
  */
 const http = require('http');
 const solc = require('solc'), ganache = require('ganache'), { ethers } = require('ethers');
@@ -120,7 +121,7 @@ function startProxy(gp) {
   const mkProvider = () => { const p = new ethers.JsonRpcProvider(proxy.url, undefined, { staticNetwork: true }); p.pollingInterval = 200; return p; };
   let provider = mkProvider();
   const mk = (opts = {}) => createRelayer({ ethers, wallet: new ethers.Wallet(opts.key || keys[1], provider), pools: [], routers: [], v6Pools: [pool.target], v6Routers: [router.target],
-    perIpHour: 1000, dailyCap: 10000, failPerIpHour: 1000, maxQueue: 30, log: process.env.DEBUG ? (m) => console.log('   log: ' + m) : undefined, ...opts });
+    perIpHour: 1000, dailyCap: 10000, failPerIpHour: 1000, maxQueue: 30, rpcTimeoutMs: 2000, waitTimeoutMs: 3000, log: process.env.DEBUG ? (m) => console.log('   log: ' + m) : undefined, ...opts });
   let nh = 1000n;
   const body = (o = {}) => ({ pool: pool.target, pA: [1, 2], pB: [[1, 2], [3, 4]], pC: [1, 2], root: 7, nullifierHash: (nh++).toString(), recipient: ethers.Wallet.createRandom().address, ...o });
   const W = (R, b, ip = 'ip-a') => R.handle('POST', '/relay/api/withdraw', b, ip);
@@ -133,6 +134,12 @@ function startProxy(gp) {
   let r = await W(R, body());
   rec('baseline: a withdrawal through the HTTP proxy is relayed', r.status === 200 && !!r.body.tx, JSON.stringify(r.body).slice(0, 80));
 
+  // ---- 0b. pools of retired generations (before V7): refused with the reason, nothing sent
+  { const RR = createRelayer({ ethers, wallet: new ethers.Wallet(keys[1], provider), pools: [], routers: [], v6Pools: [], v6Routers: [], retiredPools: [pool.target], retiredRouters: [router.target] });
+    const nb = await nonceOf();
+    const a = await W(RR, body(), 'ip-old'); const m = await RR.handle('POST', '/relay/api/withdrawMany', { router: router.target, items: [[0, [1, 2], [[1, 2], [3, 4]], [1, 2], 7, '1', '0']], recipient: ethers.Wallet.createRandom().address }, 'ip-old');
+    rec('A1: a pool or router before V7 is refused (400, "retired", own wallet), nothing sent', a.status === 400 && /retired/.test(a.body.error) && m.status === 400 && /retired/.test(m.body.error) && (await nonceOf()) === nb, a.body.error.slice(0, 60)); }
+
   // ---- 1. HTTP 429 from the RPC: ethers' FetchRequest retries (up to 12 attempts, backoff), then gives up
   let n429 = 0;
   proxy.set((c) => (c.method === 'eth_getBalance' && n429++ < 3 ? { http: 429 } : undefined));
@@ -141,7 +148,7 @@ function startProxy(gp) {
   proxy.set((c) => (c.method === 'eth_getBalance' ? { http: 429, retryAfter: 1 } : undefined));
   t0 = Date.now(); r = await W(R, body(), 'ip-429');
   const t429 = Date.now() - t0;
-  rec('429 on every call: request fails with 502 after ethers gives up, nothing sent', r.status === 502, `${t429} ms`);
+  rec('429 on every call: 503 (node trouble, not the client), nothing sent', r.status === 503, `${t429} ms`);
   proxy.set(); await sleep(500);   // ethers keeps a failed call in its 250 ms request cache
   r = await W(R, body());
   rec('after 429 storm: the queue is not stuck, next request relayed', r.status === 200);
@@ -152,8 +159,7 @@ function startProxy(gp) {
   for (let i = 0; i < 3; i++) await W(R, body(), 'ip-victim');
   proxy.set(); await sleep(400);
   r = await W(R, body(), 'ip-victim');
-  // KNOWN-DEFECT (low): three failures of OUR node lock an honest client out for an hour.
-  rec('KNOWN-DEFECT: node-side RPC errors count as the client\'s failures and lock the IP out', r.status === 429, r.body.error && r.body.error.slice(0, 50));
+  rec('FIXED: node-side RPC errors do not count as the client\'s failures: the IP can still relay', r.status === 200, r.body.error && r.body.error.slice(0, 50));
 
   // ---- 3. Lost answer after broadcast: the node accepted and mined the transaction, the response never came back
   R = mk();
@@ -164,7 +170,7 @@ function startProxy(gp) {
   const n1 = await nonceOf(), isSpent = await spent(b.nullifierHash);
   // The user is told the relayer could NOT send it, but the withdrawal happened.
   rec('lost answer after broadcast: tx mined (nonce +1, note spent)', n1 === n0 + 1 && isSpent, `nonce ${n0}->${n1}`);
-  rec('KNOWN-DEFECT: ...but the user gets 502 "could not send" and no tx hash', r.status === 502 && !r.body.tx, `status ${r.status}`);
+  rec('FIXED: ...and the user gets 200 with the transaction hash (it was signed before broadcasting)', r.status === 200 && !!r.body.tx, `status ${r.status}`);
   // The user retries the same proof: the simulation sees the spent note, nothing is sent again.
   r = await W(R, b, 'ip-lost');
   rec('retry of the same proof after a lost answer: refused before sending (no 2nd tx)', r.status === 400 && (await nonceOf()) === n1, r.body.error.slice(0, 70));
@@ -192,9 +198,8 @@ function startProxy(gp) {
   if (process.env.DEBUG) { const bn = await direct.getBlockNumber(); for (let i = bn - 4; i <= bn; i++) { const blk = await direct.getBlock(i, true); for (const t of blk.prefetchedTransactions) { const x = await direct.getTransactionReceipt(t.hash); console.log('   blk', i, t.from.slice(0, 8), 'nonce', t.nonce, t.hash.slice(0, 10), 'status', x.status, 'nh', t.data.slice(10 + 64 * 9, 10 + 64 * 10).replace(/^0+/, ''), 'logs', x.logs.length); } } console.log('   hashes', proxy.stats.hashes.slice(h0).map((h) => h.slice(0, 10)).join()); }
   const rcs = await Promise.all(proxy.stats.hashes.slice(h0).map((h) => direct.getTransactionReceipt(h)));
   const mined = rcs.filter(Boolean), reverted = mined.filter((x) => x.status === 0);
-  // KNOWN-DEFECT (low): both transactions are mined; the one that comes second reverts ("Note already spent") and the
-  // relayer pays its gas. The answer the user gets depends on which of the two the retry was: here it is recorded below.
-  rec('KNOWN-DEFECT: pending tx + lost answer + immediate retry = 2 txs on-chain, one reverts (relayer pays gas twice)', txCount === 2 && mined.length === 2 && reverted.length === 1,
+  // Before the fix both transactions were mined and the second reverted (the relayer paid its gas twice).
+  rec('FIXED: pending tx + lost answer + immediate retry = 1 tx; the retry is refused (409, note in flight)', txCount === 1 && mined.length === 1 && reverted.length === 0 && r2.v && r2.v.status === 409,
     `txs ${txCount}, mined ${mined.length}, reverted ${reverted.length} (gas ${reverted.map((x) => x.gasUsed).join()}), 1st answer ${r.status}, retry answer ${r2.v && r2.v.status}, relayer spent ${ethers.formatEther(bal2 - bal3)} ETH`);
 
   // ---- 5. Transaction never mined (dropped by the node / sequencer restart): tx.wait() has no timeout
@@ -206,11 +211,11 @@ function startProxy(gp) {
   const next = W(R, body(), 'ip-next');
   const s1 = await withTimeout(stuck, 8000), s2 = await withTimeout(next, 2000);
   const st = await R.status('x');
-  // KNOWN-DEFECT (medium): one dropped transaction blocks the serial queue forever; every later request waits, then 503.
-  rec('KNOWN-DEFECT: a never-mined tx blocks the queue (no wait timeout), later requests hang', !s1.done && !s2.done, `after 8 s: first done=${s1.done}, next done=${s2.done}`);
-  const busy = []; for (let i = 0; i < 30; i++) busy.push(W(R, body(), 'ip-q' + i));
+  // Before the fix one dropped transaction blocked the serial queue forever.
+  rec('FIXED: a never-mined tx: after the wait timeout the user gets its hash marked pending, and the queue moves on', s1.done && s1.v && s1.v.status === 200 && s1.v.body.pending === true && !!s1.v.body.tx && s2.done && s2.v.status === 200,
+    `first ${s1.done && s1.v && JSON.stringify(s1.v.body).slice(0, 60)}, next ${s2.done && s2.v && s2.v.status}`);
   r = await W(R, body(), 'ip-late');
-  rec('KNOWN-DEFECT: ...the queue fills up and every new request gets 503 until restart', r.status === 503, r.body.error.slice(0, 40));
+  rec('FIXED: ...and later requests are relayed normally (no 503 pile-up)', r.status === 200, r.body.error && r.body.error.slice(0, 40));
   // the relayer object is now unusable; continue with a fresh one and a fresh provider (as a container restart would)
   provider.destroy(); provider = mkProvider();
 
@@ -219,8 +224,8 @@ function startProxy(gp) {
   proxy.set((c) => (c.method === 'eth_getCode' ? { hang: true } : undefined));
   const h1 = W(R, body(), 'ip-h1'); await sleep(200); proxy.set();
   const h2 = W(R, body(), 'ip-h2');
-  const hr1 = await withTimeout(h1, 6000), hr2 = await withTimeout(h2, 1000);
-  rec('KNOWN-DEFECT: a hanging RPC call blocks the queue (ethers default 300 s timeout, none in the relayer)', !hr1.done && !hr2.done, `after 6 s: hung=${!hr1.done}, next waiting=${!hr2.done}`);
+  const hr1 = await withTimeout(h1, 6000), hr2 = await withTimeout(h2, 8000);
+  rec('FIXED: a hanging RPC call times out (503 to that request) and the next request is relayed', hr1.done && hr1.v.status === 503 && hr2.done && hr2.v.status === 200, `first ${hr1.done && hr1.v.status}, next ${hr2.done && hr2.v.status}`);
   provider.destroy(); provider = mkProvider();
 
   // ---- 7. Nonce: node lags (pending count too low) -> "nonce too low" -> relayer retries with a fresh nonce
@@ -238,8 +243,8 @@ function startProxy(gp) {
   proxy.set((c) => (c.method === 'eth_getTransactionCount' && c.params && c.params[1] === 'pending' && gap-- > 0 ? { result: ethers.toQuantity(n4 + 5) } : undefined));
   const g1 = W(R, body(), 'ip-gap');
   await sleep(300); proxy.set();
-  const gr = await withTimeout(g1, 5000);
-  rec('KNOWN-DEFECT: nonce gap -> tx sits in the node as a future tx, wait() never returns, queue stuck', !gr.done, `after 5 s done=${gr.done}`);
+  const gr = await withTimeout(g1, 8000);
+  rec('FIXED: nonce gap -> future tx never mined, but the wait times out (hash returned as pending), queue not stuck', gr.done && gr.v.status === 200 && gr.v.body.pending === true, `done=${gr.done} ${gr.done && JSON.stringify(gr.v.body).slice(0, 50)}`);
   provider.destroy(); provider = mkProvider();
   // clear ganache's queued future tx by mining; it cannot be mined (gap) — fine for the rest of the test (later sends fill nonces below it)
 
@@ -317,10 +322,8 @@ function startProxy(gp) {
   proxy.set((c) => (c.method === 'eth_call' ? { http: 429, retryAfter: 1 } : undefined));
   mb = many(5); nm0 = await nonceOf(); r = await WM(R, mb, 'ip-m429b');
   proxy.set(); await sleep(400);
-  // KNOWN-DEFECT (low): the simulation's catch (relayer.js:146) turns ANY error into 400 "the chain would reject it",
-  // so an RPC outage during eth_call reads as a bad proof to the user (and counts against their IP).
-  rec('KNOWN-DEFECT: many: 429 on every eth_call -> 400 "chain would reject it" (node error shown as a bad request), nothing sent',
-    r.status === 400 && /would reject/.test(r.body.error) && (await nonceOf()) === nm0, (r.body.error || '').slice(0, 90));
+  rec('FIXED: many: 429 on every eth_call -> 503 node trouble (not "the chain would reject it"), nothing sent',
+    r.status === 503 && !/would reject/.test(r.body.error) && (await nonceOf()) === nm0, (r.body.error || '').slice(0, 90));
   r = await WM(R, many(2), 'ip-m429c');
   rec('many: after the 429 storm the queue moves on', r.status === 200);
 
@@ -336,7 +339,7 @@ function startProxy(gp) {
   proxy.set((c) => (c.method === 'eth_sendRawTransaction' ? { forwardThenDrop: true } : undefined));
   r = await WM(R, mb, 'ip-mlost');
   proxy.set(); await sleep(1000);
-  rec('KNOWN-DEFECT: many: lost answer -> batch mined (all 8 spent) but the user gets 502 without a hash', r.status === 502 && (await allSpent(mb)) && (await nonceOf()) === nm0 + 1, `status ${r.status}`);
+  rec('FIXED: many: lost answer -> batch mined (all 8 spent) and the user gets 200 with the hash', r.status === 200 && !!r.body.tx && (await allSpent(mb)) && (await nonceOf()) === nm0 + 1, `status ${r.status}`);
   r = await WM(R, mb, 'ip-mlost');
   rec('many: retry of the same batch after a lost answer -> refused before sending, no 2nd tx', r.status === 400 && (await nonceOf()) === nm0 + 1, (r.body.error || '').slice(0, 60));
 
@@ -355,7 +358,7 @@ function startProxy(gp) {
   proxy.set(); await sleep(500);
   const mrcs = (await Promise.all(proxy.stats.hashes.slice(hm0).map((h) => direct.getTransactionReceipt(h)))).filter(Boolean);
   const mrev = mrcs.filter((x) => x.status === 0);
-  rec('KNOWN-DEFECT: many: pending batch + lost answer + retry -> 2 txs, the 2nd reverts (relayer pays its gas)', mrcs.length === 2 && mrev.length === 1 && (await allSpent(mb)),
+  rec('FIXED: many: pending batch + lost answer + retry -> 1 tx, the retry refused (409, notes in flight)', mrcs.length === 1 && mrev.length === 0 && (await allSpent(mb)) && mr2.v && mr2.v.status === 409,
     `mined ${mrcs.length}, reverted ${mrev.length} (gas ${mrev.map((x) => x.gasUsed).join()}), answers ${r.status}/${mr2.v && mr2.v.status}, relayer spent ${ethers.formatEther(bm2 - (await balOf()))} ETH`);
 
   // M6. limits under a burst of batches: one slot per request, not per note

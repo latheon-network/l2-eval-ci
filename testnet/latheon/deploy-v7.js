@@ -101,6 +101,7 @@ async function main() {
   const v7router = { id: `${id}:LTH:v7`, network: id, token: 'LTH', native: true, version: 'v7', address: router, deployBlock: st.tx.RouterV7.block };
   dep.pools = v7pools.concat(dep.pools.filter((p) => p.version !== 'v7-native'));
   dep.routers = [v7router].concat((dep.routers || []).filter((r) => r.version !== 'v7'));
+  require('./mark-legacy').markLegacy(dep);   // every set before V7: frozen and forgeable (the pre-V7 circuit flaw)
   dep.buildV7 = { compiler: ART.compiler, settings: ART.settings, latheonCommit: ART.source.commit };
   dep.deployTxV7 = st.tx;
   saveJson(outPath, dep);

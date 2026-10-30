@@ -139,8 +139,10 @@ services:
     image: node:22-bookworm-slim
     restart: unless-stopped
     user: "1000:1000"
-    working_dir: /faucet
-    command: sh -c 'npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node server.js'
+    # The code is mounted read-only and copied into the container to install its packages: the service cannot change the
+    # files that the operator's commands (faucet-cmd.sh, run with the deployer key) execute. Only secret/ is writable.
+    working_dir: /tmp
+    command: sh -c 'mkdir -p /tmp/app && cp /faucet/package.json /faucet/package-lock.json /faucet/*.js /faucet/*.html /tmp/app/ && cd /tmp/app && npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node server.js'
     depends_on:
       - nitro
     environment:
@@ -151,8 +153,11 @@ services:
       FAUCET_COOLDOWN_HOURS: ${FAUCET_COOLDOWN_HOURS:-24}
       FAUCET_DAILY_CAP: ${FAUCET_DAILY_CAP:-5000}
       FAUCET_EXEMPT_IPS: ${FAUCET_EXEMPT_IPS:-}
+      FAUCET_KEY_FILE: /faucet/secret/faucet.key
+      STATE_DIR: /faucet/secret
     volumes:
-      - ./faucet:/faucet
+      - ./faucet:/faucet:ro
+      - ./faucet/secret:/faucet/secret
 
   relayer:
     logging: *logging
@@ -161,8 +166,9 @@ services:
     image: node:22-bookworm-slim
     restart: unless-stopped
     user: "1000:1000"
-    working_dir: /relayer
-    command: sh -c 'npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node relayer.js serve'
+    # Read-only code, copied into the container to install packages (see faucet); only secret/ is writable.
+    working_dir: /tmp
+    command: sh -c 'mkdir -p /tmp/app && cp /relayer/package.json /relayer/package-lock.json /relayer/relayer.js /tmp/app/ && cd /tmp/app && npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node relayer.js serve'
     depends_on:
       - nitro
     environment:
@@ -173,8 +179,14 @@ services:
       RELAY_DAILY_CAP: ${RELAY_DAILY_CAP:-500}
       RELAY_MIN_FEE: ${RELAY_MIN_FEE:-0}
       RELAY_EXEMPT_IPS: ${RELAY_EXEMPT_IPS:-}
+      RELAY_FAIL_PER_IP_HOUR: ${RELAY_FAIL_PER_IP_HOUR:-20}
+      RELAY_MAX_QUEUE: ${RELAY_MAX_QUEUE:-30}
+      RELAY_MIN_BALANCE: ${RELAY_MIN_BALANCE:-1}
+      RELAY_VERSIONS: ${RELAY_VERSIONS:-v7-native,v7}
+      RELAYER_KEY_FILE: /relayer/secret/relayer.key
     volumes:
-      - ./relayer:/relayer
+      - ./relayer:/relayer:ro
+      - ./relayer/secret:/relayer/secret
       - ./latheon/out:/latheon-out:ro
 
   bot:
@@ -227,6 +239,8 @@ services:
       RPC_RATE_PER_MINUTE: ${RPC_RATE_PER_MINUTE:-600}
       API_RATE_PER_SECOND: ${API_RATE_PER_SECOND:-40}
       API_RATE_PER_MINUTE: ${API_RATE_PER_MINUTE:-1200}
+      RELAY_RATE_PER_MINUTE: ${RELAY_RATE_PER_MINUTE:-60}
+      FAUCET_RATE_PER_MINUTE: ${FAUCET_RATE_PER_MINUTE:-30}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./ops:/srv/ops:ro

@@ -31,4 +31,7 @@ jobs:
           ls "$LATHEON_REPO/circuits/build/withdraw_v3/" || echo "::error::no withdraw_v3 build in the Latheon checkout"
           node test.js > /tmp/test.txt 2>&1; rc=$?; cat /tmp/test.txt
           [ $rc = 0 ] || echo "::error::test exit $rc: $(grep -v 'uws\|µWS\|Require stack\|^- ' /tmp/test.txt | tail -4 | tr '\n' ' ' | cut -c1-600)"
+          [ $rc = 0 ] || exit $rc
+          node test-faults.js > /tmp/faults.txt 2>&1; rc=$?; cat /tmp/faults.txt
+          [ $rc = 0 ] || echo "::error::fault tests exit $rc: $(grep '^FAIL' /tmp/faults.txt | head -3 | tr '\n' ' ' | cut -c1-600)"
           exit $rc

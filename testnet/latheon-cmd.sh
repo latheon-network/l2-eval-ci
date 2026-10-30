@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
-# Latheon contracts on the test chain, run in a Node container on the server: ./latheon-cmd.sh deploy|smoke|deploy-v6|smoke-v6|deploy-v7|smoke-v7
+# Latheon contracts on the test chain, run in a Node container on the server: ./latheon-cmd.sh deploy|smoke|deploy-v6|smoke-v6|deploy-v7|smoke-v7|mark-legacy
 #   deploy  Poseidon, verifiers, four native-coin V5 pools, native router; every link checked, real proofs against both verifiers
 #   smoke   router deposit of 11 LTH, withdrawMany of 2 notes with real proofs to an empty address, invariants, disclosure
 #   deploy-v6  V6 next to V5: verifier V4, four 20-level native pools, V6 router; listed first in the public entry
 #   smoke-v6   the same smoke on V6 with a relayer fee bound into the proofs, plus a 23-note deposit for gas
 #   deploy-v7  V7 next to V5/V6: verifier V5, the withdraw_v5 fix (pathIndices constrained to a bit); supersedes V6
 #   smoke-v7   the same smoke on V7
+#   mark-legacy  marks every pool and router before V7 as frozen and forgeable in latheon/out/latheon-deployments.json (no key)
 # Asks for the deployer key without echo unless DEPLOYER_KEY is set. Uses the node's local RPC (127.0.0.1:8449).
 # Public result: latheon/out/latheon-deployments.json (goes into demo/deployments.json); latheon/secret/ stays private.
 set -euo pipefail
 cd "$(dirname "$0")"
-case "${1:-}" in deploy|smoke|deploy-v6|smoke-v6|deploy-v7|smoke-v7) ;; *) echo "usage: $0 deploy|smoke|deploy-v6|smoke-v6|deploy-v7|smoke-v7"; exit 2 ;; esac
+case "${1:-}" in deploy|smoke|deploy-v6|smoke-v6|deploy-v7|smoke-v7|mark-legacy) ;; *) echo "usage: $0 deploy|smoke|deploy-v6|smoke-v6|deploy-v7|smoke-v7|mark-legacy"; exit 2 ;; esac
+if [ "$1" = mark-legacy ]; then
+  exec docker run --rm -u 0 -v "$PWD/latheon:/latheon" -w /latheon node:22-bookworm-slim node mark-legacy.js
+fi
 set -a; . ./.env; set +a
 if [ -z "${DEPLOYER_KEY:-}" ]; then
   read -r -s -p "Deployer private key (input hidden): " DEPLOYER_KEY; echo

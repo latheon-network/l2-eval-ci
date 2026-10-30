@@ -62,7 +62,8 @@ const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
   check('deploy-v7 again: every V7 contract reused', v7b.status === 0 && (v7b.stdout.match(/already deployed/g) || []).length === 6 && !/gas \d/.test(v7b.stdout));
   const e7 = JSON.parse(fs.readFileSync(path.join(envs.OUT_DIR, 'latheon-deployments.json'), 'utf8'));
   check('entry: V7 pools and router listed first, V6 and V5 kept, v7Verifier set',
-    e7.pools.length === 12 && e7.pools.slice(0, 4).every((p) => p.version === 'v7-native') && e7.routers[0].version === 'v7' && !!e7.network.v7Verifier);
+    e7.pools.length === 12 && e7.pools.slice(0, 4).every((p) => p.version === 'v7-native' && !p.frozen) && e7.routers[0].version === 'v7' && !!e7.network.v7Verifier
+    && e7.pools.slice(4).every((p) => p.frozen && p.forgeable) && e7.routers.slice(1).every((r) => r.frozen && r.forgeable));
   const s7 = await run('smoke-v7.js');
   check('smoke-v7: router deposit 11, withdrawMany with relayer fees bound into the proofs, 23-note deposit, invariants, disclosure', s7.status === 0 && /All checks passed/.test(s7.stdout));
   const recKey = JSON.parse(fs.readFileSync(path.join(envs.STATE_DIR, 'latheon-smoke-notes.json'), 'utf8')).recipientKey.slice(2).toLowerCase();

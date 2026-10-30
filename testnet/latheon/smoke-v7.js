@@ -1,6 +1,6 @@
 'use strict';
 /*
- * Smoke test of the deployed V7 native-coin contracts (20-level trees, withdraw_v4) with real proofs:
+ * Smoke test of the deployed V7 native-coin contracts (20-level trees, withdraw_v5) with real proofs:
  *   router deposit of 11 LTH with 2 commitments = one note of 10 and one of 1
  *   → withdrawMany of both notes to a NEW, EMPTY address, with a relayer fee of 0.1 LTH per note bound into the proofs:
  *     the address receives exactly 10.8 LTH and the relayer named in the proofs exactly 0.2

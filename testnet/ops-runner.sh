@@ -7,6 +7,9 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 Q=ops-queue
+# Answers are written in a root-only folder on the same disk and then moved into the queue: the bot (which can write
+# to ops-queue/) cannot plant a link that makes root write through it, and mv replaces a link instead of following it.
+install -d -m 700 -o root -g root ops-tmp
 SERVICES=" nitro blockscout frontend faucet relayer caddy db bot "
 shopt -s nullglob
 for req in "$Q"/*.req; do
@@ -14,7 +17,7 @@ for req in "$Q"/*.req; do
   [[ "$id" =~ ^[A-Za-z0-9_-]{1,40}$ ]] || { rm -f "$req"; continue; }
   read -r action arg _ < <(head -c 200 "$req" | tr -cd 'a-z0-9 \n-' | head -1)
   rm -f "$req"
-  out="$Q/$id.out.tmp"
+  out=$(mktemp -p ops-tmp)
   {
     case "$action" in
       restart)
@@ -23,7 +26,7 @@ for req in "$Q"/*.req; do
       logs)
         if [[ "$SERVICES" == *" $arg "* ]]; then docker compose logs --no-color --tail 40 "$arg" 2>&1 | grep -v 'Getting file info' | sed -E -e 's#(https?://[^ "]*/v[0-9]+/)[A-Za-z0-9_-]{8,}#\1***#g' -e 's#([?&](api[_-]?key|key|token|apikey|access[_-]?token)=)[^&" ]+#\1***#gI' | tail -25 | cut -c1-220
         else echo "refused: unknown service"; fi ;;
-      faucet-pause) touch faucet/secret/paused && chown 1000:1000 faucet/secret/paused && echo "faucet paused" ;;
+      faucet-pause) rm -f faucet/secret/paused && setpriv --reuid=1000 --regid=1000 --clear-groups touch faucet/secret/paused && echo "faucet paused" ;;   # created as the faucet user, never through a link
       faucet-resume) rm -f faucet/secret/paused && echo "faucet resumed" ;;
       faucet-fund)
         if [[ "$arg" =~ ^[0-9]{1,7}$ ]]; then ./faucet-cmd.sh fund-from-ops "$arg" 2>&1 | tail -3; else echo "refused: amount"; fi ;;
@@ -31,7 +34,8 @@ for req in "$Q"/*.req; do
       *) echo "refused: unknown action" ;;
     esac
   } > "$out" 2>&1
-  chown 1000:1000 "$out" 2>/dev/null; mv "$out" "$Q/$id.out"
+  chown -h 1000:1000 "$out"; chmod 640 "$out"; mv -fT "$out" "$Q/$id.out"
+  [ -L "$Q/actions.log" ] && rm -f "$Q/actions.log"
   echo "$(date -u +%FT%TZ) $action $arg" >> "$Q/actions.log"
 done
 # keep the queue small: answers older than a day

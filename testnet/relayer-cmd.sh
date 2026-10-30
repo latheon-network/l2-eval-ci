@@ -12,6 +12,7 @@ if [ "$1" = fund ] && [ -z "${DEPLOYER_KEY:-}" ]; then
   export DEPLOYER_KEY
 fi
 mkdir -p relayer/secret && chown -R 1000:1000 relayer && chmod 700 relayer/secret
-docker run --rm --network host -u 1000:1000 -e DEPLOYER_KEY -e L3_RPC=http://127.0.0.1:8449 \
-  -v "$PWD/relayer:/relayer" -w /relayer node:22-bookworm-slim \
-  sh -c 'npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && node relayer.js "$@"' relayer "$@"
+# Run from a fresh copy of the read-only code with freshly installed packages (never the service's files).
+docker run --rm --network host -u 1000:1000 -e DEPLOYER_KEY -e L3_RPC=http://127.0.0.1:8449 -e RELAYER_KEY_FILE=/src/secret/relayer.key \
+  -v "$PWD/relayer:/src:ro" -v "$PWD/relayer/secret:/src/secret" -w /tmp node:22-bookworm-slim \
+  sh -c 'mkdir -p /tmp/app && cp /src/package.json /src/package-lock.json /src/relayer.js /tmp/app/ && cd /tmp/app && npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && node relayer.js "$@"' relayer "$@"

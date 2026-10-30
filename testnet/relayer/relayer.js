@@ -21,6 +21,11 @@
  * per day in total (a slot is reserved when the request arrives, so a burst of parallel requests cannot pass the check
  * together; it is given back if the request is refused before sending), RELAY_FAIL_PER_IP_HOUR refused or failed requests
  * per IP per hour, at most RELAY_MAX_QUEUE requests waiting, one transaction at a time, RELAY_MIN_BALANCE LTH kept for gas.
+ * Only the current generation (V7) is relayed (RELAY_VERSIONS); pools before V7 are refused with the reason, because
+ * their circuit lets anyone withdraw without a deposit and the relayer would pay the gas. Every call to the node has a
+ * timeout (rpcTimeoutMs) and so has the wait for a block (waitTimeoutMs, then the hash is returned marked pending), so the
+ * queue never hangs; node trouble is answered 503 and not counted against the client. Transactions are signed before
+ * they are sent, so a lost answer still returns the hash, and a note already in flight is not sent twice (409).
  * Nothing is stored about users: IPs live in memory for the hourly limits only; the log has transaction hashes.
  *
  * Service: node relayer.js serve     Admin: node relayer.js init | address | fund AMOUNT (deployer key, asked without echo)
@@ -41,6 +46,9 @@ const ROUTER_ABI_V6 = ['function withdrawMany((uint256 pool, uint256[2] pA, uint
   'function MAX_WITHDRAWALS() view returns (uint256)'];
 
 class Refusal extends Error { constructor(status, msg) { super(msg); this.status = status; } }
+// A problem on our side (node slow, unreachable, rate-limited): never counted against the client.
+class NodeTrouble extends Refusal { constructor(msg) { super(503, msg); } }
+const RETIRED = 'This pool is from a generation before V7, which is retired: the relayer no longer sends its withdrawals. Withdraw your note from your own wallet in the demo.';
 
 /**
  * The relayer logic, independent of HTTP and of where the chain runs (tests inject a local chain).
@@ -54,6 +62,14 @@ function createRelayer(o) {
   const minFee = o.minFee ?? 0n, exempt = new Set(o.exemptIps || []);
   const perIpHour = o.perIpHour ?? 10, dailyCap = o.dailyCap ?? 500, minBalance = o.minBalance ?? ethers.parseEther('1');
   const failPerIpHour = o.failPerIpHour ?? 20, maxQueue = o.maxQueue ?? 30;
+  const rpcTimeoutMs = o.rpcTimeoutMs ?? 20000, waitTimeoutMs = o.waitTimeoutMs ?? 120000;
+  // Pools and routers of retired generations (before V7): named so the refusal can say why.
+  const retired = new Set([...(o.retiredPools || []), ...(o.retiredRouters || [])].map((a) => a.toLowerCase()));
+  const inFlight = new Map();   // nullifierHash -> {tx, until}: a note already being sent is not sent twice
+  let nextNonce = null;         // our own nonce counter (the node's 'pending' count can lag or be cached)
+  const T = (p, what, ms = rpcTimeoutMs) => { let t; return Promise.race([p, new Promise((_, rej) => { t = setTimeout(() => rej(new NodeTrouble('The chain node did not answer in time (' + what + '). Try again in a minute.')), ms); })]).finally(() => clearTimeout(t)); };
+  const isNonceErr = (e) => /nonce/i.test([reason(e), e && e.message, e && e.info && JSON.stringify(e.info), e && e.error && e.error.message].filter(Boolean).join(' '));
+  const nodeErr = (e, what) => (e instanceof Refusal ? e : new NodeTrouble('The chain node is not available right now (' + what + '). Try again in a minute, or send the withdrawal from your own wallet.'));
   // Slots: {t} objects. A slot is reserved in byIp/sent when a request arrives and removed again if the request is refused
   // before anything is sent; a sent transaction keeps its slot whether it succeeded or reverted. Refusals and failures
   // also count in failsByIp, which has its own, separate hourly limit.
@@ -101,8 +117,9 @@ function createRelayer(o) {
     try {
       return await prepareAndSend(kind, body, () => { wasSent = true; });
     } catch (e) {
-      failed(ip);
-      if (!wasSent) release(ip, slot);   // refused before sending: the slot is given back, the refusal still counts
+      // Only the client's own mistakes count against its failure limit; trouble on our side (node, timeouts) does not.
+      if (e instanceof Refusal && !(e instanceof NodeTrouble) && e.status < 500) failed(ip);
+      if (!wasSent) release(ip, slot);   // refused before sending: the slot is given back
       throw e;
     }
   }
@@ -113,6 +130,7 @@ function createRelayer(o) {
     let contract, args;
     if (kind === 'withdraw') {
       const pool = address(body.pool, 'pool'), v6 = v6Pools.has(pool.toLowerCase());
+      if (retired.has(pool.toLowerCase())) throw new Refusal(400, RETIRED);
       if (!v6 && !pools.has(pool.toLowerCase())) throw new Refusal(400, 'Not a Latheon pool on this chain.');
       const p = proof(body);
       if (v6) {
@@ -121,6 +139,7 @@ function createRelayer(o) {
       } else { contract = new ethers.Contract(pool, POOL_ABI, wallet); args = [p.pA, p.pB, p.pC, p.root, p.nullifierHash, recipient]; }
     } else {
       const router = address(body.router, 'router'), v6 = v6Routers.has(router.toLowerCase());
+      if (retired.has(router.toLowerCase())) throw new Refusal(400, RETIRED);
       if (!v6 && !routers.has(router.toLowerCase())) throw new Refusal(400, 'Not a Latheon router on this chain.');
       if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > 16) throw new Refusal(400, 'Between 1 and 16 notes per request.');
       const items = body.items.map((it) => {
@@ -136,26 +155,71 @@ function createRelayer(o) {
       } else { contract = new ethers.Contract(router, ROUTER_ABI, wallet); args = [items, recipient]; }
     }
     const fn = kind === 'withdraw' ? 'withdraw' : 'withdrawMany';
+    const nullifiers = (kind === 'withdraw' ? [args[4]] : args[0].map((x) => x[5])).map(String);
+    const now = Date.now(); for (const [k, v] of inFlight) if (v.until < now) inFlight.delete(k);
+    const busyNote = nullifiers.find((n) => inFlight.has(n));
+    if (busyNote) throw new Refusal(409, 'This note is already being sent in ' + inFlight.get(busyNote).tx + '. Wait for it on the explorer instead of sending it again.');
     waiting++;
     return serial(async () => {
-      const bal = await wallet.provider.getBalance(wallet.address);
+      let bal, code;
+      try { bal = await T(wallet.provider.getBalance(wallet.address), 'balance'); code = await T(wallet.provider.getCode(recipient), 'recipient code'); }
+      catch (e) { throw nodeErr(e, 'reading the chain'); }
       if (bal < minBalance) throw new Refusal(503, 'The relayer is out of gas money. Try later, or send the withdrawal from your own wallet.');
-      if ((await wallet.provider.getCode(recipient)) !== '0x') throw new Refusal(400, 'The relayer only pays to ordinary addresses, not to contracts. Use a fresh address, or send the withdrawal from your own wallet.');
+      if (code !== '0x') throw new Refusal(400, 'The relayer only pays to ordinary addresses, not to contracts. Use a fresh address, or send the withdrawal from your own wallet.');
+      if (nullifiers.some((n) => inFlight.has(n))) throw new Refusal(409, 'This note is already being sent. Wait for it on the explorer instead of sending it again.');
       let gas;
-      try { await contract[fn].staticCall(...args); gas = await contract[fn].estimateGas(...args); }
-      catch (e) { throw new Refusal(400, 'Refused before sending (the chain would reject it): ' + reason(e)); }
-      markSent();
-      // "nonce has already been used" / "nonce too low": the node's pending count lagged behind our last transaction. The
-      // transaction was rejected before it was sent, so sending again with a fresh nonce is safe.
-      let tx;
-      for (let attempt = 1; ; attempt++) {
-        try { tx = await contract[fn](...args, { gasLimit: gas + gas / 5n, nonce: await wallet.provider.getTransactionCount(wallet.address, 'pending') }); break; }
-        catch (e) { if (attempt < 4 && /nonce/i.test(reason(e))) { log('nonce taken, retrying: ' + reason(e)); await new Promise((r) => setTimeout(r, 400 * attempt)); continue; } throw e; }
+      try { await T(contract[fn].staticCall(...args), 'simulation'); gas = await T(contract[fn].estimateGas(...args), 'gas estimate'); }
+      catch (e) {
+        if (e && e.code === 'CALL_EXCEPTION') throw new Refusal(400, 'Refused before sending (the chain would reject it): ' + reason(e));
+        throw nodeErr(e, 'simulation');   // node error, timeout, 429: not the client's fault, nothing sent
       }
-      const rc = await tx.wait();
-      if (!rc || rc.status !== 1) throw new Refusal(502, 'The transaction failed on-chain: ' + tx.hash);
-      log(`relayed ${fn} ${tx.hash} gas ${rc.gasUsed}`);
-      return { tx: tx.hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString() };
+      markSent();
+      const txReq = { ...(await contract[fn].populateTransaction(...args)), gasLimit: gas + gas / 5n };
+      const canSign = !!wallet.signingKey;   // an ethers.Wallet: sign first, so the hash is known before broadcasting
+      let hash = null, sentTx = null;
+      // "nonce has already been used" / "nonce too low": the node's count lagged behind our last transaction; the
+      // transaction was rejected, nothing was sent, so sending again with a fresh nonce is safe (up to three retries).
+      for (let attempt = 1; ; attempt++) {
+        try {
+          // never below the node's count (a transaction sent from this key elsewhere) nor below our own last one (the
+          // node's 'pending' count can lag right after a send)
+          const nodeCount = await T(wallet.provider.getTransactionCount(wallet.address, 'pending'), 'nonce');
+          const req = { ...txReq, nonce: Math.max(nodeCount, nextNonce ?? 0) };
+          if (canSign) {
+            const signed = await wallet.signTransaction(await T(wallet.populateTransaction(req), 'fees'));
+            hash = ethers.keccak256(signed);
+            try { await T(wallet.provider.broadcastTransaction(signed), 'sending'); }
+            catch (e) {
+              if (isNonceErr(e)) throw e;
+              // the answer may have been lost after the node accepted it: look the hash up before giving up
+              await new Promise((r) => setTimeout(r, 1000));
+              const known = await T(wallet.provider.getTransaction(hash), 'lookup').catch(() => null);
+              if (!known) throw e;
+              log('send answer lost, but the node has ' + hash);
+            }
+          } else { sentTx = await T(wallet.sendTransaction(req), 'sending'); hash = sentTx.hash; }
+          nextNonce = req.nonce + 1;
+          break;
+        } catch (e) {
+          nextNonce = null;
+          if (attempt < 4 && isNonceErr(e)) { log('nonce taken, retrying: ' + reason(e)); await new Promise((r) => setTimeout(r, 400 * attempt)); continue; }
+          log('error: ' + reason(e));
+          throw new Refusal(502, 'The relayer could not send the transaction. Try again, or send it from your own wallet.');
+        }
+      }
+      for (const n of nullifiers) inFlight.set(n, { tx: hash, until: Date.now() + 15 * 60e3 });
+      let rc;
+      try { rc = await wallet.provider.waitForTransaction(hash, 1, waitTimeoutMs); }
+      catch (e) {
+        // not mined in time: answer with the hash and free the queue; the next send takes its nonce from the node again
+        nextNonce = null;
+        log('not mined within ' + waitTimeoutMs / 1000 + ' s: ' + hash);
+        return { tx: hash, pending: true, message: 'Sent, but not yet in a block. Check this transaction on the explorer; do not send the same note again.' };
+      }
+      for (const n of nullifiers) inFlight.delete(n);
+      if (!rc || rc.status !== 1) throw new Refusal(502, 'The transaction failed on-chain: ' + hash);
+      log(`relayed ${fn} ${hash} gas ${rc.gasUsed}`);
+      return { tx: hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString() };
     }).finally(() => { waiting--; });
   }
 
@@ -183,7 +247,7 @@ function createRelayer(o) {
   return { handle, status, relay };
 }
 
-module.exports = { createRelayer, Refusal };
+module.exports = { createRelayer, Refusal, NodeTrouble };
 
 // ---------------- service and admin ----------------
 if (require.main === module) {
@@ -194,7 +258,7 @@ if (require.main === module) {
   const LATHEON_JSON = env('LATHEON_JSON', '/latheon-out/latheon-deployments.json');
   const log = (...a) => console.log(new Date().toISOString(), ...a);
   const die = (m) => { console.error('ERROR: ' + m); process.exit(1); };
-  const provider = new ethers.JsonRpcProvider(L3_RPC, undefined, { staticNetwork: true });
+  const provider = new ethers.JsonRpcProvider(L3_RPC, undefined, { staticNetwork: true, cacheTimeout: -1 });
   const [cmd, arg] = process.argv.slice(2);
 
   (async () => {
@@ -225,10 +289,15 @@ if (require.main === module) {
     const dep = JSON.parse(fs.readFileSync(LATHEON_JSON, 'utf8'));
     // V6 and V7 share the fee-bearing interface (withdraw + relayer + fee; 7-field withdrawMany items), so the relayer
     // treats them the same; the v6Pools/v6Routers buckets below mean "fee-bearing pools", V6 and V7 alike.
-    const isV6 = (x) => ['v6-native', 'v6', 'v7-native', 'v7'].includes(x.version);
+    // Only the current generation (V7) is relayed. Older pools carry the pre-V7 circuit flaw (withdrawal without a
+    // deposit, THREAT-MODEL 8.0); relaying them would pay gas for anyone draining them. Their notes are withdrawn from
+    // the user's own wallet. RELAY_VERSIONS can widen this (e.g. "v6-native,v6,v7-native,v7") only on purpose.
+    const ok = new Set(env('RELAY_VERSIONS', 'v7-native,v7').split(',').map((x) => x.trim()));
+    const cur = (x) => ok.has(x.version) && !x.frozen && !x.forgeable;
     const relayer = createRelayer({ ethers, wallet, log,
-      pools: dep.pools.filter((p) => !isV6(p)).map((p) => p.address), routers: (dep.routers || []).filter((r) => !isV6(r)).map((r) => r.address),
-      v6Pools: dep.pools.filter(isV6).map((p) => p.address), v6Routers: (dep.routers || []).filter(isV6).map((r) => r.address),
+      pools: [], routers: [],
+      v6Pools: dep.pools.filter(cur).map((p) => p.address), v6Routers: (dep.routers || []).filter(cur).map((r) => r.address),
+      retiredPools: dep.pools.filter((p) => !cur(p)).map((p) => p.address), retiredRouters: (dep.routers || []).filter((r) => !cur(r)).map((r) => r.address),
       perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), failPerIpHour: Number(env('RELAY_FAIL_PER_IP_HOUR', '20')), maxQueue: Number(env('RELAY_MAX_QUEUE', '30')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
       minFee: ethers.parseEther(env('RELAY_MIN_FEE', '0')), exemptIps: env('RELAY_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean) });
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '600' };
