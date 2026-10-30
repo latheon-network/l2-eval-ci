@@ -1,6 +1,7 @@
 'use strict';
 /*
- * Load and anonymity test of the Latheon test chain (V7 pools and router by default; LOADTEST_GEN=v6 for the V6 set). Testnet only.
+ * Load and anonymity test of the Latheon test chain (V7 pools and router by default; LOADTEST_GEN=v6 for the V6 set, whose
+ * deposits are refused unless LOADTEST_ALLOW_PRE_V7=1, because pools before V7 are forgeable and frozen). Testnet only.
  *
  * Many wallets use the chain over a day the way people would: faucet claims, deposits into fixed pools and through the
  * router (exact amounts and rounded ones), withdrawals to fresh addresses (all at once, in parts, note by note), through
@@ -257,6 +258,8 @@ async function act(s, P, c, master, wal, notesOf) {
   if (s.kind === 'bridge-in') return bridgeIn(s, P, c, master, w);
   if (s.kind === 'bridge-out') return bridgeOut(s, P, c, me);
   if (s.kind === 'pool-deposit' || s.kind === 'router-deposit') {
+    // Pools before V7 are forgeable (Latheon THREAT-MODEL 8.0) and frozen for deposits: an old V6 plan must not put new funds there.
+    if (c.gen !== 'v7' && process.env.LOADTEST_ALLOW_PRE_V7 !== '1') throw new Error('deposit into the pre-V7 (' + c.gen.toUpperCase() + ') pools refused: they are forgeable and frozen; make a new plan (V7), or set LOADTEST_ALLOW_PRE_V7=1 on a throwaway local chain');
     const amount = BigInt(s.amount);
     const counts = s.kind === 'router-deposit' ? split(amount) : DENOMS.map((d) => (d === amount ? 1 : 0));
     const notes = [];
