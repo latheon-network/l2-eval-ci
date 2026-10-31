@@ -129,7 +129,27 @@ function ctx() {
 // Withdrawal recipients are fresh addresses whose keys can be re-derived from the master key (which never leaves the
 // server), so the test LTH can be swept back after the analysis instead of being stranded. An observer cannot tell.
 const recipientWallet = (stepId, k, p) => new ethers.Wallet(ethers.keccak256(ethers.toUtf8Bytes(fs.readFileSync(MASTER, 'utf8').trim() + ':recipient:' + stepId + ':' + k)), p);
-const masterWallet = (p) => new ethers.NonceManager(new ethers.Wallet(fs.readFileSync(MASTER, 'utf8').trim(), p));
+// The master wallet funds many test wallets at once. Its transactions go out one at a time, in nonce order, with the
+// nonce taken as max(node's pending count, our next nonce): parallel sends with a shared nonce counter reached the
+// node out of order in a burst and one refused send left a gap that failed every later one (stress test 31.10.2026).
+function masterWallet(p) {
+  const w = new ethers.Wallet(fs.readFileSync(MASTER, 'utf8').trim(), p);
+  let chain = Promise.resolve(), next = -1;
+  const isNonceErr = (e) => /nonce|replacement|already known|could not coalesce/i.test(String((e && (e.shortMessage || e.message)) || e) + ' ' + JSON.stringify((e && (e.info || e.error)) || '').slice(0, 500));
+  const send = (tx) => {
+    const run = chain.then(async () => {
+      for (let a = 0; ; a++) {
+        const pending = await retry(() => p.getTransactionCount(w.address, 'pending'), 'master nonce');
+        const nonce = Math.max(pending, next);
+        try { const r = await w.sendTransaction({ ...tx, nonce }); next = nonce + 1; return r; }
+        catch (e) { if (a >= 4 || !isNonceErr(e)) throw e; next = -1; await sleep(500 * (a + 1)); }
+      }
+    });
+    chain = run.catch(() => {});
+    return run;
+  };
+  return { address: w.address, provider: p, signer: w, sendTransaction: send, getAddress: async () => w.address, reset: () => { next = -1; } };
+}
 
 async function fund() {
   const P = loadJson(PLAN, null); if (!P) die('plan first');
@@ -216,7 +236,6 @@ async function run() {
       rec.ok = true;
     } catch (e) {
       rec.ok = false; rec.error = String((e && (e.shortMessage || e.message)) || e).slice(0, 200); rec.status = e && e.status;
-      if (/nonce/i.test(rec.error) && master.reset) master.reset();   // a nonce mix-up on the shared master wallet: resync
     }
     journal(rec);
     log(`${rec.ok ? 'ok  ' : 'FAIL'} ${s.id} ${s.kind}${rec.tx ? ' ' + rec.tx : ''}${rec.error ? ' — ' + rec.error : ''}`);
@@ -243,12 +262,14 @@ async function run() {
 async function act(s, P, c, master, wal, notesOf) {
   const w = P.wallets[s.w], me = wal(s.w);
   if (s.kind === 'faucet') {
-    const r = await post(FAUCET_URL + '/claim', { address: w.address });
-    await retry(() => c.provider.waitForTransaction(r.txHash), 'faucet tx');
+    let r = null;
+    try { r = await post(FAUCET_URL + '/claim', { address: w.address }); }
+    catch (e) { if (e.status !== 429 || !/address already received/i.test(e.message)) throw e; }   // a retried step: the claim went through the first time
+    if (r) await retry(() => c.provider.waitForTransaction(r.txHash), 'faucet tx');
     const top = await c.provider.getBalance(w.address);   // the faucet gives 100; top up the rest of what the deposits need
     const need = P.steps.filter((x) => x.w === s.w && /deposit/.test(x.kind)).reduce((a, x) => a + BigInt(x.amount), 0n) * E18 + 3n * E18;
     if (top < need) await (await master.sendTransaction({ to: w.address, value: need - top })).wait();
-    return { tx: r.txHash, source: 'faucet' };
+    return { tx: r ? r.txHash : undefined, source: r ? 'faucet' : 'faucet (claimed on an earlier try)' };
   }
   if (s.kind === 'fund') {
     const need = P.steps.filter((x) => x.w === s.w && /deposit/.test(x.kind)).reduce((a, x) => a + BigInt(x.amount), 0n) * E18 + 3n * E18;
