@@ -59,7 +59,11 @@ function ctx() {
   const pools = dep.pools.filter((p) => p.version === 'v7-native');
   if (pools.length !== 4) die('no V7 set in ' + LATHEON_JSON);
   const pool = pools.find((p) => Number(p.amount) === 1); if (!pool) die('no V7 1 LTH pool in ' + LATHEON_JSON);
-  const provider = new ethers.JsonRpcProvider(L3_RPC, undefined, { staticNetwork: true, cacheTimeout: -1 });
+  // One HTTP request per call, as separate users would send them. ethers batches calls by default, and a Nitro node answers
+  // eth_sendRawTransaction only once the transaction is sequenced, so a batch of sends goes in one by one: with batching the
+  // test measured its own client (one transfer or deposit per block, 31.10.2026), not the chain. --batch restores it.
+  const batch = process.argv.includes('--batch');
+  const provider = new ethers.JsonRpcProvider(L3_RPC, undefined, { staticNetwork: true, cacheTimeout: -1, ...(batch ? {} : { batchMaxCount: 1 }) });
   return { provider, pool, poolIndex: pools.indexOf(pool), abi: ART.contracts.PoolV7Native.abi };
 }
 
