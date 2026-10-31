@@ -52,8 +52,9 @@ function tree(leaves, zeros) {
 }
 
 // V5 (withdraw_v3, 8 levels) by default; v6: true proves with withdraw_v4 (20 levels) and binds relayer and fee too.
-async function withdrawProof({ sk, vk, leaf, leaves, zeros, recipient, v6 = false, v7 = false, relayer = '0x0000000000000000000000000000000000000000', fee = 0n }) {
-  const t = tree(leaves, zeros);
+// prebuilt: a tree(leaves, zeros) made once, for many proofs against the same root (the relayer burst test)
+async function withdrawProof({ sk, vk, leaf, leaves, zeros, recipient, v6 = false, v7 = false, relayer = '0x0000000000000000000000000000000000000000', fee = 0n, prebuilt = null }) {
+  const t = prebuilt || tree(leaves, zeros);
   const { el, idx } = t.path(leaf);
   const input = { root: t.root.toString(), nullifierHash: nullifierOf(sk).toString(), recipient: BigInt(recipient).toString(),
     spendKey: sk.toString(), viewKey: vk.toString(), pathElements: el, pathIndices: idx };

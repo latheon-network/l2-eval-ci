@@ -1,6 +1,7 @@
 'use strict';
 /*
- * flood.js on a local ganache chain: deploy V5 (Poseidon) + V7, fund, run two short stages, report, sweep.
+ * flood.js on a local ganache chain: deploy V5 (Poseidon) + V7, fund, run two short stages, then the relayer burst
+ * (proofs in advance, a real relayer), report, sweep.
  *   LATHEON_REPO=/path/to/Latheon node loadtest/flood-local-test.js      (after npm ci in latheon/)
  */
 const os = require('os');
@@ -9,6 +10,8 @@ const path = require('path');
 const { spawn } = require('child_process');
 const T = path.join(__dirname, '..');
 const ganache = require(path.join(T, 'latheon', 'node_modules', 'ganache'));
+const { ethers } = require(path.join(T, 'latheon', 'node_modules', 'ethers'));
+const RPORT = 18091;
 
 const PORT = 8549, CHAIN_ID = 412346;
 const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'; // public ganache/Hardhat test key, holds nothing
@@ -41,6 +44,18 @@ const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
     check(`deposits journaled with their keys (${dep.length})`, dep.length > 4 && dep.every((e) => e.sk && e.vk && e.commitment && e.tx));
     check('two stage summaries, no failed sends', st.length === 2 && st.every((s) => s.failed === 0 && s.ok > 0));
     check('commitments unique', new Set(dep.map((e) => e.commitment)).size === dep.length);
+    // a real relayer (V7 only, as on the server), funded from the test key
+    const prov = new ethers.JsonRpcProvider(rpc, undefined, { cacheTimeout: -1 });
+    const rk = ethers.Wallet.createRandom(); fs.mkdirSync(path.join(tmp, 'rel'), { recursive: true }); fs.writeFileSync(path.join(tmp, 'rel', 'relayer.key'), rk.privateKey);
+    await (await new ethers.Wallet(KEY, prov).sendTransaction({ to: rk.address, value: ethers.parseEther('100') })).wait();
+    const rel = spawn(process.execPath, [path.join(T, 'relayer', 'relayer.js'), 'serve'], { env: { ...envs, PORT: String(RPORT), RELAYER_KEY_FILE: path.join(tmp, 'rel', 'relayer.key'), LATHEON_JSON: fl.LATHEON_JSON, RELAY_EXEMPT_IPS: '127.0.0.1,::1,::ffff:127.0.0.1' }, stdio: ['ignore', 'ignore', 'inherit'] });
+    await new Promise((r) => setTimeout(r, 2500));
+    check('prove: 6 proofs in advance', (await run(F, ['prove', '--count', '6'], fl)).status === 0 && fs.readFileSync(path.join(fl.STATE_DIR, 'proofs.jsonl'), 'utf8').trim().split('\n').length === 6);
+    const b = await run(F, ['burst', '--stages', '2,4', '--per-stage', '3', '--relayer', `http://127.0.0.1:${RPORT}/relay/api`], fl);
+    rel.kill();
+    const BJ = fs.readFileSync(path.join(fl.STATE_DIR, 'journal.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+    const bs = BJ.filter((e) => e.kind === 'burst-stage');
+    check('burst: two stages, every withdrawal relayed and confirmed', b.status === 0 && bs.length === 2 && bs.every((x) => (x.byStatus['200'] || 0) === 3 && x.onChain === 3));
     const rep = await run(F, ['report'], fl);
     check('report has no key', rep.status === 0 && !dep.some((e) => rep.out.includes(e.sk)));
     check('sweep', (await run(F, ['sweep'], fl)).status === 0);

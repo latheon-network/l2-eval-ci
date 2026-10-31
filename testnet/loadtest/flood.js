@@ -9,7 +9,14 @@
  *                       funds the wallets from the master (once), then runs each stage for --minutes; a stage with more
  *                       than 20% failed sends or a median confirmation over 30 s ends the run (that is the limit found)
  *   node flood.js report                               per-stage table -> out-flood/flood-report.md (no keys)
- *   node flood.js sweep                                LTH left on the flood wallets back to the master
+ *   node flood.js sweep                                LTH left on the flood wallets and burst recipients back to the master
+ *
+ * Relayer burst (after a flood run, while nobody else deposits into the pool, so its root stays put):
+ *   node flood.js prove [--count 400]                  withdraw_v5 proofs for flood notes, made in advance against today's
+ *                                                      root, to fresh recipients derived from the master key (no relayer fee)
+ *   node flood.js burst [--stages 8,16,32] [--per-stage 120] [--relayer URL]
+ *                       sends the ready proofs to the relayer, that many requests at once per stage; per stage: answers by
+ *                       HTTP status, withdrawals per minute, answer time, and how many of the returned transactions are on chain
  *
  * Every note's keys are derived from the master key, and every deposit is journaled privately (secret-flood/), so the
  * notes can be withdrawn later (the relayer burst test uses them) instead of staying in the pool for good.
@@ -18,7 +25,7 @@
 const fs = require('fs');
 const path = require('path');
 const { ethers, E18, ART, env, log, die, retry, loadJson, saveJson, sleep, getKey } = require('../latheon/lib');
-const { commitmentOf } = require('../latheon/zk');
+const { commitmentOf, tree, withdrawProof } = require('../latheon/zk');
 
 const HERE = __dirname;
 const STATE = env('STATE_DIR', path.join(HERE, 'secret-flood'));
@@ -26,7 +33,8 @@ const OUT = env('OUT_DIR', path.join(HERE, 'out-flood'));
 const L3_RPC = env('L3_RPC', 'http://127.0.0.1:8449');
 const LATHEON_JSON = env('LATHEON_JSON', path.join(HERE, '..', 'latheon', 'out', 'latheon-deployments.json'));
 const EXPLORER_API = env('EXPLORER_API', 'https://explorer.testnet.latheon.xyz/api/v2/main-page/blocks');
-const MASTER = path.join(STATE, 'master.key'), JOURNAL = path.join(STATE, 'journal.jsonl'), FUNDED = path.join(STATE, 'funded.json');
+const MASTER = path.join(STATE, 'master.key'), JOURNAL = path.join(STATE, 'journal.jsonl'), FUNDED = path.join(STATE, 'funded.json'), PROOFS = path.join(STATE, 'proofs.jsonl');
+const RELAYER_URL = env('RELAYER_URL', 'https://explorer.testnet.latheon.xyz/relay/api');
 const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
 const arg = (name, d) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : d; };
 let stopping = false;
@@ -144,26 +152,97 @@ async function run() {
 }
 
 function report() {
-  const S = readJournal().filter((e) => e.kind === 'stage');
-  if (!S.length) die('no stage finished yet');
+  const S = readJournal().filter((e) => e.kind === 'stage'), B = readJournal().filter((e) => e.kind === 'burst-stage');
+  if (!S.length && !B.length) die('no stage finished yet');
   const deposits = readJournal().filter((e) => e.kind === 'deposit').length;
   const rows = S.map((s) => `| ${s.stage} | ${s.minutes} | ${s.ok} | ${s.failed} | ${s.perMinute} | ${s.medianMs} | ${s.p95Ms} | ${s.explorerLagMedianBlocks} / ${s.explorerLagMaxBlocks} | ${Object.entries(s.errors).map(([k, v]) => v + '× ' + k.replace(/\|/g, '/')).join('; ') || '—'} |`);
   const md = ['# Latheon throughput test without proofs', '', `Generated ${new Date().toISOString()}. Deposits into the V7 1 LTH pool from many wallets at once; ${deposits} deposits in total. Testnet only; the load came from the same server.`, '',
     '| Wallets at once | Minutes | Confirmed | Failed | Deposits/min | Confirmation median, ms | p95, ms | Explorer behind (median / max blocks) | Errors |',
-    '|---|---|---|---|---|---|---|---|---|', ...rows, ''].join('\n');
+    '|---|---|---|---|---|---|---|---|---|', ...rows, '',
+    ...(B.length ? ['## Relayer burst (proofs made in advance)', '', '| Requests at once | Minutes | Requests | Answers by HTTP status | Relayed/min | Answer median, ms | p95, ms | Confirmed on chain |', '|---|---|---|---|---|---|---|---|',
+      ...B.map((b) => `| ${b.stage} | ${b.minutes} | ${b.requests} | ${Object.entries(b.byStatus).map(([k, v]) => k + ': ' + v).join(', ')} | ${b.perMinute} | ${b.medianMs} | ${b.p95Ms} | ${b.onChain} |`), ''] : [])].join('\n');
   fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, 'flood-report.md'), md); console.log(md);
 }
 
 async function sweep() {
   const c = ctx(); const m = new ethers.Wallet(masterKey()).address; const done = loadJson(FUNDED, []);
   const fd = await c.provider.getFeeData(); const price = (fd.maxFeePerGas || fd.gasPrice) * 2n; let total = 0n;
-  for (const i of done) {
-    const w = new ethers.Wallet(walletKey(i), c.provider); const bal = await retry(() => c.provider.getBalance(w.address), 'balance'); if (bal === 0n) continue;
+  const keys = [...done.map((i) => walletKey(i)), ...readJournal().filter((e) => e.kind === 'burst' && e.status === 200).map((e) => recipientOf(e.commitment).privateKey)];
+  for (const key of keys) {
+    const w = new ethers.Wallet(key, c.provider); const bal = await retry(() => c.provider.getBalance(w.address), 'balance'); if (bal === 0n) continue;
     const gas = await retry(() => c.provider.estimateGas({ from: w.address, to: m, value: 1n }), 'estimate'); const value = bal - gas * 2n * price; if (value <= 0n) continue;
     await (await w.sendTransaction({ to: m, value, gasLimit: gas * 2n, maxFeePerGas: price, maxPriorityFeePerGas: 0n })).wait(); total += value;
   }
   log(`Swept ${ethers.formatEther(total)} LTH from the flood wallets back to the master ${m}.`);
 }
 
+// ------------------------------------------------------------------ relayer burst
+const readProofs = () => (fs.existsSync(PROOFS) ? fs.readFileSync(PROOFS, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
+const recipientOf = (commitment) => new ethers.Wallet(ethers.toBeHex(derive('recipient:' + commitment) % (FIELD - 1n) + 1n, 32));
+
+async function prove() {
+  const count = Number(arg('count', 400));
+  const c = ctx(); const pool = new ethers.Contract(c.pool.address, c.abi, c.provider);
+  const have = new Set(readProofs().map((x) => x.commitment));
+  const used = new Set(readJournal().filter((e) => e.kind === 'burst' && e.status === 200).map((e) => e.commitment));
+  const notes = readJournal().filter((e) => e.kind === 'deposit' && !have.has(e.commitment) && !used.has(e.commitment)).slice(0, Math.max(0, count - have.size));
+  if (!notes.length) return log(`${have.size} proofs already made. Next: node flood.js burst`);
+  const head = await c.provider.getBlockNumber(); const leaves = [];
+  for (let from = c.pool.deployBlock || 0; from <= head; from += 50000) {
+    const logs = await retry(() => pool.queryFilter('Deposit', from, Math.min(head, from + 49999)), 'deposit logs');
+    for (const l of logs) leaves[Number(l.args.leafIndex)] = l.args.commitment;
+  }
+  if (leaves.some((x) => x === undefined) || BigInt(leaves.length) !== (await pool.nextIndex())) die('incomplete deposit scan of the 1 LTH pool');
+  const zeros = []; for (let l = 0; l < 20; l++) zeros.push(await pool.zeros(l));
+  const t = tree(leaves, zeros), idx = new Map(leaves.map((x, i) => [x.toString(), i]));
+  if (!(await pool.isKnownRoot(t.root))) die('the computed root is not known to the pool');
+  log(`Tree of ${leaves.length} deposits, root known to the pool. Making ${notes.length} proofs...`);
+  let n = 0; const t0 = Date.now();
+  for (const e of notes) {
+    if (stopping) break;
+    const leaf = idx.get(e.commitment); if (leaf === undefined) continue;
+    const to = recipientOf(e.commitment).address;
+    const p = await withdrawProof({ sk: BigInt(e.sk), vk: BigInt(e.vk), leaf, leaves, zeros, recipient: to, v7: true, prebuilt: t });
+    fs.appendFileSync(PROOFS, JSON.stringify({ commitment: e.commitment, recipient: to, pA: p.pA, pB: p.pB, pC: p.pC, root: p.root, nullifierHash: p.nullifierHash }) + '\n', { mode: 0o600 });
+    if (++n % 50 === 0) log(`${n} proofs (${((Date.now() - t0) / n / 1000).toFixed(1)} s each)`);
+  }
+  log(`${n} proofs made, ${have.size + n} ready. Next: node flood.js burst`);
+}
+
+async function burst() {
+  const stages = String(arg('stages', '8,16,32')).split(',').map(Number).filter((x) => x > 0), per = Number(arg('per-stage', 120));
+  const url = arg('relayer', RELAYER_URL);
+  const c = ctx();
+  const sent = new Set(readJournal().filter((e) => e.kind === 'burst').map((e) => e.commitment));
+  const queue = readProofs().filter((x) => !sent.has(x.commitment));
+  log(`${queue.length} proofs ready; relayer ${url}.`);
+  for (const conc of stages) {
+    if (stopping || !queue.length) break;
+    const batch = queue.splice(0, per), st = { byStatus: {}, ms: [], txs: [] }, t0 = Date.now();
+    log(`Stage: ${conc} requests at once, ${batch.length} withdrawals.`);
+    const worker = async () => {
+      while (!stopping && batch.length) {
+        const x = batch.shift(); const s0 = Date.now(); let status = 0, j = {};
+        try {
+          const r = await fetch(url + '/withdraw', { method: 'POST', headers: { 'content-type': 'application/json' }, signal: AbortSignal.timeout(180e3),
+            body: JSON.stringify({ pool: c.pool.address, pA: x.pA, pB: x.pB, pC: x.pC, root: x.root, nullifierHash: x.nullifierHash, recipient: x.recipient, relayer: ethers.ZeroAddress, fee: '0' }) });
+          status = r.status; try { j = await r.json(); } catch (e) { /* empty */ }
+        } catch (e) { status = 'net:' + String(e.name || e.message).slice(0, 30); }
+        const ms = Date.now() - s0; st.byStatus[status] = (st.byStatus[status] || 0) + 1;
+        if (status === 200) { st.ms.push(ms); if (j.tx) st.txs.push(j.tx); }
+        journal({ kind: 'burst', stage: conc, commitment: x.commitment, status, ms, tx: j.tx, pending: !!j.pending, error: j.error ? String(j.error).slice(0, 100) : undefined });
+      }
+    };
+    await Promise.all(Array.from({ length: conc }, worker));
+    const mins = (Date.now() - t0) / 60e3;
+    let onChain = 0; for (const h of st.txs) { const rc = await retry(() => c.provider.waitForTransaction(h, 1, 120e3), 'receipt').catch(() => null); if (rc && rc.status === 1) onChain++; }
+    const summary = { kind: 'burst-stage', stage: conc, minutes: +mins.toFixed(2), requests: Object.values(st.byStatus).reduce((a, b) => a + b, 0), byStatus: st.byStatus,
+      perMinute: +((st.byStatus[200] || 0) / mins).toFixed(1), medianMs: pct(st.ms, 0.5), p95Ms: pct(st.ms, 0.95), onChain };
+    journal(summary);
+    log(`Stage ${conc}: ${JSON.stringify(st.byStatus)}, ${summary.perMinute} relayed withdrawals/min, answer median ${summary.medianMs} ms, p95 ${summary.p95Ms} ms, ${onChain} of ${st.txs.length} transactions confirmed on chain.`);
+  }
+  log('Burst finished. Next: node flood.js report');
+}
+
 const cmd = process.argv[2];
-Promise.resolve().then(() => ({ fund, run, report, sweep }[cmd] || (() => die('usage: node flood.js fund|run|report|sweep')))()).catch((e) => { console.error(e); process.exit(1); });
+Promise.resolve().then(() => ({ fund, run, report, sweep, prove, burst }[cmd] || (() => die('usage: node flood.js fund|run|report|sweep|prove|burst')))()).catch((e) => { console.error(e); process.exit(1); });
