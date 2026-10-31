@@ -1,3 +1,6 @@
 node_modules/
 secret/
 out/
+# every saved run: secret-v6-run1, secret-stress1, secret-flood ... (keys inside) and its reports
+secret*/
+out*/
