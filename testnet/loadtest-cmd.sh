@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Load and anonymity test on the test chain (testnet only): ./loadtest-cmd.sh plan|fund|start|status|stop|logs|hashes|analyze|sweep
-# Throughput test without proofs: ./loadtest-cmd.sh flood-fund|flood-start|flood-logs|flood-stop|flood-report|flood-sweep  (see loadtest/flood.js)
+# Throughput test without proofs: ./loadtest-cmd.sh flood-fund|flood-start|flood-logs|flood-stop|flood-report|flood-sweep, then the relayer burst: flood-prove|flood-burst  (see loadtest/flood.js)
 #   plan     [--wallets 200] [--bridge 25] [--hours 24]   writes loadtest/secret/plan.json (wallet keys inside: private)
 #   fund     sends LTH (and, for bridge wallets, ETH + test LTH on Arbitrum Sepolia) to the test's master wallet;
 #            asks for the deployer key without echo; the key goes only into this throwaway container
@@ -35,7 +35,7 @@ case "$cmd" in
       sh -c 'cd /t/latheon && npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && cd /t/loadtest && exec node loadtest.js run'
     echo "started; watch with: ./loadtest-cmd.sh logs" ;;
   logs) docker logs --tail 40 -f latheon-loadtest ;;
-  flood-fund|flood-report|flood-sweep)
+  flood-fund|flood-report|flood-sweep|flood-prove|flood-burst)
     mkdir -p loadtest/secret-flood && chmod 700 loadtest/secret-flood
     if [ "$cmd" = flood-fund ] && [ -z "${DEPLOYER_KEY:-}" ]; then read -r -s -p "Deployer private key (input hidden): " DEPLOYER_KEY; echo; export DEPLOYER_KEY; fi
     docker run --rm -i --network host -u 0 -e DEPLOYER_KEY -e L3_RPC=http://127.0.0.1:8449 -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json \
@@ -51,5 +51,5 @@ case "$cmd" in
   flood-logs) docker logs --tail 40 -f latheon-flood ;;
   flood-stop) docker stop -t 120 latheon-flood >/dev/null && echo 'stopped' ;;
   stop) docker stop -t 300 latheon-loadtest >/dev/null && docker rm latheon-loadtest >/dev/null && echo 'stopped after the current step' ;;   # SIGTERM: the step in progress finishes first
-  *) echo "usage: $0 plan|fund|start|status|logs|stop|hashes|analyze|sweep|flood-fund|flood-start|flood-logs|flood-stop|flood-report|flood-sweep"; exit 2 ;;
+  *) echo "usage: $0 plan|fund|start|status|logs|stop|hashes|analyze|sweep|flood-fund|flood-start|flood-logs|flood-stop|flood-report|flood-sweep|flood-prove|flood-burst"; exit 2 ;;
 esac
