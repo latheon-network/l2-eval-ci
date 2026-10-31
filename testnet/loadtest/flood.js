@@ -5,7 +5,9 @@
  * load generator stays light and what we measure is the chain itself: the sequencer and node, the RPC, and the explorer.
  *
  *   node flood.js fund  [--wallets 64] [--per 700]     deployer -> the flood's master wallet (deployer key asked without echo)
- *   node flood.js run   [--stages 8,16,32,64] [--minutes 5] [--wallets 64] [--per 700]
+ *   node flood.js run   [--stages 8,16,32,64] [--minutes 5] [--wallets 64] [--per 700] [--kind deposit|transfer]
+ *                       --kind transfer sends plain 1-wei transfers instead of deposits: the usual "transactions per second"
+ *                       yardstick, to set beside the deposits
  *                       funds the wallets from the master (once), then runs each stage for --minutes; a stage with more
  *                       than 20% failed sends or a median confirmation over 30 s ends the run (that is the limit found)
  *   node flood.js report                               per-stage table -> out-flood/flood-report.md (no keys)
@@ -77,10 +79,9 @@ async function fundWallets(c, n, per) {
   const done = new Set(loadJson(FUNDED, []));
   const master = new ethers.Wallet(masterKey(), c.provider);
   for (let i = 0; i < n; i++) {   // one at a time: a few dozen transfers, and no nonce games on the master
-    if (done.has(i)) continue;
-    const to = new ethers.Wallet(walletKey(i)).address;
+    const to = new ethers.Wallet(walletKey(i)).address;   // balance checked every time: a sweep empties the wallets
     const have = await retry(() => c.provider.getBalance(to), 'balance');
-    if (have < per * E18) await (await master.sendTransaction({ to, value: per * E18 - have })).wait();
+    if (have < per * E18 / 2n) await (await master.sendTransaction({ to, value: per * E18 - have })).wait();
     done.add(i); saveJson(FUNDED, [...done]);
   }
   log(`${done.size} flood wallets hold ${per} LTH each.`);
@@ -94,17 +95,18 @@ async function headOfExplorer() {
 
 async function run() {
   const stages = String(arg('stages', '8,16,32,64')).split(',').map(Number).filter((x) => x > 0);
-  const minutes = Number(arg('minutes', 5)), n = Math.max(Number(arg('wallets', 64)), ...stages), per = BigInt(arg('per', 700));
+  const minutes = Number(arg('minutes', 5)), n = Math.max(Number(arg('wallets', 64)), ...stages), per = BigInt(arg('per', 700)), kind = arg('kind', 'deposit');
+  if (kind !== 'deposit' && kind !== 'transfer') die('--kind must be deposit or transfer');
   const c = ctx();
   await fundWallets(c, n, per);
   const counters = new Map();
   for (const e of readJournal()) if (e.kind === 'deposit') counters.set(e.w, Math.max(counters.get(e.w) || 0, e.k + 1));
-  const value = BigInt(c.pool.amount) * E18;
+  const value = BigInt(c.pool.amount) * E18, sink = new ethers.Wallet(masterKey()).address;
   for (const conc of stages) {
     if (stopping) break;
-    const st = { stage: conc, start: Date.now(), ok: 0, fail: 0, lat: [], errors: {}, lagMax: 0, lagSamples: [] };
+    const st = { stage: conc, start: Date.now(), ok: 0, fail: 0, lat: [], errors: {}, lagMax: 0, lagSamples: [], blocks: new Set(), gas: null };
     const end = st.start + minutes * 60e3;
-    log(`Stage: ${conc} wallets sending at once, ${minutes} min.`);
+    log(`Stage: ${conc} wallets sending ${kind === 'transfer' ? 'transfers' : 'deposits'} at once, ${minutes} min.`);
     const sampler = (async () => {
       while (!stopping && Date.now() < end) {
         const [h, x] = await Promise.all([c.provider.getBlockNumber().catch(() => null), headOfExplorer()]);
@@ -119,6 +121,21 @@ async function run() {
       let k = counters.get(w) || 0;
       while (!stopping && Date.now() < end) {
         if ((await c.provider.getBalance(me.address).catch(() => value * 3n)) < value * 2n) { log(`w${w}: out of LTH`); return; }
+        if (kind === 'transfer') {
+          const t0 = Date.now();
+          try {
+            const tx = await me.sendTransaction({ to: sink, value: 1n, nonce });
+            nonce++;
+            const rc = await tx.wait();
+            st.ok++; st.lat.push(Date.now() - t0); st.blocks.add(rc.blockNumber); if (!st.gas) st.gas = { used: rc.gasUsed.toString(), forL1: (rc.gasUsedForL1 || 0n).toString() };
+          } catch (e) {
+            const m = String((e && (e.shortMessage || e.message)) || e).slice(0, 80);
+            st.fail++; if (!st.errors[m]) log(`w${w}: ${m}`); st.errors[m] = (st.errors[m] || 0) + 1;
+            nonce = await c.provider.getTransactionCount(me.address, 'pending').catch(() => nonce);
+            await sleep(1000);
+          }
+          continue;
+        }
         const note = noteOf(w, k), t0 = Date.now();
         try {
           // gas from an estimate plus a margin: a deposit's cost depends on which tree slots it writes, and other wallets'
@@ -143,9 +160,9 @@ async function run() {
     await sampler;
     st.end = Date.now();
     const mins = (st.end - st.start) / 60e3, med = pct(st.lat, 0.5), p95 = pct(st.lat, 0.95);
-    const summary = { kind: 'stage', stage: conc, minutes: +mins.toFixed(2), ok: st.ok, failed: st.fail, perMinute: +(st.ok / mins).toFixed(1), medianMs: med, p95Ms: p95, explorerLagMaxBlocks: st.lagMax, explorerLagMedianBlocks: pct(st.lagSamples, 0.5), errors: st.errors };
+    const summary = { kind: 'stage', tx: kind, blocks: st.blocks.size || undefined, gas: st.gas || undefined, stage: conc, minutes: +mins.toFixed(2), ok: st.ok, failed: st.fail, perMinute: +(st.ok / mins).toFixed(1), medianMs: med, p95Ms: p95, explorerLagMaxBlocks: st.lagMax, explorerLagMedianBlocks: pct(st.lagSamples, 0.5), errors: st.errors };
     journal(summary);
-    log(`Stage ${conc}: ${st.ok} ok, ${st.fail} failed, ${summary.perMinute} deposits/min, confirmation median ${med} ms, p95 ${p95} ms, explorer behind by up to ${st.lagMax} blocks.`);
+    log(`Stage ${conc} (${kind}): ${st.ok} ok, ${st.fail} failed, ${summary.perMinute} per minute, confirmation median ${med} ms, p95 ${p95} ms, explorer behind by up to ${st.lagMax} blocks.`);
     if (st.fail > 0.2 * (st.ok + st.fail) || (med != null && med > 30e3)) { log('Limit reached: more than 20% failed or the median confirmation is over 30 s. Stopping here.'); break; }
   }
   log('Flood finished. Next: node flood.js report');
@@ -155,10 +172,10 @@ function report() {
   const S = readJournal().filter((e) => e.kind === 'stage'), B = readJournal().filter((e) => e.kind === 'burst-stage');
   if (!S.length && !B.length) die('no stage finished yet');
   const deposits = readJournal().filter((e) => e.kind === 'deposit').length;
-  const rows = S.map((s) => `| ${s.stage} | ${s.minutes} | ${s.ok} | ${s.failed} | ${s.perMinute} | ${s.medianMs} | ${s.p95Ms} | ${s.explorerLagMedianBlocks} / ${s.explorerLagMaxBlocks} | ${Object.entries(s.errors).map(([k, v]) => v + '× ' + k.replace(/\|/g, '/')).join('; ') || '—'} |`);
-  const md = ['# Latheon throughput test without proofs', '', `Generated ${new Date().toISOString()}. Deposits into the V7 1 LTH pool from many wallets at once; ${deposits} deposits in total. Testnet only; the load came from the same server.`, '',
-    '| Wallets at once | Minutes | Confirmed | Failed | Deposits/min | Confirmation median, ms | p95, ms | Explorer behind (median / max blocks) | Errors |',
-    '|---|---|---|---|---|---|---|---|---|', ...rows, '',
+  const rows = S.map((s) => `| ${s.tx || 'deposit'} | ${s.stage} | ${s.minutes} | ${s.ok} | ${s.failed} | ${s.perMinute} | ${s.medianMs} | ${s.p95Ms} | ${s.explorerLagMedianBlocks} / ${s.explorerLagMaxBlocks} | ${Object.entries(s.errors).map(([k, v]) => v + '× ' + k.replace(/\|/g, '/')).join('; ') || '—'} |`);
+  const md = ['# Latheon throughput test without proofs', '', `Generated ${new Date().toISOString()}. Deposits into the V7 1 LTH pool from many wallets at once (${deposits} in total), and plain transfers where the first column says so. Testnet only; the load came from the same server.`, '',
+    '| Transaction | Wallets at once | Minutes | Confirmed | Failed | Per minute | Confirmation median, ms | p95, ms | Explorer behind (median / max blocks) | Errors |',
+    '|---|---|---|---|---|---|---|---|---|---|', ...rows, ...S.filter((s) => s.gas).slice(0, 1).map((s) => `\nOne ${s.tx}: ${s.gas.used} gas, of which ${s.gas.forL1} for parent-chain data; ${s.blocks} blocks in its stage.`), '',
     ...(B.length ? ['## Relayer burst (proofs made in advance)', '', '| Requests at once | Minutes | Requests | Answers by HTTP status | Relayed/min | Answer median, ms | p95, ms | Confirmed on chain |', '|---|---|---|---|---|---|---|---|',
       ...B.map((b) => `| ${b.stage} | ${b.minutes} | ${b.requests} | ${Object.entries(b.byStatus).map(([k, v]) => k + ': ' + v).join(', ')} | ${b.perMinute} | ${b.medianMs} | ${b.p95Ms} | ${b.onChain} |`), ''] : [])].join('\n');
   fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, 'flood-report.md'), md); console.log(md);

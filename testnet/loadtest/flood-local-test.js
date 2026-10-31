@@ -44,6 +44,9 @@ const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
     check(`deposits journaled with their keys (${dep.length})`, dep.length > 4 && dep.every((e) => e.sk && e.vk && e.commitment && e.tx));
     check('two stage summaries, no failed sends', st.length === 2 && st.every((s) => s.failed === 0 && s.ok > 0));
     check('commitments unique', new Set(dep.map((e) => e.commitment)).size === dep.length);
+    check('run: plain transfers, one stage', (await run(F, ['run', '--stages', '3', '--minutes', '0.2', '--wallets', '6', '--per', '30', '--kind', 'transfer'], fl)).status === 0);
+    const ts = fs.readFileSync(path.join(fl.STATE_DIR, 'journal.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l)).filter((e) => e.kind === 'stage' && e.tx === 'transfer');
+    check('transfer stage: confirmed, none failed, gas recorded', ts.length === 1 && ts[0].ok > 0 && ts[0].failed === 0 && ts[0].gas && Number(ts[0].gas.used) >= 21000);
     // a real relayer (V7 only, as on the server), funded from the test key
     const prov = new ethers.JsonRpcProvider(rpc, undefined, { cacheTimeout: -1 });
     const rk = ethers.Wallet.createRandom(); fs.mkdirSync(path.join(tmp, 'rel'), { recursive: true }); fs.writeFileSync(path.join(tmp, 'rel', 'relayer.key'), rk.privateKey);
