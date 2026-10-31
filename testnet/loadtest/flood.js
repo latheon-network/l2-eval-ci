@@ -245,4 +245,4 @@ async function burst() {
 }
 
 const cmd = process.argv[2];
-Promise.resolve().then(() => ({ fund, run, report, sweep, prove, burst }[cmd] || (() => die('usage: node flood.js fund|run|report|sweep|prove|burst')))()).catch((e) => { console.error(e); process.exit(1); });
+Promise.resolve().then(() => ({ fund, run, report, sweep, prove, burst }[cmd] || (() => die('usage: node flood.js fund|run|report|sweep|prove|burst')))()).then(() => process.exit(0), (e) => { console.error(e); process.exit(1); });   // exit explicitly: snarkjs keeps worker threads alive
