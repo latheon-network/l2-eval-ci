@@ -15,7 +15,7 @@ cmd="${1:-}"; shift || true
 mkdir -p loadtest/secret loadtest/out && chmod 700 loadtest/secret
 run() {
   docker run --rm "$@" --network host -u 0 -e LOADTEST_GEN \
-    -e L3_RPC=http://127.0.0.1:8449 -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -e CHAIN_JSON=/t/chain/out/chain.json \
+    -e L3_RPC="${L3_RPC:-http://127.0.0.1:8449}" -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -e CHAIN_JSON=/t/chain/out/chain.json \
     -e RELAYER_URL -e FAUCET_URL -e DEPLOYER_KEY -e CIRCUIT_CACHE=/t/latheon/secret/circuits \
     -v "$PWD:/t" -w /t/loadtest node:22-bookworm-slim \
     sh -c 'cd /t/latheon && npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && cd /t/loadtest && node loadtest.js "$@"' sh "${ARGS[@]}"
@@ -29,7 +29,7 @@ case "$cmd" in
     if [ "$(docker inspect -f '{{.State.Running}}' latheon-loadtest 2>/dev/null)" = "true" ]; then echo "already running; ./loadtest-cmd.sh stop first"; exit 1; fi
     docker rm latheon-loadtest >/dev/null 2>&1 || true
     docker run -d --name latheon-loadtest --restart on-failure:20 --log-opt max-size=50m --log-opt max-file=3 --network host -u 0 \
-      -e L3_RPC=http://127.0.0.1:8449 -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -e CHAIN_JSON=/t/chain/out/chain.json \
+      -e L3_RPC="${L3_RPC:-http://127.0.0.1:8449}" -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -e CHAIN_JSON=/t/chain/out/chain.json \
       -e RELAYER_URL -e FAUCET_URL -e CIRCUIT_CACHE=/t/latheon/secret/circuits \
       -e LOADTEST_RETRY_KINDS -e LOADTEST_CONCURRENCY -v "$PWD:/t" -w /t/loadtest node:22-bookworm-slim \
       sh -c 'cd /t/latheon && npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && cd /t/loadtest && exec node loadtest.js run'
@@ -38,14 +38,14 @@ case "$cmd" in
   flood-fund|flood-report|flood-sweep|flood-prove|flood-burst|flood-give)
     mkdir -p loadtest/secret-flood && chmod 700 loadtest/secret-flood
     if [ "$cmd" = flood-fund ] && [ -z "${DEPLOYER_KEY:-}" ]; then read -r -s -p "Deployer private key (input hidden): " DEPLOYER_KEY; echo; export DEPLOYER_KEY; fi
-    docker run --rm -i --network host -u 0 -e DEPLOYER_KEY -e L3_RPC=http://127.0.0.1:8449 -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json \
+    docker run --rm -i --network host -u 0 -e DEPLOYER_KEY -e L3_RPC="${L3_RPC:-http://127.0.0.1:8449}" -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json \
       -v "$PWD:/t" -w /t/loadtest node:22-bookworm-slim \
       sh -c 'cd /t/latheon && npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && cd /t/loadtest && node flood.js "$@"' sh "${cmd#flood-}" "$@" ;;
   flood-start)
     if [ "$(docker inspect -f '{{.State.Running}}' latheon-flood 2>/dev/null)" = "true" ]; then echo "already running; ./loadtest-cmd.sh flood-stop first"; exit 1; fi
     docker rm latheon-flood >/dev/null 2>&1 || true
     docker run -d --name latheon-flood --log-opt max-size=50m --log-opt max-file=3 --network host -u 0 \
-      -e L3_RPC=http://127.0.0.1:8449 -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -v "$PWD:/t" -w /t/loadtest node:22-bookworm-slim \
+      -e L3_RPC="${L3_RPC:-http://127.0.0.1:8449}" -e LATHEON_JSON=/t/latheon/out/latheon-deployments.json -v "$PWD:/t" -w /t/loadtest node:22-bookworm-slim \
       sh -c 'cd /t/latheon && npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && cd /t/loadtest && exec node flood.js run "$@"' sh "$@" >/dev/null
     echo "started; watch with: ./loadtest-cmd.sh flood-logs" ;;
   flood-logs) docker logs --tail 40 -f latheon-flood ;;
