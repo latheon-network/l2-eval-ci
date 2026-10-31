@@ -197,12 +197,12 @@ async function sweep() {
     for (let a = 0; a < 3; a++) {
       try {
         const bal = await retry(() => c.provider.getBalance(w.address), 'balance'); if (bal === 0n) break;
-        // fresh estimate each try, three times over: on Arbitrum the gas of a transfer includes the data charge, which
-        // moves with the parent chain's price and the chain's base fee (a fixed double of an older estimate fell short)
-        const fd = await c.provider.getFeeData(), price = (fd.maxFeePerGas || fd.gasPrice) * 2n;
-        const gas = (await c.provider.estimateGas({ from: w.address, to: m, value: 1n })) * 3n, value = bal - gas * price;
+        // Leave a small reserve and let ethers estimate gas for the real transaction. On Arbitrum a transfer's gas includes
+        // the data charge, which depends on the transaction's own bytes and the current prices: an estimate made for a
+        // 1-wei transfer was too low for the real one ("intrinsic gas too low", 31.10.2026), even tripled.
+        const reserve = E18 * BigInt(a + 1), value = bal - reserve;
         if (value <= 0n) break;
-        await (await w.sendTransaction({ to: m, value, gasLimit: gas, maxFeePerGas: price, maxPriorityFeePerGas: 0n })).wait(); total += value; n++; break;
+        await (await w.sendTransaction({ to: m, value })).wait(); total += value; n++; break;
       } catch (e) { if (a === 2) { skipped++; log(`${w.address}: ${errMsg(e)}`); } else await sleep(1000); }
     }
   }
