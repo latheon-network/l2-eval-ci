@@ -38,6 +38,8 @@ const EXPLORER_API = env('EXPLORER_API', 'https://explorer.testnet.latheon.xyz/a
 const MASTER = path.join(STATE, 'master.key'), JOURNAL = path.join(STATE, 'journal.jsonl'), FUNDED = path.join(STATE, 'funded.json'), PROOFS = path.join(STATE, 'proofs.jsonl');
 const RELAYER_URL = env('RELAYER_URL', 'https://explorer.testnet.latheon.xyz/relay/api');
 const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+// the node's own message when ethers only says "could not coalesce error"
+const errMsg = (e) => String((e && ((e.error && e.error.message) || (e.info && e.info.error && e.info.error.message) || e.shortMessage || e.message)) || e).slice(0, 120);
 const arg = (name, d) => { const i = process.argv.indexOf('--' + name); return i > 0 ? process.argv[i + 1] : d; };
 let stopping = false;
 process.on('SIGTERM', () => { stopping = true; log('stop requested: finishing the sends in flight'); });
@@ -134,7 +136,7 @@ async function run() {
             st.ok++; st.lat.push(Date.now() - t0); st.blocks.add(rc.blockNumber);
             if (!st.gas) { const raw = await c.provider.send('eth_getTransactionReceipt', [rc.hash]).catch(() => ({})); st.gas = { used: rc.gasUsed.toString(), forL1: raw.gasUsedForL1 ? BigInt(raw.gasUsedForL1).toString() : 'unknown' }; }   // ethers drops Arbitrum's gasUsedForL1
           } catch (e) {
-            const m = String((e && (e.shortMessage || e.message)) || e).slice(0, 80);
+            const m = errMsg(e);
             st.fail++; if (!st.errors[m]) log(`w${w}: ${m}`); st.errors[m] = (st.errors[m] || 0) + 1;
             nonce = await c.provider.getTransactionCount(me.address, 'pending').catch(() => nonce);
             await sleep(1000);
@@ -153,7 +155,7 @@ async function run() {
           journal({ kind: 'deposit', w, k, pool: c.poolIndex, ...note, tx: rc.hash, block: rc.blockNumber, ms: Date.now() - t0, stage: conc });
           k++; counters.set(w, k);
         } catch (e) {
-          const m = String((e && (e.shortMessage || e.message)) || e).slice(0, 80);
+          const m = errMsg(e);
           st.fail++; if (!st.errors[m]) log(`w${w}: ${m}`); st.errors[m] = (st.errors[m] || 0) + 1;
           if (/nonce|replacement|already known|coalesce/i.test(m)) nonce = await c.provider.getTransactionCount(me.address, 'pending').catch(() => nonce);
           if (/already/i.test(m)) k++;   // the commitment went in on an earlier try
@@ -188,14 +190,32 @@ function report() {
 
 async function sweep() {
   const c = ctx(); const m = new ethers.Wallet(masterKey()).address; const done = loadJson(FUNDED, []);
-  const fd = await c.provider.getFeeData(); const price = (fd.maxFeePerGas || fd.gasPrice) * 2n; let total = 0n;
+  let total = 0n, n = 0, skipped = 0;
   const keys = [...done.map((i) => walletKey(i)), ...readJournal().filter((e) => e.kind === 'burst' && e.status === 200).map((e) => recipientOf(e.commitment).privateKey)];
   for (const key of keys) {
-    const w = new ethers.Wallet(key, c.provider); const bal = await retry(() => c.provider.getBalance(w.address), 'balance'); if (bal === 0n) continue;
-    const gas = await retry(() => c.provider.estimateGas({ from: w.address, to: m, value: 1n }), 'estimate'); const value = bal - gas * 2n * price; if (value <= 0n) continue;
-    await (await w.sendTransaction({ to: m, value, gasLimit: gas * 2n, maxFeePerGas: price, maxPriorityFeePerGas: 0n })).wait(); total += value;
+    const w = new ethers.Wallet(key, c.provider);
+    for (let a = 0; a < 3; a++) {
+      try {
+        const bal = await retry(() => c.provider.getBalance(w.address), 'balance'); if (bal === 0n) break;
+        // fresh estimate each try, three times over: on Arbitrum the gas of a transfer includes the data charge, which
+        // moves with the parent chain's price and the chain's base fee (a fixed double of an older estimate fell short)
+        const fd = await c.provider.getFeeData(), price = (fd.maxFeePerGas || fd.gasPrice) * 2n;
+        const gas = (await c.provider.estimateGas({ from: w.address, to: m, value: 1n })) * 3n, value = bal - gas * price;
+        if (value <= 0n) break;
+        await (await w.sendTransaction({ to: m, value, gasLimit: gas, maxFeePerGas: price, maxPriorityFeePerGas: 0n })).wait(); total += value; n++; break;
+      } catch (e) { if (a === 2) { skipped++; log(`${w.address}: ${errMsg(e)}`); } else await sleep(1000); }
+    }
   }
-  log(`Swept ${ethers.formatEther(total)} LTH from the flood wallets back to the master ${m}.`);
+  log(`Swept ${ethers.formatEther(total)} LTH from ${n} addresses back to the master ${m}${skipped ? `; ${skipped} skipped` : ''}.`);
+}
+
+// Send LTH from the flood's master to another address (e.g. the master of a flood run from a second machine).
+async function give() {
+  const to = arg('to'), amount = arg('amount');
+  if (!to || !ethers.isAddress(to) || !amount) die('usage: node flood.js give --to ADDRESS --amount LTH');
+  const c = ctx(); const master = new ethers.Wallet(masterKey(), c.provider);
+  const rc = await (await master.sendTransaction({ to, value: ethers.parseEther(String(amount)) })).wait();
+  log(`Sent ${amount} LTH from ${master.address} to ${to} (${rc.hash}).`);
 }
 
 // ------------------------------------------------------------------ relayer burst
@@ -267,4 +287,4 @@ async function burst() {
 }
 
 const cmd = process.argv[2];
-Promise.resolve().then(() => ({ fund, run, report, sweep, prove, burst }[cmd] || (() => die('usage: node flood.js fund|run|report|sweep|prove|burst')))()).then(() => process.exit(0), (e) => { console.error(e); process.exit(1); });   // exit explicitly: snarkjs keeps worker threads alive
+Promise.resolve().then(() => ({ fund, run, report, sweep, prove, burst, give }[cmd] || (() => die('usage: node flood.js fund|run|report|sweep|prove|burst|give')))()).then(() => process.exit(0), (e) => { console.error(e); process.exit(1); });   // exit explicitly: snarkjs keeps worker threads alive
