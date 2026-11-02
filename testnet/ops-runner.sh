@@ -35,8 +35,9 @@ for req in "$Q"/*.req; do
     esac
   } > "$out" 2>&1
   chown -h 1000:1000 "$out"; chmod 640 "$out"; mv -fT "$out" "$Q/$id.out"
-  [ -L "$Q/actions.log" ] && rm -f "$Q/actions.log"
-  echo "$(date -u +%FT%TZ) $action $arg" >> "$Q/actions.log"
+  # The journal lives in the root-only ops-tmp/, not in ops-queue/ (writable from the bot's container), so nobody can
+  # swap it for a link between a check and the write.
+  echo "$(date -u +%FT%TZ) $action $arg" >> ops-tmp/actions.log
 done
 # keep the queue small: answers older than a day
 find "$Q" -name '*.out' -mmin +1440 -delete 2>/dev/null || true
