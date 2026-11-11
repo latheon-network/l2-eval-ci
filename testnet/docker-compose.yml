@@ -181,6 +181,9 @@ services:
       RELAY_EXEMPT_IPS: ${RELAY_EXEMPT_IPS:-}
       RELAY_FAIL_PER_IP_HOUR: ${RELAY_FAIL_PER_IP_HOUR:-20}
       RELAY_MAX_QUEUE: ${RELAY_MAX_QUEUE:-30}
+      # Delayed sending ("delay": {"withinSeconds": N}): longest window in hours (0 turns it off) and how many may wait.
+      RELAY_MAX_DELAY_HOURS: ${RELAY_MAX_DELAY_HOURS:-24}
+      RELAY_MAX_SCHEDULED: ${RELAY_MAX_SCHEDULED:-200}
       RELAY_MIN_BALANCE: ${RELAY_MIN_BALANCE:-1}
       RELAY_VERSIONS: ${RELAY_VERSIONS:-v7-native,v7}
       RELAYER_KEY_FILE: /relayer/secret/relayer.key

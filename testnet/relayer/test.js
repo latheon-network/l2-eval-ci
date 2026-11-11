@@ -199,6 +199,59 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
   relayerSigner.sendTransaction = orig;
   rec('a "nonce has already been used" answer from the node is retried with a fresh nonce: the withdrawal goes through once', thrown >= 2 && res.status === 200 && (await bal(rN)) === E18, res.body.error || 'ok');
 
+  // ---- delayed sending: accepted now, sent at a random moment within the window (clock and store injected)
+  {
+    let t = 1_800_000_000_000; const saved = { list: [] };
+    const store = { load: () => JSON.parse(JSON.stringify(saved.list)), save: (l) => { saved.list = JSON.parse(JSON.stringify(l)); } };
+    const mk = (extra = {}) => createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], v6Routers: [router6.target], perIpHour: 50, dailyCap: 100, store, now: () => t, ...extra });
+    const RD = mk();
+    const one = async () => { const n = note(); await depositTo(pools6[3], n); const r = fresh(); const p = await prove(pools6[3], n, r, { relayer: ethers.ZeroAddress, fee: 0n }); return { n, r, req: { pool: pools6[3].target, ...p, recipient: r } }; };
+    const a = await one();
+    res = await RD.handle('POST', '/relay/api/withdraw', { ...a.req, delay: { withinSeconds: 3600 } }, 'ip-d');
+    const idA = res.body.id, jobA = saved.list.find((j) => j.id === idA);
+    rec('delay: a valid request is accepted (202) with an id and nothing is sent yet', res.status === 202 && res.body.scheduled === true && /^[0-9a-f]{32}$/.test(idA || '') && (await bal(a.r)) === 0n, JSON.stringify(res.body).slice(0, 80));
+    rec('delay: the send time is random inside the window (at least 60 s, at most the window) and the stored request has no IP, no arrival time and no delay field',
+      !!jobA && jobA.dueAt >= t + 60e3 && jobA.dueAt <= t + 3600e3 && jobA.notAfter === t + 3600e3 && !/ip-d/.test(JSON.stringify(saved.list)) && !('delay' in jobA.body) && !Object.values(jobA).includes(t), jobA ? String((jobA.dueAt - t) / 1000) + ' s' : 'no job');
+    res = await RD.handle('GET', '/relay/api/scheduled/' + idA, null, 'ip-other');
+    rec('delay: state is "waiting" before the time; runDue() before the time sends nothing', res.status === 200 && res.body.state === 'waiting' && (await RD.runDue()) === 0 && (await bal(a.r)) === 0n);
+    res = await RD.handle('POST', '/relay/api/withdraw', { ...a.req, delay: { withinSeconds: 600 } }, 'ip-d');
+    rec('delay: the same note cannot be scheduled twice (409)', res.status === 409, res.body.error);
+    res = await RD.handle('POST', '/relay/api/withdraw', { ...bad, recipient: fresh(), delay: { withinSeconds: 600 } }, 'ip-d');
+    const queuedBefore = saved.list.length;
+    rec('delay: an invalid proof is refused at once (400) and nothing is queued', res.status === 400 && queuedBefore === 1, res.body.error);
+    for (const w of [59, 86401, 1.5, 'soon', null]) { res = await RD.handle('POST', '/relay/api/withdraw', { ...a.req, delay: w === null ? {} : { withinSeconds: w } }, 'ip-d'); if (res.status !== 400) { rec('delay: bad window refused', false, String(w) + ' -> ' + res.status); } }
+    rec('delay: windows outside 60 s .. 24 h, fractions and junk are refused (400)', true);
+    // a restart: a new relayer with the same store sends the waiting request when its time comes
+    const RD2 = mk(); t = jobA.dueAt + 1;
+    const sentNow = await RD2.runDue();
+    res = await RD2.handle('GET', '/relay/api/scheduled/' + idA, null, 'ip-other');
+    rec('delay: after a restart the waiting request is sent when due; the recipient is paid; state "sent" with the hash; the stored entry no longer holds the proof',
+      sentNow === 1 && (await bal(a.r)) === E18 && res.body.state === 'sent' && /^0x[0-9a-f]{64}$/.test(res.body.tx || '') && !saved.list.find((j) => j.id === idA).body, res.body.state + ' ' + (res.body.tx || '').slice(0, 12));
+    // cancel
+    const b = await one();
+    res = await RD2.handle('POST', '/relay/api/withdraw', { ...b.req, delay: { withinSeconds: 600 } }, 'ip-d'); const idB = res.body.id;
+    res = await RD2.handle('DELETE', '/relay/api/scheduled/' + idB, null, 'ip-d'); t += 700e3; await RD2.runDue();
+    rec('delay: a cancelled request is never sent, and the note can then be relayed at once', res.status === 200 && res.body.state === 'cancelled' && (await bal(b.r)) === 0n && (await RD2.handle('POST', '/relay/api/withdraw', b.req, 'ip-d')).status === 200 && (await bal(b.r)) === E18);
+    // the user withdraws the note himself while it waits: the delayed request ends as failed with the reason
+    const c = await one();
+    res = await RD2.handle('POST', '/relay/api/withdraw', { ...c.req, delay: { withinSeconds: 600 } }, 'ip-d'); const idC = res.body.id;
+    await RD2.handle('POST', '/relay/api/withdraw', c.req, 'ip-d'); t += 700e3; await RD2.runDue();
+    res = await RD2.handle('GET', '/relay/api/scheduled/' + idC, null, 'ip-d');
+    rec('delay: a note withdrawn in the meantime ends as "failed" with the chain\'s reason, and is not retried', res.body.state === 'failed' && /spent|Refused/i.test(res.body.error || '') && (await bal(c.r)) === E18, res.body.error);
+    // withdrawMany through the router, delayed
+    const m1 = note(), m2 = note(); await depositTo(pools6[3], m1); await depositTo(pools6[3], m2); const rM = fresh();
+    const pM = []; for (const n of [m1, m2]) { const p = await prove(pools6[3], n, rM, { relayer: ethers.ZeroAddress, fee: 0n }); pM.push([3, p.pA, p.pB, p.pC, p.root, p.nullifierHash, 0]); }
+    res = await RD2.handle('POST', '/relay/api/withdrawMany', { router: router6.target, items: pM, recipient: rM, delay: { withinSeconds: 600 } }, 'ip-d');
+    const okM = res.status === 202; t += 700e3; await RD2.runDue();
+    rec('delay: withdrawMany of two notes is accepted and sent when due', okM && (await bal(rM)) === 2n * E18, res.body.error || 'ok');
+    const RO = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v6Pools: [pools6[3].target], perIpHour: 50, dailyCap: 100 });
+    res = await RO.handle('POST', '/relay/api/withdraw', { ...a.req, delay: { withinSeconds: 600 } }, 'ip-d');
+    const st = await RD2.status('ip-d'), st0 = await RO.status('ip-d');
+    rec('delay: a relayer without a queue file refuses delayed requests (400) and says so in /status', res.status === 400 && st0.delay.enabled === false && st.delay.enabled === true && st.delay.maxSeconds === 86400, res.body.error);
+    res = await RD2.handle('GET', '/relay/api/scheduled/' + 'f'.repeat(32), null, 'ip-d');
+    rec('delay: an unknown id answers 404', res.status === 404);
+  }
+
   const pass = results.filter(Boolean).length;
   console.log(`\n${pass}/${results.length} checks passed`); process.exit(pass === results.length ? 0 : 1);
 })().catch((e) => { console.error(e); if (CI) console.log('::error::' + String(e && e.message || e).split('\n')[0].slice(0, 300)); process.exit(1); });
