@@ -1,0 +1,29 @@
+name: testnet quests
+
+# Free, no keys, no network: unit tests of the quest checks (testnet/quests/test.js) with a stubbed chain and explorer.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'testnet/quests/**'
+      - '.github/workflows/quests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        working-directory: testnet/quests
+        run: npm ci --no-audit --no-fund
+      - name: Quest check tests
+        working-directory: testnet/quests
+        run: node test.js

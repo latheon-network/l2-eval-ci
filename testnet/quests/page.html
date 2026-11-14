@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Latheon testnet quests</title>
+<style>
+  body { margin: 0; background: #14121C; color: #F2EFE9; font: 16px/1.5 Arial, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-family: Georgia, serif; font-size: 30px; margin: 0 0 8px; }
+  h2 { font-size: 19px; margin: 32px 0 8px; color: #5DCAA5; }
+  p, li { color: #CFCADB; }
+  .box { background: #1E1B29; border: 1px solid #3A3550; border-radius: 8px; padding: 18px; margin: 12px 0; }
+  input[type=text] { width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; border: 1px solid #3A3550; background: #14121C; color: #F2EFE9; font: 15px monospace; }
+  button { margin-top: 10px; padding: 10px 16px; border: 0; border-radius: 6px; background: #7F77DD; color: #14121C; font-weight: bold; cursor: pointer; }
+  code, .mono { font-family: monospace; word-break: break-all; }
+  .ok { color: #5DCAA5; } .bad { color: #F6C55A; }
+  .note { font-size: 14px; color: #A9A5B9; }
+  a { color: #5DCAA5; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Latheon testnet quests</h1>
+  <p>Testnet only. LTH is a test token with no value. Nothing here is an offer to sell or buy any token.</p>
+  <p class="note">Use a separate test wallet for quests: quest platforms link your wallet address to your social profile.
+    Never send anyone the keys of a note (spend key, view key) or your note text.</p>
+
+  <h2>1. Your one-time code</h2>
+  <div class="box">
+    <label for="addr">Your wallet address (the one connected on Zealy or Galxe and used for the deposit)</label>
+    <input type="text" id="addr" placeholder="0x…" autocomplete="off" spellcheck="false">
+    <button id="getCode">Get my code</button>
+    <p id="codeOut" class="mono"></p>
+  </div>
+
+  <h2>2. Make a disclosure report</h2>
+  <p>Open the <a href="https://latheon.xyz/demo" rel="noopener">demo</a>, go to the report tab, paste this code as
+    the auditor's one-time code and choose one deposit you made from this address into a current pool. Save the report
+    file. Do not include keys.</p>
+
+  <h2>3. Upload it</h2>
+  <div class="box">
+    <input type="file" id="file" accept=".json,application/json">
+    <button id="send">Check and submit</button>
+    <p id="sendOut"></p>
+  </div>
+  <p class="note">We check: the proof with the chain's disclose verifier, that it was made for your code, that the
+    deposit exists in a current Latheon pool and was sent from your address. We keep only your address and the time.
+    We never check withdrawals: that would link your deposit to your withdrawal address.</p>
+</main>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function text(el, msg, cls) { el.textContent = msg; el.className = cls || ''; }
+  $('getCode').addEventListener('click', function () {
+    var a = $('addr').value.trim();
+    fetch('/quests/api/code?address=' + encodeURIComponent(a)).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.code) text($('codeOut'), 'Your code: ' + j.code, 'mono ok'); else text($('codeOut'), j.error || 'Error', 'bad');
+    }).catch(function () { text($('codeOut'), 'Network error, try again.', 'bad'); });
+  });
+  $('send').addEventListener('click', function () {
+    var a = $('addr').value.trim(), f = $('file').files[0];
+    if (!a) return text($('sendOut'), 'Enter your address in step 1 first.', 'bad');
+    if (!f) return text($('sendOut'), 'Choose the report file.', 'bad');
+    if (f.size > 250000) return text($('sendOut'), 'File too large.', 'bad');
+    text($('sendOut'), 'Checking…');
+    f.text().then(function (t) {
+      var rep; try { rep = JSON.parse(t); } catch (e) { throw new Error('The file is not JSON.'); }
+      return fetch('/quests/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address: a, report: rep }) });
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j.ok) text($('sendOut'), 'Accepted. Now go back to the quest and press verify.', 'ok');
+      else text($('sendOut'), j.error || 'Not accepted.', 'bad');
+    }).catch(function (e) { text($('sendOut'), e.message || 'Network error, try again.', 'bad'); });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "latheon-testnet-quests",
+  "private": true,
+  "description": "Quest checks (Zealy, Galxe) for the Latheon test chain: faucet, deposit, disclosure report (testnet only)",
+  "scripts": { "start": "node server.js", "test": "node test.js" },
+  "dependencies": { "ethers": "6.17.0" }
+}

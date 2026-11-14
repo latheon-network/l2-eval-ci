@@ -192,6 +192,33 @@ services:
       - ./relayer/secret:/relayer/secret
       - ./latheon/out:/latheon-out:ro
 
+  quests:
+    logging: *logging
+    # Quest checks for Zealy and Galxe: https://EXPLORER_HOST/quests (page) and /quests/api/ (checks). Reads only public
+    # data (Blockscout API, RPC). Its secret/ holds the HMAC key for the one-time codes and the list of accepted reports.
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    user: "1000:1000"
+    # Read-only code, copied into the container to install packages (see faucet); only secret/ is writable.
+    working_dir: /tmp
+    command: sh -c 'mkdir -p /tmp/app && cp /quests/package.json /quests/package-lock.json /quests/server.js /quests/page.html /tmp/app/ && cd /tmp/app && npm ci --omit=dev --no-audit --no-fund --cache /tmp/npm >/dev/null 2>&1 && exec node server.js'
+    depends_on:
+      - nitro
+      - blockscout
+      - faucet
+    environment:
+      L3_RPC: http://nitro:8449
+      LATHEON_JSON: /latheon-out/latheon-deployments.json
+      BLOCKSCOUT_API: http://blockscout:4000/api/v2
+      FAUCET_STATUS_URL: http://faucet:8080/faucet/api/status
+      STATE_DIR: /quests/secret
+      ZEALY_API_KEY: ${ZEALY_API_KEY:-}
+      PORT: "8095"
+    volumes:
+      - ./quests:/quests:ro
+      - ./quests/secret:/quests/secret
+      - ./latheon/out:/latheon-out:ro
+
   bot:
     logging: *logging
     # Telegram bot for the operator (/status, /menu with confirmed actions) in the chat TG_CHAT_ID, and the writer of the

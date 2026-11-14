@@ -61,6 +61,19 @@
 		}
 		reverse_proxy relayer:8090
 	}
+	handle /quests* {
+		request_body {
+			max_size 300KB
+		}
+		rate_limit {
+			zone quests_minute {
+				key {remote_host}
+				events {$QUESTS_RATE_PER_MINUTE:60}
+				window 1m
+			}
+		}
+		reverse_proxy quests:8095
+	}
 	handle /faucet* {
 		request_body {
 			max_size 4KB
