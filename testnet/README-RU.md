@@ -252,3 +252,13 @@ V5 остаётся: ноты, внесённые туда, выводятся �
 ```
 
 Сеть Latheon читается через локальный RPC узла (`127.0.0.1:8449`), остальные через публичные RPC из `deployments.json` (переопределяются `RPC_ETHEREUM_SEPOLIA`, `RPC_ARBITRUM_SEPOLIA`, `RPC_ROBINHOOD_TESTNET`). Флаги: `WITHDRAWALS>DEPOSITS` (выводов больше, чем депозитов) и `BALANCE<EXPECTED` (на пуле меньше, чем депозиты минус выводы) означают, что надо разбираться, и дают код выхода 1; `balance>expected` (монету или токены прислали напрямую) и `router-holds-funds` — для сведения. Полный результат: `legacy-pools/out/legacy-pools.json`. Проверка без сети: `node legacy-pools-check-test.js`.
+
+## Проверки заданий для Zealy и Galxe (quests)
+
+Сервис `quests` (папка `quests/`, страница `https://EXPLORER_HOST/quests`) проверяет три шага для платформ заданий: адрес получил LTH из крана (`faucet`), сделал депозит в текущий пул или роутер V7 (`deposit`), загрузил отчёт о раскрытии одного депозита (`report`). Отчёт должен быть сделан для одноразового кода этого адреса (страница выдаёт код), доказательство проверяет контракт-верификатор сети, а депозит должен быть отправлен с этого же адреса. Выводы не проверяются никогда: для этого пришлось бы связать кошелёк депозита с адресом вывода.
+
+- Galxe: REST-проверка `GET https://EXPLORER_HOST/quests/api/check/ЗАДАНИЕ?address=$address`, всегда 200, ответ `{"ok":1|0,"reason":"…"}`, выражение `function(resp) { return resp.ok }`.
+- Zealy: API-задание `POST https://EXPLORER_HOST/quests/api/zealy/ЗАДАНИЕ`, ключ в заголовке `X-Api-Key` = `ZEALY_API_KEY` из `.env` (пустой — проверки Zealy выключены), адрес из `accounts.wallet`; ответ 200 или 400 с `message`.
+- Секреты: `quests/secret/quests.key` (ключ HMAC для кодов, создаётся при первом запуске) и `quests/secret/reports.json` (адреса с принятым отчётом и время). Папку не публиковать; при первой установке: `mkdir -p quests/secret && chown -R 1000:1000 quests && chmod 700 quests/secret`.
+- Запуск и обновление: `docker compose up -d quests`; после изменения `Caddyfile` — `docker compose up -d --force-recreate caddy` (файл подключён отдельно, обычный restart видит старую версию).
+- Тесты без сети: `cd quests && npm ci && node test.js` (19 проверок, также в CI).
