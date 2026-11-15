@@ -224,8 +224,13 @@ function main() {
         const b = await readBody(req, 16 * 1024);
         const wallet = b && b.accounts && b.accounts.wallet;
         if (!wallet) return send(res, 400, { message: 'Connect an EVM wallet in Zealy first.' });
-        let r; try { r = await q.check(m[1], wallet); } catch (e) { return send(res, 400, { message: e.refusal ? e.message : 'Check failed, try again in a minute.' }); }
-        return r.ok ? send(res, 200, { message: r.reason }) : send(res, 400, { message: r.reason });
+        const short = typeof wallet === 'string' && wallet.length > 12 ? wallet.slice(0, 6) + '…' + wallet.slice(-4) : String(wallet);
+        let r; try { r = await q.check(m[1], wallet); } catch (e) {
+          log(`zealy ${m[1]} ${String(wallet).toLowerCase()} error ${e.refusal ? e.message : (e.message || e)}`);
+          return send(res, 400, { message: (e.refusal ? e.message : 'Check failed, try again in a minute.') + ` (wallet ${short})` });
+        }
+        log(`zealy ${m[1]} ${String(wallet).toLowerCase()} ${r.ok ? 'ok' : 'no'}`);
+        return r.ok ? send(res, 200, { message: r.reason }) : send(res, 400, { message: r.reason + ` Checked wallet: ${short}.` });
       }
       return send(res, 404, { error: 'Not found' });
     } catch (e) {

@@ -52,7 +52,7 @@
     var rows = [];
     if (!info.configured) rows.push(['Status', 'not configured yet']);
     rows.push(['Per claim', info.amount + ' LTH']);
-    rows.push(['Limit', 'one claim per address and per connection every ' + info.cooldownHours + ' h']);
+    rows.push(['Limit', (info.ipClaims > 1 ? 'one claim per address and ' + info.ipClaims + ' per connection' : 'one claim per address and per connection') + ' every ' + info.cooldownHours + ' h']);
     if (info.chainId) rows.push(['Chain ID', String(info.chainId)]);
     if (info.balance) rows.push(['Faucet balance', Number(info.balance).toLocaleString('en-US', { maximumFractionDigits: 2 }) + ' LTH']);
     if (info.rpc) rows.push(['RPC', info.rpc]);

@@ -110,9 +110,24 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   s = await api('/faucet/api/status');
   check('after a restart the daily total is remembered (700 sent)', s.j.sentLast24h === '700.0', s.j.sentLast24h);
 
+  // ---- FAUCET_IP_CLAIMS=3: three addresses from one connection, the fourth refused; an old claims file (one time per IP) still counts
+  await stop();
+  env.FAUCET_DAILY_CAP = '100000'; env.FAUCET_IP_CLAIMS = '3';
+  env.STATE_DIR = path.join(tmp, 'state3');
+  fs.mkdirSync(env.STATE_DIR, { recursive: true });
+  fs.writeFileSync(path.join(env.STATE_DIR, 'claims.json'), JSON.stringify({ addr: {}, ip: { '10.7.0.9': Date.now() - 1000 }, sent: [] }));
+  await (await rich.sendTransaction({ to: faucetAddr, value: 1000n * E18 })).wait();
+  await start();
+  s = await api('/faucet/api/status');
+  check('status reports 3 claims per connection', s.j.ipClaims === 3, String(s.j.ipClaims));
+  const r3 = [];
+  for (let i = 0; i < 4; i++) r3.push(await claim(fresh(), '10.7.0.1'));
+  check('3 claims per connection: the first three paid, the fourth refused with 429', r3.slice(0, 3).every((r) => r.code === 200) && r3[3].code === 429 && /3 claims/.test(r3[3].j.error) && r3[3].j.retryAfterSeconds > 23 * 3600, r3[3].j && r3[3].j.error);
+  check('an old-format record (one claim) leaves two more for that connection', (await claim(fresh(), '10.7.0.9')).code === 200 && (await claim(fresh(), '10.7.0.9')).code === 200 && (await claim(fresh(), '10.7.0.9')).code === 429);
+  delete env.FAUCET_IP_CLAIMS;
+
   // ---- empty faucet
   await stop();
-  env.FAUCET_DAILY_CAP = '100000';
   env.STATE_DIR = path.join(tmp, 'state2');
   await start();
   const left = await bal(faucetAddr);

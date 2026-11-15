@@ -153,6 +153,7 @@ services:
       FAUCET_COOLDOWN_HOURS: ${FAUCET_COOLDOWN_HOURS:-24}
       FAUCET_DAILY_CAP: ${FAUCET_DAILY_CAP:-5000}
       FAUCET_EXEMPT_IPS: ${FAUCET_EXEMPT_IPS:-}
+      FAUCET_IP_CLAIMS: ${FAUCET_IP_CLAIMS:-1}
       FAUCET_KEY_FILE: /faucet/secret/faucet.key
       STATE_DIR: /faucet/secret
     volumes:

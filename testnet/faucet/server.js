@@ -6,7 +6,7 @@
  *   GET  /faucet/api/status    faucet address, balance, amount per claim, limits (public data only)
  *   POST /faucet/api/claim     {"address":"0x…"} → sends FAUCET_AMOUNT LTH, answers with the transaction hash
  *
- * Limits: one claim per address and one per IP per FAUCET_COOLDOWN_HOURS; FAUCET_DAILY_CAP LTH per 24 hours in total;
+ * Limits: one claim per address and FAUCET_IP_CLAIMS (default 1) per IP per FAUCET_COOLDOWN_HOURS; FAUCET_DAILY_CAP LTH per 24 hours in total;
  * only addresses holding less than FAUCET_AMOUNT; claims are sent one at a time (no nonce races).
  * The client IP is the last X-Forwarded-For entry written by Caddy (the service is not reachable from outside directly).
  * Claims are kept in STATE_DIR/claims.json, so a restart does not reset the limits.
@@ -30,6 +30,8 @@ const PUBLIC_RPC = env('PUBLIC_RPC', '');
 const AMOUNT = ethers.parseEther(env('FAUCET_AMOUNT', '100'));
 const COOLDOWN_MS = Number(env('FAUCET_COOLDOWN_HOURS', '24')) * 3600_000;
 const DAILY_CAP = ethers.parseEther(env('FAUCET_DAILY_CAP', '5000'));
+// Claims allowed from one IP per cooldown: mobile carriers put many people behind one IP.
+const IP_CLAIMS = Math.max(1, Math.floor(Number(env('FAUCET_IP_CLAIMS', '1')) || 1));
 // Client IPs the per-IP limit and the daily cap do not apply to (our own load tests from the server); empty by default.
 const EXEMPT_IPS = new Set(env('FAUCET_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean));
 const DAY_MS = 24 * 3600_000;
@@ -50,11 +52,17 @@ function loadWallet() {
   return wallet;
 }
 
-// ---- claim records: { addr: {lowercase address: ms}, ip: {ip: ms}, sent: [[ms, wei string]] }
+// ---- claim records: { addr: {lowercase address: ms}, ip: {ip: [ms, …]}, sent: [[ms, wei string]] }
 let state = { addr: {}, ip: {}, sent: [] };
 try { state = { ...state, ...JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')) }; } catch (e) { /* first start */ }
+// older files kept one time per IP
+for (const k of Object.keys(state.ip)) if (!Array.isArray(state.ip[k])) state.ip[k] = [state.ip[k]];
 function prune(now) {
-  for (const m of [state.addr, state.ip]) for (const k of Object.keys(m)) if (now - m[k] >= COOLDOWN_MS) delete m[k];
+  for (const k of Object.keys(state.addr)) if (now - state.addr[k] >= COOLDOWN_MS) delete state.addr[k];
+  for (const k of Object.keys(state.ip)) {
+    state.ip[k] = state.ip[k].filter((t) => now - t < COOLDOWN_MS);
+    if (!state.ip[k].length) delete state.ip[k];
+  }
   state.sent = state.sent.filter(([t]) => now - t < DAY_MS);
 }
 function save() {
@@ -84,18 +92,19 @@ async function claim(rawAddress, ip) {
     const a = to.toLowerCase();
     if (state.addr[a]) throw new Refusal(429, 'This address already received LTH recently.', { retryAfterSeconds: Math.ceil((state.addr[a] + COOLDOWN_MS - now) / 1000) });
     const exempt = EXEMPT_IPS.has(ip);
-    if (state.ip[ip] && !exempt) throw new Refusal(429, 'A claim was already made from your connection recently.', { retryAfterSeconds: Math.ceil((state.ip[ip] + COOLDOWN_MS - now) / 1000) });
+    const fromIp = state.ip[ip] || [];
+    if (fromIp.length >= IP_CLAIMS && !exempt) throw new Refusal(429, IP_CLAIMS === 1 ? 'A claim was already made from your connection recently.' : `${IP_CLAIMS} claims were already made from your connection recently.`, { retryAfterSeconds: Math.ceil((Math.min(...fromIp) + COOLDOWN_MS - now) / 1000) });
     if (!exempt && sentToday() + AMOUNT > DAILY_CAP) throw new Refusal(503, 'The faucet reached its daily limit. Try again later.');
     if ((await provider.getBalance(to)) >= AMOUNT) throw new Refusal(400, 'This address already holds enough LTH.');
     const bal = await provider.getBalance(w.address);
     if (bal < AMOUNT + ethers.parseEther('0.01')) throw new Refusal(503, 'The faucet is empty. Try again later.');
     // reserve the limits before sending, release them if the transaction is not sent
-    state.addr[a] = now; if (!exempt) { state.ip[ip] = now; state.sent.push([now, AMOUNT.toString()]); } save();
+    state.addr[a] = now; if (!exempt) { state.ip[ip] = fromIp.concat(now); state.sent.push([now, AMOUNT.toString()]); } save();
     let tx;
     try {
       tx = await w.sendTransaction({ to, value: AMOUNT });
     } catch (e) {
-      delete state.addr[a]; delete state.ip[ip]; state.sent = state.sent.filter((x) => x[0] !== now); save();
+      delete state.addr[a]; if (state.ip[ip]) { state.ip[ip] = state.ip[ip].filter((t) => t !== now); if (!state.ip[ip].length) delete state.ip[ip]; } state.sent = state.sent.filter((x) => x[0] !== now); save();
       wallet = null;   // re-read the nonce from the node next time
       log('send failed: ' + String((e && (e.shortMessage || e.message)) || e).slice(0, 160));
       throw new Refusal(502, 'The transaction could not be sent. Try again later.');
@@ -109,7 +118,7 @@ async function claim(rawAddress, ip) {
 
 async function status() {
   const w = loadWallet();
-  const out = { configured: !!w, paused: paused(), amount: ethers.formatEther(AMOUNT), cooldownHours: COOLDOWN_MS / 3600_000, dailyCap: ethers.formatEther(DAILY_CAP), explorer: EXPLORER_URL || null, rpc: PUBLIC_RPC || null };
+  const out = { configured: !!w, paused: paused(), amount: ethers.formatEther(AMOUNT), cooldownHours: COOLDOWN_MS / 3600_000, ipClaims: IP_CLAIMS, dailyCap: ethers.formatEther(DAILY_CAP), explorer: EXPLORER_URL || null, rpc: PUBLIC_RPC || null };
   if (!w) return out;
   prune(Date.now());
   const [net, bal] = await Promise.all([provider.getNetwork(), provider.getBalance(w.address)]);
