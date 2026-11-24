@@ -10,22 +10,25 @@ const POOL = '0x4444444444444444444444444444444444444444';
 const ROUTER = '0x5555555555555555555555555555555555555555';
 const OLDPOOL = '0x6666666666666666666666666666666666666666';
 const COMMIT = 123456789n;
+const POOL8 = '0x8888888888888888888888888888888888888888', CTX8 = 4242n, COMMIT8 = 987654321n;
 
 let pass = 0, fail = 0;
 async function t(name, fn) { try { await fn(); pass++; console.log('ok   ' + name); } catch (e) { fail++; console.log('FAIL ' + name + ': ' + e.message); } }
 
+const calls = [];
 function make(over = {}) {
   const state = { reports: {} };
   let saved = 0;
   const txs = { to: { [USER]: [{ status: 'ok', from: { hash: FAUCET } }] }, from: { [USER]: [{ status: 'ok', to: { hash: ROUTER }, value: '2000000000000000000' }] } };
   const q = createQuests({
     secret: Buffer.from('00'.repeat(32), 'hex'), state, save: () => { saved++; },
-    currentPools: [POOL], currentTargets: [POOL, ROUTER], discloseVerifier: '0x7777777777777777777777777777777777777777',
+    currentPools: [POOL], currentTargets: [POOL, ROUTER, POOL8], discloseVerifier: '0x7777777777777777777777777777777777777777',
+    v8Pools: [POOL8], ctxOf: (p) => (p.toLowerCase() === POOL8 ? CTX8 : 1n),
     faucetAddress: async () => FAUCET,
     addressTxs: async (a, f) => (over.txs || txs)[f][a] || [],
-    findDeposit: async (pool, c) => (pool.toLowerCase() === POOL && c === COMMIT ? { txHash: '0xabc' } : null),
+    findDeposit: async (pool, c) => ((pool.toLowerCase() === POOL && c === COMMIT) || (pool.toLowerCase() === POOL8 && c === COMMIT8) ? { txHash: '0xabc' } : null),
     txFrom: async () => over.sender || USER,
-    verifyOnChain: async () => (over.verifier !== undefined ? over.verifier : true),
+    verifyOnChain: async (a, b, c, pub, kind) => { calls.push(kind); return over.verifier !== undefined ? over.verifier : true; },
   });
   return { q, state, saved: () => saved };
 }
@@ -34,6 +37,12 @@ function report(q, addr, o = {}) {
   const item = { pool: o.pool || POOL, commitment: String(o.commitment || COMMIT), proof: { pA: ['1', '2'], pB: [['3', '4'], ['5', '6']], pC: ['7', '8'], pubSignals: [String(o.pubCommit || COMMIT), '99', o.pubCode || code] } };
   if (o.keys) item.keys = { spendKey: '1', viewKey: '2' };
   return { type: 'latheon-disclosure-report', version: 1, auditorNonce: code, items: [item] };
+}
+// V8 rows: disclose_v2 [commitment, tag, code] or disclose_link [commitment, nullifier, ctx, code, tag]
+function report8(q, addr, o = {}) {
+  const code = q.codeFor(addr), kind = o.kind || 'disclose_v2';
+  const pub = kind === 'disclose_link' ? [String(COMMIT8), '77', String(o.ctx || CTX8), code, '99'] : [String(COMMIT8), '99', code];
+  return { type: 'latheon-disclosure-report', version: 2, auditorNonce: code, items: [{ pool: o.pool || POOL8, circuit: kind, commitment: String(COMMIT8), proof: { pA: ['1', '2'], pB: [['3', '4'], ['5', '6']], pC: ['7', '8'], pubSignals: pub } }] };
 }
 
 (async () => {
@@ -75,7 +84,7 @@ function report(q, addr, o = {}) {
     const { q } = make({ verifier: false }); await assert.rejects(() => q.submitReport(USER, report(q, USER)), /rejected the proof/);
   });
   await t('report: old pool is refused', async () => {
-    const { q } = make(); await assert.rejects(() => q.submitReport(USER, report(q, USER, { pool: OLDPOOL })), /current \(V7\)/);
+    const { q } = make(); await assert.rejects(() => q.submitReport(USER, report(q, USER, { pool: OLDPOOL })), /current \(V8 or V7\)/);
   });
   await t('report: commitment mismatch is refused', async () => {
     const { q } = make(); await assert.rejects(() => q.submitReport(USER, report(q, USER, { pubCommit: 5n })), /does not match/);
@@ -89,6 +98,33 @@ function report(q, addr, o = {}) {
   });
   await t('report: wrong file type refused', async () => {
     const { q } = make(); await assert.rejects(() => q.submitReport(USER, { type: 'x', version: 1, items: [] }), /not a Latheon disclosure report/);
+  });
+  await t('V8 report (version 2, disclose_v2): accepted, checked with the disclose_v2 verifier', async () => {
+    const { q } = make(); calls.length = 0;
+    assert.strictEqual((await q.submitReport(USER, report8(q, USER))).ok, 1); assert.deepStrictEqual(calls, ['disclose_v2']);
+  });
+  await t('V8 receipt (disclose_link): accepted with the code at signal 3 and the pool context checked', async () => {
+    const { q } = make(); calls.length = 0;
+    assert.strictEqual((await q.submitReport(USER, report8(q, USER, { kind: 'disclose_link' }))).ok, 1); assert.deepStrictEqual(calls, ['disclose_link']);
+  });
+  await t('V8 receipt naming another pool (ctx) is refused before the verifier', async () => {
+    const { q } = make(); calls.length = 0;
+    await assert.rejects(() => q.submitReport(USER, report8(q, USER, { kind: 'disclose_link', ctx: 5n })), /another pool/); assert.strictEqual(calls.length, 0);
+  });
+  await t('a V8 proof type for a V7 pool, or a V7 row for a V8 pool, is refused', async () => {
+    const { q } = make();
+    await assert.rejects(() => q.submitReport(USER, report8(q, USER, { pool: POOL })), /does not match the pool generation/);
+    await assert.rejects(() => q.submitReport(USER, report(q, USER, { pool: POOL8 })), /does not match the pool generation/);
+  });
+  await t('unknown proof type and wrong signal count are refused', async () => {
+    const { q } = make(); const r = report8(q, USER); r.items[0].circuit = 'x';
+    await assert.rejects(() => q.submitReport(USER, r), /unknown proof type/);
+    const r2 = report8(q, USER, { kind: 'disclose_link' }); r2.items[0].proof.pubSignals.pop();
+    await assert.rejects(() => q.submitReport(USER, r2), /malformed proof/);
+  });
+  await t('deposit: yes into a V8 pool', async () => {
+    const { q } = make({ txs: { to: {}, from: { [USER]: [{ status: 'ok', to: { hash: POOL8 }, value: '1' }] } } });
+    assert.strictEqual((await q.check('deposit', USER)).ok, 1);
   });
   await t('report: before upload the check says no', async () => { const { q } = make(); assert.strictEqual((await q.check('report', USER)).ok, 0); });
   console.log(`\n${pass} passed, ${fail} failed`);

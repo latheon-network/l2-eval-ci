@@ -11,9 +11,10 @@
  *
  * TASK is one of:
  *   faucet   the address received LTH from our faucet
- *   deposit  the address sent a successful transaction to a current (V7) pool or router
- *   report   the address uploaded a valid disclosure report: proof accepted by the chain's disclose verifier, made for
- *            this address's code, for a deposit in a current pool whose transaction was sent from this address
+ *   deposit  the address sent a successful transaction to a current (V8 or V7) pool or router
+ *   report   the address uploaded a valid disclosure report: proof accepted by the chain's verifier for its circuit
+ *            (disclose for V7 notes; disclose_v2 or a receipt, disclose_link, for V8 notes), made for this address's
+ *            code, for a deposit in a current pool whose transaction was sent from this address
  *
  * What it never asks for or checks: withdrawals. Checking a withdrawal would require linking the deposit wallet with
  * the withdrawal address, which is exactly what the pools hide. The report task shows one deposit to us as the
@@ -40,18 +41,21 @@ class Refusal extends Error { constructor(message) { super(message); this.refusa
  * @param {object} o
  * @param {Buffer} o.secret                 HMAC key for the codes
  * @param {string[]} o.currentPools         V7 pool addresses
+ * @param {string[]} [o.v8Pools]            V8 pool addresses (also current; their rows carry circuit disclose_v2 or disclose_link)
+ * @param {(pool:string) => bigint} [o.ctxOf]  V8 pool context, keccak256(abi.encode("latheon.v8.ctx", chainId, pool)) mod p
  * @param {string[]} o.currentTargets       V7 pools and routers (deposit targets)
  * @param {string} o.discloseVerifier
  * @param {(addr:string, filter:'to'|'from') => Promise<object[]>} o.addressTxs   Blockscout transactions of an address
  * @param {() => Promise<string>} o.faucetAddress
  * @param {(pool:string, commitment:bigint) => Promise<{txHash:string}|null>} o.findDeposit
  * @param {(txHash:string) => Promise<string>} o.txFrom
- * @param {(pA, pB, pC, pub) => Promise<boolean>} o.verifyOnChain
+ * @param {(pA, pB, pC, pub, kind) => Promise<boolean>} o.verifyOnChain   kind: 'disclose', 'disclose_v2' or 'disclose_link'
  * @param {{reports: object}} o.state
  * @param {() => void} o.save
  */
 function createQuests(o) {
   const pools = new Set(o.currentPools.map((a) => a.toLowerCase()));
+  const pools8 = new Set((o.v8Pools || []).map((a) => a.toLowerCase()));
   const targets = new Set(o.currentTargets.map((a) => a.toLowerCase()));
   const maxItems = o.maxItems || 20;
   const lower = (a) => {
@@ -73,8 +77,8 @@ function createQuests(o) {
     const a = lower(addr);
     const txs = await o.addressTxs(a, 'from');
     return txs.some((t) => ok(t) && t.to && targets.has(String(t.to.hash).toLowerCase()) && BigInt(t.value || '0') > 0n)
-      ? { ok: 1, reason: 'Deposit into a Latheon V7 pool found.' }
-      : { ok: 0, reason: 'No deposit into a current (V7) Latheon pool from this address yet. Use latheon.xyz/demo.' };
+      ? { ok: 1, reason: 'Deposit into a current Latheon pool found.' }
+      : { ok: 0, reason: 'No deposit into a current (V8 or V7) Latheon pool from this address yet. Use latheon.xyz/demo.' };
   }
 
   async function report(addr) {
@@ -94,7 +98,7 @@ function createQuests(o) {
   /** Checks an uploaded report (spec docs/disclosure-report-format.md, section 5, steps 1-4 and 7, plus the sender). */
   async function submitReport(addr, rep) {
     const a = lower(addr), code = codeFor(a);
-    if (!rep || rep.type !== 'latheon-disclosure-report' || rep.version !== 1) throw new Refusal('This is not a Latheon disclosure report file (version 1).');
+    if (!rep || rep.type !== 'latheon-disclosure-report' || (rep.version !== 1 && rep.version !== 2)) throw new Refusal('This is not a Latheon disclosure report file (version 1 or 2).');
     if (!Array.isArray(rep.items) || !rep.items.length) throw new Refusal('The report has no rows.');
     if (String(rep.auditorNonce) !== code) throw new Refusal('The report was made for a different code. Get your code on this page for this address, make the report again with it.');
     if (rep.items.length > maxItems) throw new Refusal(`Too many rows: one is enough, at most ${maxItems}.`);
@@ -104,12 +108,18 @@ function createQuests(o) {
       const row = `Row ${i + 1}: `;
       try {
         if (x.keys !== undefined) { problems.push(row + 'contains keys; never send keys of a note to anyone. Make the report without them.'); continue; }
-        if (!(Array.isArray(p.pA) && p.pA.length === 2 && Array.isArray(p.pB) && p.pB.length === 2 && Array.isArray(p.pC) && p.pC.length === 2 && Array.isArray(p.pubSignals) && p.pubSignals.length === 3)) { problems.push(row + 'malformed proof.'); continue; }
+        // circuit of the row: V7 rows have none (disclose); V8 rows name disclose_v2 or disclose_link (a receipt)
+        const kind = x.circuit === undefined ? 'disclose' : String(x.circuit);
+        const nSig = { disclose: 3, disclose_v2: 3, disclose_link: 5 }[kind];
+        if (!nSig) { problems.push(row + 'unknown proof type.'); continue; }
+        if (!(Array.isArray(p.pA) && p.pA.length === 2 && Array.isArray(p.pB) && p.pB.length === 2 && Array.isArray(p.pC) && p.pC.length === 2 && Array.isArray(p.pubSignals) && p.pubSignals.length === nSig)) { problems.push(row + 'malformed proof.'); continue; }
         const pub = p.pubSignals.map((v) => BigInt(v));
-        if (pub[2].toString() !== code) { problems.push(row + 'proof made for a different code.'); continue; }
+        if (pub[kind === 'disclose_link' ? 3 : 2].toString() !== code) { problems.push(row + 'proof made for a different code.'); continue; }
         if (pub[0].toString() !== String(BigInt(x.commitment))) { problems.push(row + 'commitment does not match the proof.'); continue; }
-        if (typeof x.pool !== 'string' || !pools.has(x.pool.toLowerCase())) { problems.push(row + 'not a current (V7) Latheon pool.'); continue; }
-        if (!(await o.verifyOnChain(p.pA, p.pB, p.pC, p.pubSignals))) { problems.push(row + 'the disclose verifier rejected the proof.'); continue; }
+        const pool = typeof x.pool === 'string' ? x.pool.toLowerCase() : '';
+        if (kind === 'disclose' ? !pools.has(pool) : !pools8.has(pool)) { problems.push(row + (pools.has(pool) || pools8.has(pool) ? 'proof type does not match the pool generation.' : 'not a current (V8 or V7) Latheon pool.')); continue; }
+        if (kind === 'disclose_link' && (!o.ctxOf || pub[2] !== o.ctxOf(x.pool))) { problems.push(row + 'the receipt names another pool.'); continue; }
+        if (!(await o.verifyOnChain(p.pA, p.pB, p.pC, p.pubSignals, kind))) { problems.push(row + 'the verifier rejected the proof.'); continue; }
         const dep = await o.findDeposit(x.pool, pub[0]);
         if (!dep) { problems.push(row + 'no such deposit in that pool.'); continue; }
         if ((await o.txFrom(dep.txHash)).toLowerCase() !== a) { problems.push(row + 'that deposit was not sent from this address.'); continue; }
@@ -161,10 +171,18 @@ function main() {
   const cur = (x) => (x.version === 'v7-native' || x.version === 'v7') && !x.frozen && !x.forgeable;
   const curPools = dep.pools.filter(cur);
   const curRouters = (dep.routers || []).filter(cur);
+  // V8 (deploy-v8 writes its own file next to the V7 one)
+  let v8 = null; try { v8 = JSON.parse(fs.readFileSync(env('LATHEON_JSON_V8', path.join(path.dirname(env('LATHEON_JSON', '/latheon-out/latheon-deployments.json')), 'latheon-deployments-v8.json')), 'utf8')); } catch (e) { if (e.code !== 'ENOENT') log('V8 entry unreadable, V8 not checked: ' + e.message); }
+  const ok8 = (x) => !x.frozen && !x.forgeable && String(x.version).startsWith('v8');
+  const v8Pools = v8 ? v8.pools.filter(ok8) : [], v8Routers = v8 ? (v8.routers || []).filter(ok8) : [];
   const provider = new ethers.JsonRpcProvider(L3_RPC, undefined, { staticNetwork: true });
-  const verifier = new ethers.Contract(dep.network.discloseVerifier, VERIFIER_ABI, provider);
+  const LINK_ABI = ['function verifyProof(uint[2] _pA, uint[2][2] _pB, uint[2] _pC, uint[5] _pubSignals) view returns (bool)'];
+  const verifiers = { disclose: new ethers.Contract(dep.network.discloseVerifier, VERIFIER_ABI, provider) };
+  if (v8) { verifiers.disclose_v2 = new ethers.Contract(v8.verifiers.disclose, VERIFIER_ABI, provider); verifiers.disclose_link = new ethers.Contract(v8.verifiers.discloseLink, LINK_ABI, provider); }
+  const FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617n, chainId = BigInt((v8 && v8.network.chainId) || dep.network.chainId || 0);
+  const ctxOf = (pool) => BigInt(ethers.keccak256(ethers.AbiCoder.defaultAbiCoder().encode(['string', 'uint256', 'address'], ['latheon.v8.ctx', chainId, ethers.getAddress(pool)]))) % FIELD;
   const depositTopic = ethers.id('Deposit(uint256,uint32,uint256)');
-  const startOf = new Map(curPools.map((p) => [p.address.toLowerCase(), Number(p.deployBlock || 0)]));
+  const startOf = new Map(curPools.concat(v8Pools).map((p) => [p.address.toLowerCase(), Number(p.deployBlock || 0)]));
 
   let faucetAddr = null;
   async function getJson(url) {
@@ -175,7 +193,8 @@ function main() {
   const q = createQuests({
     secret, state, save,
     currentPools: curPools.map((p) => p.address),
-    currentTargets: curPools.map((p) => p.address).concat(curRouters.map((r) => r.address)),
+    currentTargets: curPools.concat(v8Pools).map((p) => p.address).concat(curRouters.concat(v8Routers).map((r) => r.address)),
+    v8Pools: v8Pools.map((p) => p.address), ctxOf,
     discloseVerifier: dep.network.discloseVerifier,
     faucetAddress: async () => faucetAddr || (faucetAddr = (await getJson(FAUCET_STATUS_URL)).address),
     addressTxs: async (a, filter) => {
@@ -191,7 +210,7 @@ function main() {
       return logs.length ? { txHash: logs[0].transactionHash } : null;
     },
     txFrom: async (h) => (await provider.getTransaction(h)).from,
-    verifyOnChain: (pA, pB, pC, pub) => verifier.verifyProof(pA, pB, pC, pub),
+    verifyOnChain: async (pA, pB, pC, pub, kind) => { const v = verifiers[kind || 'disclose']; if (!v) return false; try { return await v.verifyProof(pA, pB, pC, pub); } catch (e) { if (e.code === 'CALL_EXCEPTION') return false; throw e; } },
   });
 
   const send = (res, code, body, type = 'application/json') => {
@@ -204,7 +223,7 @@ function main() {
     const p = u.pathname.replace(/\/+$/, '') || '/';
     try {
       if (req.method === 'GET' && (p === '/quests' || p === '/')) return send(res, 200, PAGE, 'text/html');
-      if (req.method === 'GET' && p === '/quests/api/status') return send(res, 200, { tasks: TASKS, pools: curPools.map((x) => ({ address: x.address, amount: x.amount })), routers: curRouters.map((x) => x.address), zealy: !!ZEALY_API_KEY, acceptedReports: Object.keys(state.reports).length });
+      if (req.method === 'GET' && p === '/quests/api/status') return send(res, 200, { tasks: TASKS, pools: curPools.map((x) => ({ address: x.address, amount: x.amount })), routers: curRouters.map((x) => x.address), v8Pools: v8Pools.map((x) => ({ address: x.address, amount: x.amount })), v8Routers: v8Routers.map((x) => x.address), zealy: !!ZEALY_API_KEY, acceptedReports: Object.keys(state.reports).length });
       if (req.method === 'GET' && p === '/quests/api/code') return send(res, 200, { address: (u.searchParams.get('address') || '').toLowerCase(), code: q.codeFor(u.searchParams.get('address')) });
       if (req.method === 'POST' && p === '/quests/api/report') {
         const b = await readBody(req, 256 * 1024);
@@ -240,7 +259,7 @@ function main() {
     }
   });
   const port = Number(env('PORT', '8095'));
-  server.listen(port, () => log(`quests listening on ${port}; pools ${curPools.length}, routers ${curRouters.length}, zealy ${ZEALY_API_KEY ? 'on' : 'off'}, accepted reports ${Object.keys(state.reports).length}`));
+  server.listen(port, () => log(`quests listening on ${port}; pools ${curPools.length}, routers ${curRouters.length}, V8 pools ${v8Pools.length}, V8 routers ${v8Routers.length}, zealy ${ZEALY_API_KEY ? 'on' : 'off'}, accepted reports ${Object.keys(state.reports).length}`));
 }
 
 module.exports = { createQuests, Refusal, TASKS };
