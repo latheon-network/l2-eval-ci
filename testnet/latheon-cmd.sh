@@ -31,4 +31,4 @@ docker run --rm --network host -u 0 \
   -e PUBLIC_RPC="https://${RPC_HOST}" -e EXPLORER_URL="https://${EXPLORER_HOST}" \
   -e STATE_DIR=/latheon/secret -e OUT_DIR=/latheon/out -e CIRCUIT_CACHE=/latheon/secret/circuits \
   -v "$PWD/latheon:/latheon" -w /latheon node:22-bookworm-slim \
-  sh -c 'npm ci --omit=dev --no-audit --no-fund >/dev/null 2>&1 && node "$0.js"' "$1"
+  sh -c 'npm ci --omit=dev --no-audit --no-fund >/tmp/npm.log 2>&1 || { echo "npm ci failed:"; tail -20 /tmp/npm.log; exit 1; }; node "$0.js"' "$1"
