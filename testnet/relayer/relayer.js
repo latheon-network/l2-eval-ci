@@ -14,6 +14,13 @@
  *   (withdrawMany). Both are bound into the proof. The relayer accepts relayer = 0 with fee = 0 (no fee, as today) or
  *   relayer = its own address with fee >= RELAY_MIN_FEE; nothing else.
  *
+ * V8 pools and router (withdraw_v6, docs/v8-design.md in the Latheon repo): withdraw takes {pool, pA, pB, pC, root, nullifierHash,
+ *   recipient, relayer, fee, paymentRef, destChainId}; withdrawMany items are [pool, [pA, pB, pC], root, nullifierHash, fee,
+ *   paymentRef] with {router, items, recipient, relayer}. All of these are bound into the proof through extDataHash. Same fee
+ *   rule as V6/V7. V8 recipients MAY be contracts (smart wallets, multisigs): a V8 pool gives a payout at most its payout
+ *   gas limit and copies no return data, so a contract recipient cannot burn the relayer's gas, and one that refuses the coin
+ *   or needs more gas fails the simulation and is refused before anything is sent.
+ *
  * Delayed sending (optional, both POST routes): add "delay": {"withinSeconds": N} and the relayer checks the request at
  * once (same simulation, same limits), answers 202 {scheduled, id, notAfter} and sends the transaction at a random moment
  * within the next N seconds (60 .. RELAY_MAX_DELAY_HOURS). The point: the moment the user was online and the moment of the
@@ -28,13 +35,14 @@
  * restart does not lose them; a finished request keeps only its state and transaction hash for a day.
  *
  * Every request is simulated first (eth_call from the relayer); a request that would revert — bad proof, spent note,
- * unknown root, a recipient that refuses the coin — is refused without spending gas. Recipients must be ordinary
- * addresses without code (a contract recipient could burn the relayer's gas in its receive function). Only the pools and
+ * unknown root, a recipient that refuses the coin — is refused without spending gas. For V7 pools recipients must be
+ * ordinary addresses without code (a contract recipient could burn the relayer's gas in its receive function); V8 allows
+ * contracts (see above). Only the pools and
  * routers listed in the deployment file are accepted. Limits: RELAY_PER_IP_HOUR relays per IP per hour and RELAY_DAILY_CAP
  * per day in total (a slot is reserved when the request arrives, so a burst of parallel requests cannot pass the check
  * together; it is given back if the request is refused before sending), RELAY_FAIL_PER_IP_HOUR refused or failed requests
  * per IP per hour, at most RELAY_MAX_QUEUE requests waiting, one transaction at a time, RELAY_MIN_BALANCE LTH kept for gas.
- * Only the current generation (V7) is relayed (RELAY_VERSIONS); pools before V7 are refused with the reason, because
+ * Only the current generations (V8 and V7) are relayed (RELAY_VERSIONS); pools before V7 are refused with the reason, because
  * their circuit lets anyone withdraw without a deposit and the relayer would pay the gas. Every call to the node has a
  * timeout (rpcTimeoutMs) and so has the wait for a block (waitTimeoutMs, then the hash is returned marked pending), so the
  * queue never hangs; node trouble is answered 503 and not counted against the client. Transactions are signed before
@@ -60,6 +68,10 @@ const ROUTER_ABI = ['function withdrawMany((uint256 pool, uint256[2] pA, uint256
 const POOL_ABI_V6 = ['function withdraw(uint256[2] _pA, uint256[2][2] _pB, uint256[2] _pC, uint256 root, uint256 nullifierHash, address recipient, address relayer, uint256 fee)'];
 const ROUTER_ABI_V6 = ['function withdrawMany((uint256 pool, uint256[2] pA, uint256[2][2] pB, uint256[2] pC, uint256 root, uint256 nullifierHash, uint256 fee)[] items, address recipient, address relayer)',
   'function MAX_WITHDRAWALS() view returns (uint256)'];
+const PROOF_T = 'tuple(uint256[2] pA, uint256[2][2] pB, uint256[2] pC)';
+const POOL_ABI_V8 = [`function withdraw(${PROOF_T} proof, uint256 root, uint256 nullifierHash, tuple(address recipient, address relayer, uint256 fee, bytes32 paymentRef, uint256 destChainId) ext)`];
+const ROUTER_ABI_V8 = [`function withdrawMany(tuple(uint256 pool, ${PROOF_T} proof, uint256 root, uint256 nullifierHash, uint256 fee, bytes32 paymentRef)[] items, address recipient, address relayer) returns (uint256 paid)`,
+  'function MAX_WITHDRAWALS() view returns (uint256)'];
 
 class Refusal extends Error { constructor(status, msg) { super(msg); this.status = status; } }
 // A problem on our side (node slow, unreachable, rate-limited): never counted against the client.
@@ -75,6 +87,7 @@ function createRelayer(o) {
   const log = o.log || (() => {});
   const pools = new Set(o.pools.map((a) => a.toLowerCase())), routers = new Set(o.routers.map((a) => a.toLowerCase()));
   const v6Pools = new Set((o.v6Pools || []).map((a) => a.toLowerCase())), v6Routers = new Set((o.v6Routers || []).map((a) => a.toLowerCase()));
+  const v8Pools = new Set((o.v8Pools || []).map((a) => a.toLowerCase())), v8Routers = new Set((o.v8Routers || []).map((a) => a.toLowerCase()));
   const minFee = o.minFee ?? 0n, exempt = new Set(o.exemptIps || []);
   const perIpHour = o.perIpHour ?? 10, dailyCap = o.dailyCap ?? 500, minBalance = o.minBalance ?? ethers.parseEther('1');
   const failPerIpHour = o.failPerIpHour ?? 20, maxQueue = o.maxQueue ?? 30;
@@ -107,6 +120,7 @@ function createRelayer(o) {
     if (!Array.isArray(x.pB) || x.pB.length !== 2) throw new Refusal(400, 'Bad pB.');
     return { pA: pair(x.pA, 'pA'), pB: x.pB.map((r) => pair(r, 'pB')), pC: pair(x.pC, 'pC'), root: uint(x.root, 'root'), nullifierHash: uint(x.nullifierHash, 'nullifierHash') };
   };
+  const bytes32 = (v, name) => { if (!/^0x[0-9a-fA-F]{64}$/.test(String(v))) throw new Refusal(400, `Bad ${name}: 32 bytes of hex expected.`); return String(v).toLowerCase(); };
   const address = (a, name) => { try { return ethers.getAddress(String(a)); } catch (e) { throw new Refusal(400, `Bad ${name}.`); } };
   const reason = (e) => (e && (e.reason || e.shortMessage || e.message) || 'reverted').split('\n')[0].slice(0, 160);
 
@@ -154,8 +168,26 @@ function createRelayer(o) {
   function build(kind, body) {
     const recipient = address(body.recipient, 'recipient');
     if (recipient === ethers.ZeroAddress || recipient === wallet.address) throw new Refusal(400, 'This recipient cannot be used.');
-    let contract, args;
-    if (kind === 'withdraw') {
+    let contract, args, nullifiers, contractRecipientOk = false;
+    if (kind === 'withdraw' && v8Pools.has(String(body.pool || '').toLowerCase())) {
+      const pool = address(body.pool, 'pool');
+      const p = proof(body);
+      const fee = body.fee === undefined ? 0n : uint(body.fee, 'fee'); const rel = feeTerms(body.relayer, [fee]);
+      const ext = [recipient, rel, fee, bytes32(body.paymentRef, 'paymentRef'), uint(body.destChainId, 'destChainId')];
+      contract = new ethers.Contract(pool, POOL_ABI_V8, wallet); args = [[p.pA, p.pB, p.pC], p.root, p.nullifierHash, ext];
+      nullifiers = [String(p.nullifierHash)]; contractRecipientOk = true;
+    } else if (kind === 'withdrawMany' && v8Routers.has(String(body.router || '').toLowerCase())) {
+      const router = address(body.router, 'router');
+      if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > 16) throw new Refusal(400, 'Between 1 and 16 notes per request.');
+      const items = body.items.map((it) => {
+        if (!Array.isArray(it) || it.length !== 6 || !Array.isArray(it[1]) || it[1].length !== 3) throw new Refusal(400, 'Bad item.');
+        const p = proof({ pA: it[1][0], pB: it[1][1], pC: it[1][2], root: it[2], nullifierHash: it[3] });
+        return [uint(it[0], 'pool index'), [p.pA, p.pB, p.pC], p.root, p.nullifierHash, uint(it[4], 'fee'), bytes32(it[5], 'paymentRef')];
+      });
+      const rel = feeTerms(body.relayer, items.map((x) => x[4]));
+      contract = new ethers.Contract(router, ROUTER_ABI_V8, wallet); args = [items, recipient, rel];
+      nullifiers = items.map((x) => String(x[3])); contractRecipientOk = true;
+    } else if (kind === 'withdraw') {
       const pool = address(body.pool, 'pool'), v6 = v6Pools.has(pool.toLowerCase());
       if (retired.has(pool.toLowerCase())) throw new Refusal(400, RETIRED);
       if (!v6 && !pools.has(pool.toLowerCase())) throw new Refusal(400, 'Not a Latheon pool on this chain.');
@@ -182,18 +214,18 @@ function createRelayer(o) {
       } else { contract = new ethers.Contract(router, ROUTER_ABI, wallet); args = [items, recipient]; }
     }
     const fn = kind === 'withdraw' ? 'withdraw' : 'withdrawMany';
-    const nullifiers = (kind === 'withdraw' ? [args[4]] : args[0].map((x) => x[5])).map(String);
-    return { contract, fn, args, nullifiers, recipient };
+    if (!nullifiers) nullifiers = (kind === 'withdraw' ? [args[4]] : args[0].map((x) => x[5])).map(String);
+    return { contract, fn, args, nullifiers, recipient, contractRecipientOk };
   }
 
   // The checks made right before sending (and when a delayed request is accepted): gas money, recipient, simulation.
   async function precheck(b) {
-    const { contract, fn, args, nullifiers, recipient } = b;
+    const { contract, fn, args, nullifiers, recipient, contractRecipientOk } = b;
     let bal, code;
     try { bal = await T(wallet.provider.getBalance(wallet.address), 'balance'); code = await T(wallet.provider.getCode(recipient), 'recipient code'); }
     catch (e) { throw nodeErr(e, 'reading the chain'); }
     if (bal < minBalance) throw new Refusal(503, 'The relayer is out of gas money. Try later, or send the withdrawal from your own wallet.');
-    if (code !== '0x') throw new Refusal(400, 'The relayer only pays to ordinary addresses, not to contracts. Use a fresh address, or send the withdrawal from your own wallet.');
+    if (code !== '0x' && !contractRecipientOk) throw new Refusal(400, 'The relayer only pays to ordinary addresses, not to contracts. Use a fresh address, or send the withdrawal from your own wallet.');
     if (nullifiers.some((n) => inFlight.has(n))) throw new Refusal(409, 'This note is already being sent. Wait for it on the explorer instead of sending it again.');
     try { await T(contract[fn].staticCall(...args), 'simulation'); return await T(contract[fn].estimateGas(...args), 'gas estimate'); }
     catch (e) {
@@ -221,6 +253,8 @@ function createRelayer(o) {
       : { router: body.router, items: body.items, recipient: body.recipient };
     if (body.relayer !== undefined) x.relayer = body.relayer;
     if (body.fee !== undefined) x.fee = body.fee;
+    if (body.paymentRef !== undefined) x.paymentRef = body.paymentRef;
+    if (body.destChainId !== undefined) x.destChainId = body.destChainId;
     return JSON.parse(JSON.stringify(x, (k, v) => (typeof v === 'bigint' ? v.toString() : v)));
   }
   async function schedule(kind, body, within) {
@@ -333,7 +367,7 @@ function createRelayer(o) {
     const bal = await wallet.provider.getBalance(wallet.address);
     sent = sent.filter((x) => Date.now() - x.t < 86400e3);
     return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16, failPerIpHour, maxQueue,
-      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0,
+      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0, v8: v8Pools.size > 0, contractRecipients: v8Pools.size > 0 ? 'V8 only' : 'no',
       delay: { enabled: maxDelaySeconds > 0, minSeconds: minWindowSeconds, maxSeconds: maxDelaySeconds, waiting: [...jobs.values()].filter((j) => j.state === 'waiting').length, maxWaiting: maxScheduled },
       yourIp: ip, exempt: exempt.has(ip) };   // the caller's own address as the relayer sees it (to set RELAY_EXEMPT_IPS / FAUCET_EXEMPT_IPS)
   }
@@ -399,6 +433,15 @@ if (require.main === module) {
     if (cmd !== 'serve') die('usage: node relayer.js serve | init | address | fund AMOUNT');
 
     const dep = JSON.parse(fs.readFileSync(LATHEON_JSON, 'utf8'));
+    // V8 (deploy-v8) is written to its own file until the demo lists it; its pools and router are relayed as V8.
+    const V8_JSON = env('LATHEON_JSON_V8', path.join(path.dirname(LATHEON_JSON), 'latheon-deployments-v8.json'));
+    let v8 = null; try { v8 = JSON.parse(fs.readFileSync(V8_JSON, 'utf8')); } catch (e) { if (e.code !== 'ENOENT') log('V8 entry unreadable, V8 not relayed: ' + e.message); }
+    const v8Ok = (x) => !x.frozen && !x.forgeable && String(x.version).startsWith('v8');
+    const v8Pools = v8 ? v8.pools.filter(v8Ok).map((p) => p.address) : [], v8Routers = v8 ? (v8.routers || []).filter(v8Ok).map((r) => r.address) : [];
+    // the demo file may list V8 itself later: take V8 entries from it too, and keep them out of the V6/V7 buckets
+    for (const p of dep.pools) if (v8Ok(p)) v8Pools.push(p.address);
+    for (const r of dep.routers || []) if (v8Ok(r)) v8Routers.push(r.address);
+    const isV8 = (x) => String(x.version).startsWith('v8');
     // V6 and V7 share the fee-bearing interface (withdraw + relayer + fee; 7-field withdrawMany items), so the relayer
     // treats them the same; the v6Pools/v6Routers buckets below mean "fee-bearing pools", V6 and V7 alike.
     // Only the current generation (V7) is relayed. Older pools carry the pre-V7 circuit flaw (withdrawal without a
@@ -415,8 +458,9 @@ if (require.main === module) {
     } : null;
     const relayer = createRelayer({ ethers, wallet, log, store, maxDelaySeconds: Math.round(maxDelayHours * 3600), maxScheduled: Number(env('RELAY_MAX_SCHEDULED', '200')),
       pools: [], routers: [],
-      v6Pools: dep.pools.filter(cur).map((p) => p.address), v6Routers: (dep.routers || []).filter(cur).map((r) => r.address),
-      retiredPools: dep.pools.filter((p) => !cur(p)).map((p) => p.address), retiredRouters: (dep.routers || []).filter((r) => !cur(r)).map((r) => r.address),
+      v6Pools: dep.pools.filter((p) => cur(p) && !isV8(p)).map((p) => p.address), v6Routers: (dep.routers || []).filter((r) => cur(r) && !isV8(r)).map((r) => r.address),
+      v8Pools, v8Routers,
+      retiredPools: dep.pools.filter((p) => !cur(p) && !v8Ok(p)).map((p) => p.address), retiredRouters: (dep.routers || []).filter((r) => !cur(r) && !v8Ok(r)).map((r) => r.address),
       perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), failPerIpHour: Number(env('RELAY_FAIL_PER_IP_HOUR', '20')), maxQueue: Number(env('RELAY_MAX_QUEUE', '30')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
       minFee: ethers.parseEther(env('RELAY_MIN_FEE', '0')), exemptIps: env('RELAY_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean) });
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '600' };
@@ -435,6 +479,6 @@ if (require.main === module) {
     });
     if (store) setInterval(() => { relayer.runDue().catch((e) => log('delayed queue error: ' + (e && e.message))); }, 5000);
     server.headersTimeout = 10000; server.requestTimeout = 15000;   // slow clients cannot hold connections open
-    server.listen(Number(env('PORT', '8090')), () => log('relayer ' + wallet.address + ' listening; pools ' + dep.pools.length + ', routers ' + (dep.routers || []).length));
+    server.listen(Number(env('PORT', '8090')), () => log('relayer ' + wallet.address + ' listening; pools ' + dep.pools.length + ', routers ' + (dep.routers || []).length + '; V8 pools ' + v8Pools.length + ', V8 routers ' + v8Routers.length));
   })().catch((e) => die(e.message || String(e)));
 }
