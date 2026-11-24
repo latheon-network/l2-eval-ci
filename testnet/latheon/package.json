@@ -16,6 +16,7 @@
   "devDependencies": {
     "@openzeppelin/contracts": "5.6.1",
     "ganache": "7.9.2",
-    "solc": "0.8.37"
+    "solc": "0.8.37",
+    "solc-0839": "npm:solc@0.8.39"
   }
 }

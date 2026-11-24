@@ -66,8 +66,25 @@ const KEY = '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80'
     && e7.pools.slice(4).every((p) => p.frozen && p.forgeable) && e7.routers.slice(1).every((r) => r.frozen && r.forgeable));
   const s7 = await run('smoke-v7.js');
   check('smoke-v7: router deposit 11, withdrawMany with relayer fees bound into the proofs, 23-note deposit, invariants, disclosure', s7.status === 0 && /All checks passed/.test(s7.stdout));
+  // V8 next to the older sets (separate public entry; the demo entry is unchanged)
+  const before8 = fs.readFileSync(path.join(envs.OUT_DIR, 'latheon-deployments.json'), 'utf8');
+  envs.V8_TIMELOCK_DELAY = '120';
+  const v8a = await run('deploy-v8.js');
+  check('deploy-v8: verifiers V6/disclose V2/disclose link, timelock guardian, four V8 pools, V8 router; every check passed', v8a.status === 0);
+  const v8b = await run('deploy-v8.js');
+  check('deploy-v8 again: every V8 contract reused', v8b.status === 0 && (v8b.stdout.match(/already deployed/g) || []).length === 9 && !/\(block \d+, gas \d/.test(v8b.stdout));
+  const e8 = JSON.parse(fs.readFileSync(path.join(envs.OUT_DIR, 'latheon-deployments-v8.json'), 'utf8'));
+  check('V8 entry: 4 pools 100/50/10/1 v8-native, 1 router v8, three verifiers, timelock guardian with delay 120 s',
+    e8.pools.map((p) => p.amount).join() === '100,50,10,1' && e8.pools.every((p) => p.version === 'v8-native') && e8.routers[0].version === 'v8'
+    && !!e8.verifiers.withdraw && !!e8.verifiers.disclose && !!e8.verifiers.discloseLink && e8.guardian.delaySeconds === 120);
+  check('the demo entry latheon-deployments.json is unchanged by deploy-v8', fs.readFileSync(path.join(envs.OUT_DIR, 'latheon-deployments.json'), 'utf8') === before8);
+  const s8 = await run('smoke-v8.js');
+  check('smoke-v8: deposit 12, one note withdrawn directly, withdrawMany skips it and pays two with fees and references, 23-note deposit, invariants, disclose_v2 and disclose_link on chain', s8.status === 0 && /All checks passed/.test(s8.stdout));
+
   const recKey = JSON.parse(fs.readFileSync(path.join(envs.STATE_DIR, 'latheon-smoke-notes.json'), 'utf8')).recipientKey.slice(2).toLowerCase();
-  check('no private key (deployer or test recipient) in any output file', !fs.readdirSync(envs.OUT_DIR).some((f) => { const t = fs.readFileSync(path.join(envs.OUT_DIR, f), 'utf8').toLowerCase(); return t.includes(KEY.slice(2)) || t.includes(recKey); }));
+  const sm8 = JSON.parse(fs.readFileSync(path.join(envs.STATE_DIR, 'latheon-smoke-v8-notes.json'), 'utf8'));
+  const rec8 = [sm8.recipientKey, sm8.earlyKey].map((k) => k.slice(2).toLowerCase());
+  check('no private key (deployer or test recipient) in any output file', !fs.readdirSync(envs.OUT_DIR).some((f) => { const t = fs.readFileSync(path.join(envs.OUT_DIR, f), 'utf8').toLowerCase(); return t.includes(KEY.slice(2)) || t.includes(recKey) || rec8.some((k) => t.includes(k)); }));
 
   await server.close();
   console.log('\n' + (failed ? failed + ' check(s) failed' : 'All local checks passed'));

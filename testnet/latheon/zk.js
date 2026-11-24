@@ -73,4 +73,41 @@ async function discloseProof({ sk, vk, nonce }) {
   return { pA, pB, pC, pub };
 }
 
-module.exports = { commitmentOf, nullifierOf, tree, withdrawProof, discloseProof };
+// ---- V8 (circuits/latheon_v8.circom): tagged 3-input Poseidon, nullifier bound to the pool's ctx, extDataHash
+const { poseidon3 } = require('poseidon-lite');
+const { ethers } = require('ethers');
+const P = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+const tagOf = (s) => BigInt(ethers.keccak256(ethers.toUtf8Bytes(s))) % P;
+const TAG8 = { COMMIT: tagOf('latheon.v8.commit'), NULL: tagOf('latheon.v8.null'), DISC: tagOf('latheon.v8.disc') };
+const commitmentV8 = (sk, vk) => poseidon3([TAG8.COMMIT, sk, vk]);
+const nullifierV8 = (sk, ctx) => poseidon3([TAG8.NULL, sk, BigInt(ctx)]);
+const discTagV8 = (vk, nonce) => poseidon3([TAG8.DISC, vk, nonce]);
+const abi = ethers.AbiCoder.defaultAbiCoder();
+// ext = { recipient, relayer, fee, paymentRef (bytes32 hex), destChainId }
+const extDataHashV8 = (e) => BigInt(ethers.keccak256(abi.encode(['address', 'address', 'uint256', 'bytes32', 'uint256'], [e.recipient, e.relayer, e.fee, e.paymentRef, e.destChainId]))) % P;
+const extTupleV8 = (e) => [e.recipient, e.relayer, e.fee, e.paymentRef, e.destChainId];
+const calldata = async (proof, publicSignals) => { const [pA, pB, pC, pub] = JSON.parse('[' + (await snarkjs.groth16.exportSolidityCallData(proof, publicSignals)) + ']'); return { pA, pB, pC, pub, proof: [pA, pB, pC] }; };
+
+async function withdrawProofV8({ sk, vk, leaf, leaves, zeros, ctx, ext }) {
+  const t = tree(leaves, zeros);
+  const { el, idx } = t.path(leaf);
+  const input = { root: t.root.toString(), nullifierHash: nullifierV8(sk, ctx).toString(), ctx: BigInt(ctx).toString(), extDataHash: extDataHashV8(ext).toString(),
+    spendKey: sk.toString(), viewKey: vk.toString(), pathElements: el, pathIndices: idx };
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, await circuitFile('withdraw_v6/withdraw_v6.wasm'), await circuitFile('withdraw_v6/withdraw_v6_final.zkey'));
+  const c = await calldata(proof, publicSignals);
+  return { ...c, root: c.pub[0], nullifierHash: c.pub[1] };
+}
+async function discloseV2Proof({ sk, vk, nonce }) {
+  const input = { commitment: commitmentV8(sk, vk).toString(), disclosureTag: discTagV8(vk, nonce).toString(), auditorNonce: nonce.toString(), spendKey: sk.toString(), viewKey: vk.toString() };
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, await circuitFile('disclose_v2/disclose_v2.wasm'), await circuitFile('disclose_v2/disclose_v2_final.zkey'));
+  return calldata(proof, publicSignals);
+}
+async function discloseLinkProof({ sk, vk, ctx, nonce }) {
+  const input = { commitment: commitmentV8(sk, vk).toString(), nullifierHash: nullifierV8(sk, ctx).toString(), ctx: BigInt(ctx).toString(), auditorNonce: nonce.toString(),
+    disclosureTag: discTagV8(vk, nonce).toString(), spendKey: sk.toString(), viewKey: vk.toString() };
+  const { proof, publicSignals } = await snarkjs.groth16.fullProve(input, await circuitFile('disclose_link/disclose_link.wasm'), await circuitFile('disclose_link/disclose_link_final.zkey'));
+  return calldata(proof, publicSignals);
+}
+
+module.exports = { commitmentOf, nullifierOf, tree, withdrawProof, discloseProof,
+  commitmentV8, nullifierV8, discTagV8, extDataHashV8, extTupleV8, withdrawProofV8, discloseV2Proof, discloseLinkProof };
