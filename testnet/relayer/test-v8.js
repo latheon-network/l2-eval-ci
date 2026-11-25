@@ -33,11 +33,12 @@ const results = []; const rec = (n, ok, note) => { results.push(ok); console.log
 pragma solidity 0.8.39;
 contract Refuser { receive() external payable { revert("no"); } }
 contract Burner { uint256 public x; receive() external payable { while (true) { x++; } } }
-contract Wallet { uint256 public got; receive() external payable { got += msg.value; } }` } },
+contract Wallet { uint256 public got; receive() external payable { got += msg.value; } }
+contract Sneaky { receive() external payable { require(tx.gasprice == 0, "only in simulation"); } }` } },
     settings: { optimizer: { enabled: true, runs: 200 }, evmVersion: 'paris', outputSelection: { '*': { '*': ['abi', 'evm.bytecode.object', 'evm.bytecode.linkReferences'] } } } })));
   if ((out.errors || []).some((e) => e.severity === 'error')) throw new Error(out.errors.map((e) => e.formattedMessage).join('\n'));
   const C = { Pool: out.contracts['P8.sol'].LatheonShieldedPoolV8Native, Router: out.contracts['R8.sol'].LatheonDistributionPoolV8Native, T3: out.contracts['PoseidonT3.sol'].PoseidonT3, Ver: out.contracts['V8.sol'].WithdrawVerifierV6,
-    Ref: out.contracts['X.sol'].Refuser, Burn: out.contracts['X.sol'].Burner, Wal: out.contracts['X.sol'].Wallet };
+    Ref: out.contracts['X.sol'].Refuser, Burn: out.contracts['X.sol'].Burner, Wal: out.contracts['X.sol'].Wallet, Sneaky: out.contracts['X.sol'].Sneaky };
   const link = (c, libs) => { let code = c.evm.bytecode.object; const refs = c.evm.bytecode.linkReferences; for (const f in refs) for (const l in refs[f]) for (const { start, length } of refs[f][l]) code = code.slice(0, start * 2) + libs[l].slice(2).toLowerCase() + code.slice(start * 2 + length * 2); return code; };
   const gp = ganache.provider({ logging: { quiet: true }, chain: { hardfork: 'shanghai', chainId: CHAIN }, wallet: { deterministic: true, totalAccounts: 4, defaultBalance: 100000 }, miner: { blockGasLimit: 60000000 } });
   const provider = new ethers.BrowserProvider(gp);
@@ -48,7 +49,7 @@ contract Wallet { uint256 public got; receive() external payable { got += msg.va
   const pools = []; for (const d of [100n, 50n, 10n, 1n]) pools.push(await deploy(C.Pool, [await ver.getAddress(), d * E18, ethers.ZeroAddress], libs));
   const router = await deploy(C.Router, [await Promise.all(pools.map((p) => p.getAddress()))]);
   const strayPool = await deploy(C.Pool, [await ver.getAddress(), 10n * E18, ethers.ZeroAddress], libs);
-  const refuser = await deploy(C.Ref), burner = await deploy(C.Burn), cwallet = await deploy(C.Wal);
+  const refuser = await deploy(C.Ref), burner = await deploy(C.Burn), cwallet = await deploy(C.Wal), sneaky = await deploy(C.Sneaky);
 
   const leaves = new Map();
   const note = () => { const sk = rnd(), vk = rnd(); return { sk, vk, commitment: poseidon3([TAG.C, sk, vk]) }; };
@@ -75,7 +76,7 @@ contract Wallet { uint256 public got; receive() external payable { got += msg.va
   let clockMs = Date.now();
   const jobsStore = { list: [], load() { return this.list; }, save(l) { this.list = l; } };
   const R = createRelayer({ ethers, wallet: relayerSigner, pools: [], routers: [], v8Pools: await Promise.all(pools.map((p) => p.getAddress())), v8Routers: [await router.getAddress()],
-    perIpHour: 50, dailyCap: 100, minFee: E18 / 100n, store: jobsStore, now: () => clockMs, maxDelaySeconds: 3600 });
+    perIpHour: 50, dailyCap: 100, minFee: E18 / 100n, store: jobsStore, now: () => clockMs, maxDelaySeconds: 3600, chainFailsPerDay: 2 });
   const body = (pool, p, ext) => ({ pool: pool.target, ...p, recipient: ext.recipient, relayer: ext.relayer, fee: ext.fee.toString(), paymentRef: ext.paymentRef, destChainId: ext.destChainId.toString() });
   const extOf = (o = {}) => ({ recipient: fresh(), relayer: ethers.ZeroAddress, fee: 0n, paymentRef: ref(), destChainId: BigInt(CHAIN), ...o });
 
@@ -114,6 +115,24 @@ contract Wallet { uint256 public got; receive() external payable { got += msg.va
     res = await R.handle('POST', '/relay/api/withdraw', body(pools[3], p, e), 'ip-c');
     rec(`V8: a contract recipient that ${label} is refused before sending; no gas; the note stays unspent`, res.status === 400 && /Native transfer failed/.test(res.body.error) && (await bal(relayerAddr)) === bb && !(await pools[3].nullifierHashes(p.nullifierHash)), res.body.error);
   }
+  // 4b. R-1: a contract that pays in the simulation (gas price 0) and reverts in the real transaction
+  const sn = []; for (let i = 0; i < 2; i++) { const n = note(); await depositTo(pools[3], n); const e = extOf({ recipient: sneaky.target }); sn.push({ e, p: await prove(pools[3], n, e) }); }
+  const capBefore = (await R.handle('GET', '/relay/api/status', null, 'ip-x')).body.relayedLast24h;
+  res = await R.handle('POST', '/relay/api/withdraw', body(pools[3], sn[0].p, sn[0].e), 'ip-r');
+  rec('R-1: a recipient that reverts only in the real transaction: the relayer sends once and reports the on-chain failure', res.status === 502 && /failed on-chain/.test(res.body.error), res.body.error);
+  const bR = await bal(relayerAddr);
+  res = await R.handle('POST', '/relay/api/withdraw', body(pools[3], sn[0].p, sn[0].e), 'ip-r2');
+  rec('R-1: the same note again (even from another IP) is refused before sending; no gas', res.status === 400 && /already failed on chain/.test(res.body.error) && (await bal(relayerAddr)) === bR && !(await pools[3].nullifierHashes(sn[0].p.nullifierHash)), res.body.error);
+  rec('R-1: the failed transaction does not use a slot of the daily cap', (await R.handle('GET', '/relay/api/status', null, 'ip-x')).body.relayedLast24h === capBefore);
+  res = await R.handle('POST', '/relay/api/withdraw', body(pools[3], sn[1].p, sn[1].e), 'ip-r3');
+  const nw = note(); await depositTo(pools[3], nw); const ew = extOf({ recipient: cwallet.target }); const pw = await prove(pools[3], nw, ew);
+  res = await R.handle('POST', '/relay/api/withdraw', body(pools[3], pw, ew), 'ip-r4');
+  const st2 = (await R.handle('GET', '/relay/api/status', null, 'ip-x')).body;
+  rec('R-1: after RELAY_CHAIN_FAILS_PER_DAY on-chain failures (2 here) contract recipients are refused, status says paused', res.status === 400 && /paused/.test(res.body.error) && st2.contractRecipients === 'paused' && st2.chainFailsLast24h === 2, res.body.error);
+  const eo = extOf(); const po = await prove(pools[3], nw, eo);
+  res = await R.handle('POST', '/relay/api/withdraw', body(pools[3], po, eo), 'ip-r4');
+  rec('R-1: ordinary addresses are still relayed', res.status === 200 && (await bal(eo.recipient)) === E18, res.body.error || 'ok');
+
   // 5. withdrawMany: three notes, one already withdrawn directly → skipped
   const ns = [note(), note(), note()]; await depositTo(pools[0], ns[0]); await depositTo(pools[1], ns[1]); await depositTo(pools[3], ns[2]);
   const rm = fresh(); const items = [];
@@ -138,7 +157,7 @@ contract Wallet { uint256 public got; receive() external payable { got += msg.va
   res = await R.handle('GET', '/relay/api/scheduled/' + id, null, 'ip-e');
   rec('V8: … and sent when due; the empty address gets 1', res.body.state === 'sent' && (await bal(e6.recipient)) === E18, JSON.stringify(res.body));
   res = await R.handle('GET', '/relay/api/status', null, 'ip-x');
-  rec('status says V8 is relayed and contract recipients are allowed for V8 only', res.status === 200 && res.body.v8 === true && res.body.contractRecipients === 'V8 only', JSON.stringify(res.body).slice(0, 120));
+  rec('status says V8 is relayed (contract recipients paused after the R-1 failures above)', res.status === 200 && res.body.v8 === true && res.body.contractRecipients === 'paused', JSON.stringify(res.body).slice(0, 120));
 
   const failed = results.filter((x) => !x).length;
   console.log(`\n${results.length - failed} passed, ${failed} failed`);

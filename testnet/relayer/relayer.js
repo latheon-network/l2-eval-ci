@@ -18,8 +18,13 @@
  *   recipient, relayer, fee, paymentRef, destChainId}; withdrawMany items are [pool, [pA, pB, pC], root, nullifierHash, fee,
  *   paymentRef] with {router, items, recipient, relayer}. All of these are bound into the proof through extDataHash. Same fee
  *   rule as V6/V7. V8 recipients MAY be contracts (smart wallets, multisigs): a V8 pool gives a payout at most its payout
- *   gas limit and copies no return data, so a contract recipient cannot burn the relayer's gas, and one that refuses the coin
- *   or needs more gas fails the simulation and is refused before anything is sent.
+ *   gas limit and copies no return data, so a contract recipient cannot run up the cost of one transaction, and one that
+ *   refuses the coin or needs more gas fails the simulation and is refused before anything is sent. A contract can still
+ *   behave differently in the simulation and in the real transaction (gas price, block, a switch flipped in between), so
+ *   the real transaction reverts and the relayer pays for it. Against repeating that: a note whose relayed withdrawal
+ *   reverted on chain is not relayed again for 24 hours, the failure counts against the IP's failure limit and does not
+ *   use a slot of the daily cap, and after RELAY_CHAIN_FAILS_PER_DAY such failures in 24 hours contract recipients are
+ *   refused until the count drops. (Internal review of 25 November 2026, finding R-1.)
  *
  * Delayed sending (optional, both POST routes): add "delay": {"withinSeconds": N} and the relayer checks the request at
  * once (same simulation, same limits), answers 202 {scheduled, id, notAfter} and sends the transaction at a random moment
@@ -27,8 +32,8 @@
  * withdrawal on chain are no longer the same, which is the cheapest defence against matching a withdrawal to a deposit by
  * time while few people use the pools. What it does not do: the relayer itself still sees when the request arrived and
  * from which IP address (it does not write either to its log or to disk); a proof is valid only while its Merkle root is
- * among the pool's last 100 (the next 99 deposits into that pool), so in a busy pool a long delay can expire it, and the
- * request then ends as failed with the reason; nothing is retried with new data, because the relayer has no keys.
+ * among the pool's last 100 (the next 99 deposits into that pool) for V5–V7 pools, so in a busy pool a long delay can expire
+ * it, and the request then ends as failed with the reason (V8 pools keep every root); nothing is retried with new data, because the relayer has no keys.
  *   GET    /relay/api/scheduled/ID   {state: waiting | sent | failed | cancelled, tx?, error?, notAfter}
  *   DELETE /relay/api/scheduled/ID   cancels a waiting request (the ID is the only credential: keep it private)
  * Waiting requests are kept in RELAY_QUEUE_FILE (proofs and recipients, no IP addresses, no arrival time) so that a
@@ -91,6 +96,10 @@ function createRelayer(o) {
   const minFee = o.minFee ?? 0n, exempt = new Set(o.exemptIps || []);
   const perIpHour = o.perIpHour ?? 10, dailyCap = o.dailyCap ?? 500, minBalance = o.minBalance ?? ethers.parseEther('1');
   const failPerIpHour = o.failPerIpHour ?? 20, maxQueue = o.maxQueue ?? 30;
+  // On-chain failures (a relayed transaction that reverted after a successful simulation): see R-1 in the header.
+  const chainFailsPerDay = o.chainFailsPerDay ?? 20;
+  const reverted = new Map();   // nullifierHash -> time of the on-chain failure; not relayed again for 24 hours
+  let chainFails = [];          // times of on-chain failures in the last 24 hours
   const rpcTimeoutMs = o.rpcTimeoutMs ?? 20000, waitTimeoutMs = o.waitTimeoutMs ?? 120000;
   // Delayed sending: off unless a store is given. store = { load(): job[], save(job[]) }; clock = () => ms (tests).
   const store = o.store || null, clock = o.now || Date.now;
@@ -134,6 +143,7 @@ function createRelayer(o) {
     if (sent.length >= dailyCap) throw new Refusal(429, 'The relayer reached its daily limit. Try tomorrow, or send the withdrawal from your own wallet.');
     const slot = { t: now }; h.push(slot); sent.push(slot); return slot;
   }
+  function releaseDaily(slot) { if (!slot) return; const j = sent.indexOf(slot); if (j >= 0) sent.splice(j, 1); }
   function release(ip, slot) { if (!slot) return; const h = byIp.get(ip) || []; const i = h.indexOf(slot); if (i >= 0) h.splice(i, 1); const j = sent.indexOf(slot); if (j >= 0) sent.splice(j, 1); }
   function failed(ip) { if (exempt.has(ip)) return; const h = failsByIp.get(ip) || []; h.push({ t: Date.now() }); failsByIp.set(ip, h); }
 
@@ -158,7 +168,9 @@ function createRelayer(o) {
       return await prepareAndSend(kind, body, () => { wasSent = true; });
     } catch (e) {
       // Only the client's own mistakes count against its failure limit; trouble on our side (node, timeouts) does not.
-      if (e instanceof Refusal && !(e instanceof NodeTrouble) && e.status < 500) failed(ip);
+      // A transaction that reverted on chain after a clean simulation counts too (R-1), and gives back its daily slot.
+      if (e instanceof Refusal && !(e instanceof NodeTrouble) && (e.status < 500 || e.onChain)) failed(ip);
+      if (e && e.onChain) releaseDaily(slot);
       if (!wasSent) release(ip, slot);   // refused before sending: the slot is given back
       throw e;
     }
@@ -225,6 +237,8 @@ function createRelayer(o) {
     try { bal = await T(wallet.provider.getBalance(wallet.address), 'balance'); code = await T(wallet.provider.getCode(recipient), 'recipient code'); }
     catch (e) { throw nodeErr(e, 'reading the chain'); }
     if (bal < minBalance) throw new Refusal(503, 'The relayer is out of gas money. Try later, or send the withdrawal from your own wallet.');
+    chainFails = chainFails.filter((t) => Date.now() - t < 86400e3);
+    if (code !== '0x' && contractRecipientOk && chainFails.length >= chainFailsPerDay) throw new Refusal(400, 'Payouts to contracts through the relayer are paused for now (too many failed on chain today). Use an ordinary address, or send the withdrawal from your own wallet.');
     if (code !== '0x' && !contractRecipientOk) throw new Refusal(400, 'The relayer only pays to ordinary addresses, not to contracts. Use a fresh address, or send the withdrawal from your own wallet.');
     if (nullifiers.some((n) => inFlight.has(n))) throw new Refusal(409, 'This note is already being sent. Wait for it on the explorer instead of sending it again.');
     try { await T(contract[fn].staticCall(...args), 'simulation'); return await T(contract[fn].estimateGas(...args), 'gas estimate'); }
@@ -236,6 +250,8 @@ function createRelayer(o) {
 
   function notBusy(nullifiers) {
     const now = Date.now(); for (const [k, v] of inFlight) if (v.until < now) inFlight.delete(k);
+    for (const [k, t] of reverted) if (now - t > 86400e3) reverted.delete(k);
+    if (nullifiers.some((n) => reverted.has(n))) throw new Refusal(400, 'A withdrawal of this note through the relayer already failed on chain in the last 24 hours (the recipient did not accept the payment). Send it from your own wallet, or to another recipient with a new proof.');
     const busyNote = nullifiers.find((n) => inFlight.has(n));
     if (busyNote) throw new Refusal(409, 'This note is already being sent in ' + inFlight.get(busyNote).tx + '. Wait for it on the explorer instead of sending it again.');
   }
@@ -357,7 +373,11 @@ function createRelayer(o) {
         return { tx: hash, pending: true, message: 'Sent, but not yet in a block. Check this transaction on the explorer; do not send the same note again.' };
       }
       for (const n of nullifiers) inFlight.delete(n);
-      if (!rc || rc.status !== 1) throw new Refusal(502, 'The transaction failed on-chain: ' + hash);
+      if (!rc || rc.status !== 1) {
+        const now = Date.now(); for (const n of nullifiers) reverted.set(n, now); chainFails.push(now);
+        log('reverted on chain after a clean simulation: ' + hash);
+        const e = new Refusal(502, 'The transaction failed on-chain: ' + hash); e.onChain = true; throw e;
+      }
       log(`relayed ${fn} ${hash} gas ${rc.gasUsed}`);
       return { tx: hash, block: rc.blockNumber, gasUsed: rc.gasUsed.toString() };
     }).finally(() => { waiting--; });
@@ -366,8 +386,8 @@ function createRelayer(o) {
   async function status(ip) {
     const bal = await wallet.provider.getBalance(wallet.address);
     sent = sent.filter((x) => Date.now() - x.t < 86400e3);
-    return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16, failPerIpHour, maxQueue,
-      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0, v8: v8Pools.size > 0, contractRecipients: v8Pools.size > 0 ? 'V8 only' : 'no',
+    return { address: wallet.address, balance: ethers.formatEther(bal), enabled: bal >= minBalance, perIpHour, dailyCap, relayedLast24h: sent.length, maxNotesPerRequest: 16, failPerIpHour, maxQueue, chainFailsLast24h: chainFails.filter((t) => Date.now() - t < 86400e3).length,
+      fee: '0', minFeeV6: ethers.formatEther(minFee), v6: v6Pools.size > 0, v8: v8Pools.size > 0, contractRecipients: v8Pools.size === 0 ? 'no' : chainFails.filter((t) => Date.now() - t < 86400e3).length >= chainFailsPerDay ? 'paused' : 'V8 only',
       delay: { enabled: maxDelaySeconds > 0, minSeconds: minWindowSeconds, maxSeconds: maxDelaySeconds, waiting: [...jobs.values()].filter((j) => j.state === 'waiting').length, maxWaiting: maxScheduled },
       yourIp: ip, exempt: exempt.has(ip) };   // the caller's own address as the relayer sees it (to set RELAY_EXEMPT_IPS / FAUCET_EXEMPT_IPS)
   }
@@ -461,7 +481,7 @@ if (require.main === module) {
       v6Pools: dep.pools.filter((p) => cur(p) && !isV8(p)).map((p) => p.address), v6Routers: (dep.routers || []).filter((r) => cur(r) && !isV8(r)).map((r) => r.address),
       v8Pools, v8Routers,
       retiredPools: dep.pools.filter((p) => !cur(p) && !v8Ok(p)).map((p) => p.address), retiredRouters: (dep.routers || []).filter((r) => !cur(r) && !v8Ok(r)).map((r) => r.address),
-      perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), failPerIpHour: Number(env('RELAY_FAIL_PER_IP_HOUR', '20')), maxQueue: Number(env('RELAY_MAX_QUEUE', '30')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
+      perIpHour: Number(env('RELAY_PER_IP_HOUR', '10')), failPerIpHour: Number(env('RELAY_FAIL_PER_IP_HOUR', '20')), chainFailsPerDay: Number(env('RELAY_CHAIN_FAILS_PER_DAY', '20')), maxQueue: Number(env('RELAY_MAX_QUEUE', '30')), dailyCap: Number(env('RELAY_DAILY_CAP', '500')), minBalance: ethers.parseEther(env('RELAY_MIN_BALANCE', '1')),
       minFee: ethers.parseEther(env('RELAY_MIN_FEE', '0')), exemptIps: env('RELAY_EXEMPT_IPS', '').split(',').map((x) => x.trim()).filter(Boolean) });
     const cors = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '600' };
     const ipOf = (req) => { const x = String(req.headers['x-forwarded-for'] || '').split(',').map((s) => s.trim()).filter(Boolean); return x.length ? x[x.length - 1] : (req.socket.remoteAddress || 'unknown'); };
