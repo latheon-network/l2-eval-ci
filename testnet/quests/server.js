@@ -10,11 +10,17 @@
  *   POST /quests/api/zealy/TASK           Zealy API task: X-Api-Key, body.accounts.wallet; 200 or 400 {"message"}
  *
  * TASK is one of:
- *   faucet   the address received LTH from our faucet
- *   deposit  the address sent a successful transaction to a current (V8 or V7) pool or router
- *   report   the address uploaded a valid disclosure report: proof accepted by the chain's verifier for its circuit
- *            (disclose for V7 notes; disclose_v2 or a receipt, disclose_link, for V8 notes), made for this address's
- *            code, for a deposit in a current pool whose transaction was sent from this address
+ *   faucet     the address received LTH from our faucet
+ *   deposit    the address sent a successful transaction to a current (V8 or V7) pool or router
+ *   deposit-v8 the same, V8 pools and router only
+ *   report     the address uploaded a valid disclosure report: proof accepted by the chain's verifier for its circuit
+ *              (disclose for V7 notes, disclose_v2 for V8 notes), made for this address's code, for a deposit in a
+ *              current pool whose transaction was sent from this address
+ *   report-v8  the same, with at least one accepted V8 row (reports accepted before 28 November 2026 did not record
+ *              the generation: upload again)
+ *
+ * Receipts (disclose_link) are refused: a receipt also shows the auditor the note's withdrawal (recipient, relayer,
+ * fee), and the quests never look at withdrawals.
  *
  * What it never asks for or checks: withdrawals. Checking a withdrawal would require linking the deposit wallet with
  * the withdrawal address, which is exactly what the pools hide. The report task shows one deposit to us as the
@@ -31,7 +37,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ADDR = /^0x[0-9a-fA-F]{40}$/;
-const TASKS = ['faucet', 'deposit', 'report'];
+const TASKS = ['faucet', 'deposit', 'deposit-v8', 'report', 'report-v8'];
 const VERIFIER_ABI = ['function verifyProof(uint[2] _pA, uint[2][2] _pB, uint[2] _pC, uint[3] _pubSignals) view returns (bool)'];
 
 class Refusal extends Error { constructor(message) { super(message); this.refusal = true; } }
@@ -43,7 +49,8 @@ class Refusal extends Error { constructor(message) { super(message); this.refusa
  * @param {string[]} o.currentPools         V7 pool addresses
  * @param {string[]} [o.v8Pools]            V8 pool addresses (also current; their rows carry circuit disclose_v2 or disclose_link)
  * @param {(pool:string) => bigint} [o.ctxOf]  V8 pool context, keccak256(abi.encode("latheon.v8.ctx", chainId, pool)) mod p
- * @param {string[]} o.currentTargets       V7 pools and routers (deposit targets)
+ * @param {string[]} o.currentTargets       V7 and V8 pools and routers (deposit targets)
+ * @param {string[]} [o.v8Targets]          V8 pools and routers only (task deposit-v8)
  * @param {string} o.discloseVerifier
  * @param {(addr:string, filter:'to'|'from') => Promise<object[]>} o.addressTxs   Blockscout transactions of an address
  * @param {() => Promise<string>} o.faucetAddress
@@ -57,6 +64,7 @@ function createQuests(o) {
   const pools = new Set(o.currentPools.map((a) => a.toLowerCase()));
   const pools8 = new Set((o.v8Pools || []).map((a) => a.toLowerCase()));
   const targets = new Set(o.currentTargets.map((a) => a.toLowerCase()));
+  const targets8 = new Set((o.v8Targets || []).map((a) => a.toLowerCase()));
   const maxItems = o.maxItems || 20;
   const lower = (a) => {
     if (typeof a !== 'string' || !ADDR.test(a.trim())) throw new Refusal('Not a valid 0x address.');
@@ -73,25 +81,26 @@ function createQuests(o) {
       : { ok: 0, reason: 'No faucet transfer to this address found yet. Claim at explorer.testnet.latheon.xyz/faucet (it can take a few seconds to show).' };
   }
 
-  async function deposit(addr) {
-    const a = lower(addr);
+  async function deposit(addr, v8only) {
+    const a = lower(addr), set = v8only ? targets8 : targets;
     const txs = await o.addressTxs(a, 'from');
-    return txs.some((t) => ok(t) && t.to && targets.has(String(t.to.hash).toLowerCase()) && BigInt(t.value || '0') > 0n)
-      ? { ok: 1, reason: 'Deposit into a current Latheon pool found.' }
-      : { ok: 0, reason: 'No deposit into a current (V8 or V7) Latheon pool from this address yet. Use latheon.xyz/demo.' };
+    return txs.some((t) => ok(t) && t.to && set.has(String(t.to.hash).toLowerCase()) && BigInt(t.value || '0') > 0n)
+      ? { ok: 1, reason: v8only ? 'Deposit into a V8 Latheon pool found.' : 'Deposit into a current Latheon pool found.' }
+      : { ok: 0, reason: v8only ? 'No deposit into a V8 Latheon pool or router from this address yet. Use latheon.xyz/demo (V8 is the default).' : 'No deposit into a current (V8 or V7) Latheon pool from this address yet. Use latheon.xyz/demo.' };
   }
 
-  async function report(addr) {
-    const a = lower(addr);
-    return o.state.reports[a]
-      ? { ok: 1, reason: 'Disclosure report accepted.' }
-      : { ok: 0, reason: 'No accepted disclosure report for this address yet. Upload it at explorer.testnet.latheon.xyz/quests.' };
+  async function report(addr, v8only) {
+    const a = lower(addr), r = o.state.reports[a];
+    if (r && (!v8only || r.v8 > 0)) return { ok: 1, reason: v8only ? 'Disclosure report with a V8 deposit accepted.' : 'Disclosure report accepted.' };
+    return { ok: 0, reason: (v8only && r ? 'Your accepted report has no V8 deposit (or was accepted before 28 November 2026). ' : 'No accepted disclosure report for this address yet. ') + 'Upload a report for a V8 deposit at explorer.testnet.latheon.xyz/quests.'.replace(v8only ? '' : 'for a V8 deposit ', '') };
   }
 
   async function check(task, addr) {
     if (task === 'faucet') return faucet(addr);
-    if (task === 'deposit') return deposit(addr);
-    if (task === 'report') return report(addr);
+    if (task === 'deposit') return deposit(addr, false);
+    if (task === 'deposit-v8') return deposit(addr, true);
+    if (task === 'report') return report(addr, false);
+    if (task === 'report-v8') return report(addr, true);
     throw new Refusal('Unknown task.');
   }
 
@@ -102,7 +111,7 @@ function createQuests(o) {
     if (!Array.isArray(rep.items) || !rep.items.length) throw new Refusal('The report has no rows.');
     if (String(rep.auditorNonce) !== code) throw new Refusal('The report was made for a different code. Get your code on this page for this address, make the report again with it.');
     if (rep.items.length > maxItems) throw new Refusal(`Too many rows: one is enough, at most ${maxItems}.`);
-    const accepted = [], problems = [];
+    const accepted = [], problems = []; let v8rows = 0;
     for (let i = 0; i < rep.items.length; i++) {
       const x = rep.items[i] || {}, p = x.proof || {};
       const row = `Row ${i + 1}: `;
@@ -112,6 +121,7 @@ function createQuests(o) {
         const kind = x.circuit === undefined ? 'disclose' : String(x.circuit);
         const nSig = { disclose: 3, disclose_v2: 3, disclose_link: 5 }[kind];
         if (!nSig) { problems.push(row + 'unknown proof type.'); continue; }
+        if (kind === 'disclose_link') { problems.push(row + 'is a receipt: it would also show us your withdrawal, and the quests never look at withdrawals. Make the report again without the receipt option.'); continue; }
         if (!(Array.isArray(p.pA) && p.pA.length === 2 && Array.isArray(p.pB) && p.pB.length === 2 && Array.isArray(p.pC) && p.pC.length === 2 && Array.isArray(p.pubSignals) && p.pubSignals.length === nSig)) { problems.push(row + 'malformed proof.'); continue; }
         const pub = p.pubSignals.map((v) => BigInt(v));
         if (pub[kind === 'disclose_link' ? 3 : 2].toString() !== code) { problems.push(row + 'proof made for a different code.'); continue; }
@@ -123,13 +133,14 @@ function createQuests(o) {
         const dep = await o.findDeposit(x.pool, pub[0]);
         if (!dep) { problems.push(row + 'no such deposit in that pool.'); continue; }
         if ((await o.txFrom(dep.txHash)).toLowerCase() !== a) { problems.push(row + 'that deposit was not sent from this address.'); continue; }
-        accepted.push(pub[0].toString());
+        accepted.push(pub[0].toString()); if (kind !== 'disclose') v8rows++;
       } catch (e) { problems.push(row + 'could not be checked (' + (e.shortMessage || e.message) + ').'); }
     }
     if (!accepted.length) throw new Refusal('Report not accepted. ' + problems.join(' '));
-    o.state.reports[a] = { at: new Date().toISOString(), rows: accepted.length };
+    const prev = o.state.reports[a];
+    o.state.reports[a] = { at: new Date().toISOString(), rows: accepted.length, v8: v8rows + (prev && prev.v8 ? prev.v8 : 0) };
     o.save();
-    return { ok: 1, accepted: accepted.length, problems, reason: 'Disclosure report accepted.' };
+    return { ok: 1, accepted: accepted.length, v8: v8rows, problems, reason: 'Disclosure report accepted' + (v8rows ? ' (with a V8 deposit).' : '.') };
   }
 
   return { codeFor, check, submitReport, TASKS };
@@ -195,6 +206,7 @@ function main() {
     currentPools: curPools.map((p) => p.address),
     currentTargets: curPools.concat(v8Pools).map((p) => p.address).concat(curRouters.concat(v8Routers).map((r) => r.address)),
     v8Pools: v8Pools.map((p) => p.address), ctxOf,
+    v8Targets: v8Pools.map((p) => p.address).concat(v8Routers.map((r) => r.address)),
     discloseVerifier: dep.network.discloseVerifier,
     faucetAddress: async () => faucetAddr || (faucetAddr = (await getJson(FAUCET_STATUS_URL)).address),
     addressTxs: async (a, filter) => {
@@ -231,11 +243,11 @@ function main() {
         log('report accepted for ' + String(b.address).toLowerCase() + ' rows ' + r.accepted);
         return send(res, 200, r);
       }
-      let m = p.match(/^\/quests\/api\/check\/([a-z]+)$/);
+      let m = p.match(/^\/quests\/api\/check\/([a-z0-9-]+)$/);
       if (req.method === 'GET' && m) {
         try { return send(res, 200, await q.check(m[1], u.searchParams.get('address'))); } catch (e) { return send(res, 200, { ok: 0, reason: e.refusal ? e.message : 'Check failed, try again in a minute.' }); }
       }
-      m = p.match(/^\/quests\/api\/zealy\/([a-z]+)$/);
+      m = p.match(/^\/quests\/api\/zealy\/([a-z0-9-]+)$/);
       if (req.method === 'POST' && m) {
         if (!ZEALY_API_KEY) return send(res, 400, { message: 'Zealy checks are not configured.' });
         const given = String(req.headers['x-api-key'] || '');

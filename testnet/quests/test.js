@@ -23,7 +23,7 @@ function make(over = {}) {
   const q = createQuests({
     secret: Buffer.from('00'.repeat(32), 'hex'), state, save: () => { saved++; },
     currentPools: [POOL], currentTargets: [POOL, ROUTER, POOL8], discloseVerifier: '0x7777777777777777777777777777777777777777',
-    v8Pools: [POOL8], ctxOf: (p) => (p.toLowerCase() === POOL8 ? CTX8 : 1n),
+    v8Pools: [POOL8], v8Targets: [POOL8], ctxOf: (p) => (p.toLowerCase() === POOL8 ? CTX8 : 1n),
     faucetAddress: async () => FAUCET,
     addressTxs: async (a, f) => (over.txs || txs)[f][a] || [],
     findDeposit: async (pool, c) => ((pool.toLowerCase() === POOL && c === COMMIT) || (pool.toLowerCase() === POOL8 && c === COMMIT8) ? { txHash: '0xabc' } : null),
@@ -103,13 +103,10 @@ function report8(q, addr, o = {}) {
     const { q } = make(); calls.length = 0;
     assert.strictEqual((await q.submitReport(USER, report8(q, USER))).ok, 1); assert.deepStrictEqual(calls, ['disclose_v2']);
   });
-  await t('V8 receipt (disclose_link): accepted with the code at signal 3 and the pool context checked', async () => {
-    const { q } = make(); calls.length = 0;
-    assert.strictEqual((await q.submitReport(USER, report8(q, USER, { kind: 'disclose_link' }))).ok, 1); assert.deepStrictEqual(calls, ['disclose_link']);
-  });
-  await t('V8 receipt naming another pool (ctx) is refused before the verifier', async () => {
-    const { q } = make(); calls.length = 0;
-    await assert.rejects(() => q.submitReport(USER, report8(q, USER, { kind: 'disclose_link', ctx: 5n })), /another pool/); assert.strictEqual(calls.length, 0);
+  await t('V8 receipt (disclose_link) is refused before the verifier: it would show the withdrawal', async () => {
+    const { q, state } = make(); calls.length = 0;
+    await assert.rejects(() => q.submitReport(USER, report8(q, USER, { kind: 'disclose_link' })), /receipt/); assert.strictEqual(calls.length, 0);
+    assert.strictEqual(Object.keys(state.reports).length, 0);
   });
   await t('a V8 proof type for a V7 pool, or a V7 row for a V8 pool, is refused', async () => {
     const { q } = make();
@@ -119,12 +116,29 @@ function report8(q, addr, o = {}) {
   await t('unknown proof type and wrong signal count are refused', async () => {
     const { q } = make(); const r = report8(q, USER); r.items[0].circuit = 'x';
     await assert.rejects(() => q.submitReport(USER, r), /unknown proof type/);
-    const r2 = report8(q, USER, { kind: 'disclose_link' }); r2.items[0].proof.pubSignals.pop();
+    const r2 = report8(q, USER); r2.items[0].proof.pubSignals.pop();
     await assert.rejects(() => q.submitReport(USER, r2), /malformed proof/);
   });
   await t('deposit: yes into a V8 pool', async () => {
     const { q } = make({ txs: { to: {}, from: { [USER]: [{ status: 'ok', to: { hash: POOL8 }, value: '1' }] } } });
     assert.strictEqual((await q.check('deposit', USER)).ok, 1);
+  });
+  await t('deposit-v8: yes into a V8 pool, no for a V7 router deposit', async () => {
+    const yes = make({ txs: { to: {}, from: { [USER]: [{ status: 'ok', to: { hash: POOL8 }, value: '1' }] } } });
+    assert.strictEqual((await yes.q.check('deposit-v8', USER)).ok, 1);
+    const no = make(); assert.strictEqual((await no.q.check('deposit-v8', USER)).ok, 0); assert.strictEqual((await no.q.check('deposit', USER)).ok, 1);
+  });
+  await t('report-v8: yes after a V8 report, no after a V7-only report or an old record', async () => {
+    const a = make(); await a.q.submitReport(USER, report8(a.q, USER));
+    assert.strictEqual((await a.q.check('report-v8', USER)).ok, 1); assert.strictEqual((await a.q.check('report', USER)).ok, 1);
+    const b = make(); await b.q.submitReport(USER, report(b.q, USER));
+    assert.strictEqual((await b.q.check('report-v8', USER)).ok, 0); assert.strictEqual((await b.q.check('report', USER)).ok, 1);
+    const c = make(); c.state.reports[USER.toLowerCase()] = { at: '2026-11-25T00:00:00Z', rows: 1 };
+    assert.strictEqual((await c.q.check('report-v8', USER)).ok, 0);
+  });
+  await t('a later V7 report keeps an earlier V8 row', async () => {
+    const { q } = make(); await q.submitReport(USER, report8(q, USER)); await q.submitReport(USER, report(q, USER));
+    assert.strictEqual((await q.check('report-v8', USER)).ok, 1);
   });
   await t('report: before upload the check says no', async () => { const { q } = make(); assert.strictEqual((await q.check('report', USER)).ok, 0); });
   console.log(`\n${pass} passed, ${fail} failed`);
